@@ -1,0 +1,37 @@
+---
+
+- name: Install MySQL
+  become_user: root
+  apt:
+    name: '{{ item }}'
+    state: latest
+  with_items:
+    - mysql-server
+    - python-mysqldb
+
+- name: Start MySQL
+  service:
+    name: mysql
+    enabled: yes
+  notify: Start MySQL
+
+- name: Update MySQL root password
+  mysql_user:
+    name: root
+    password: '{{ mysql_root_password }}'
+    check_implicit_admin: true
+
+- name: Create .my.cnf
+  template:
+    src: .my.cnf
+    dest: /root/.my.cnf
+    owner: root
+    group: root
+    mode: 0600
+
+- name: Add TPN database
+  mysql_db:
+    name: tpn
+    state: present
+    config_file: /root/.my.cnf
+  notify: Restart MySQL

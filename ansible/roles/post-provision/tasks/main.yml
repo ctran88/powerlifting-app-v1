@@ -1,0 +1,55 @@
+---
+
+- name: Remove directories for API and App if they exist
+  file:
+    path: '{{ item }}'
+    state: absent
+  with_items:
+    - '{{ api_dest }}'
+    - '{{ app_dest }}'
+
+- name: Create directories for API and App
+  file:
+    path: '{{ item }}'
+    state: directory
+    owner: ubuntu
+    group: ubuntu
+    recurse: yes
+  with_items:
+    - '{{ api_dest }}'
+    - '{{ app_dest }}'
+
+- name: Copy API and App files to their directories
+  copy:
+    src: '{{ item.src }}'
+    dest: '{{ item.dest }}'
+    owner: ubuntu
+    group: ubuntu
+  with_items:
+    - { src: '{{ api_src }}', dest: '{{ api_dest }}' }
+    - { src: '{{ app_src }}', dest: '{{ app_dest }}' }
+
+- name: Install API NPM packages
+  shell: npm install
+  args:
+    chdir: '{{ api_dest }}'
+
+- name: Install PM2 Startup Script
+  command: pm2 startup
+
+- name: Kill PM2
+  command: pm2 kill
+
+- name: Start API server
+  shell: npm run prod
+  args:
+    chdir: '{{ api_dest }}'
+
+- name: Save PM2 processes
+  command: pm2 save
+  
+- name: Configure PM2 startup service
+  service:
+    name: pm2-init.sh
+    state: restarted
+    enabled: yes

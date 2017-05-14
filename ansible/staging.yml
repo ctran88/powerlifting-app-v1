@@ -1,0 +1,14 @@
+---
+
+- hosts: staging
+  sudo: yes
+  gather_facts: yes
+
+  roles:
+    - common
+    - python
+    - nodejs
+    - mysql
+    - pm2
+    - nginx
+    - post-provision

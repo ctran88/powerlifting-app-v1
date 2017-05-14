@@ -1,0 +1,7 @@
+---
+
+api_src: ../../api/deploy/
+app_src: ../../front-end/dist/
+
+api_dest: /var/www/api
+app_dest: /var/www/app

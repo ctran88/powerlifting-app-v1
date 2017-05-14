@@ -1,0 +1,38 @@
+---
+
+- name: Install Nginx
+  apt:
+    name: 'nginx'
+    update_cache: yes
+    state: latest
+
+- name: Add SSL certs
+  copy:
+    src: ssl
+    dest: /etc/nginx
+    owner: root
+    group: root
+
+- name: Disable Default Site
+  file:
+    dest: /etc/nginx/sites-enabled/default
+    state: absent
+
+- name: Add TPN Site Config
+  template:
+    src: thepowerliftingnotebook.com.conf.j2
+    dest: /etc/nginx/sites-available/thepowerliftingnotebook.com.conf
+    owner: root
+    group: root
+
+- name: Enable TPN Site Config
+  file:
+    src: /etc/nginx/sites-available/thepowerliftingnotebook.com.conf
+    dest: /etc/nginx/sites-enabled/thepowerliftingnotebook.com.conf
+    state: link
+
+- name: Set INIT status
+  service:
+    name: nginx
+    enabled: yes
+  notify: Start Nginx

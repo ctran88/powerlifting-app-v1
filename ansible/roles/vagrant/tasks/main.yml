@@ -1,0 +1,11 @@
+---
+
+- name: bashrc exports
+  copy:
+    src: bashrc
+    dest: /home/vagrant/.bashrc
+    owner: vagrant
+  register: bashrc
+
+- debug:
+    var: bashrc

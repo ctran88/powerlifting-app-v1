@@ -1,0 +1,25 @@
+---
+    
+- name: Add Python 2.7.12 Repository
+  become_user: root
+  apt_repository:
+    repo: ppa:fkrull/deadsnakes-python2.7
+    state: present
+
+- name: Install Python 2.7.12
+  become_user: root
+  apt:
+    name: python2.7
+    state: latest
+
+- name: Install Python 2.7.12-dev
+  become_user: root
+  apt:
+    name: python2.7-dev
+    state: latest
+
+- name: Install Pip
+  become_user: root
+  apt:
+    name: python-pip
+    state: latest

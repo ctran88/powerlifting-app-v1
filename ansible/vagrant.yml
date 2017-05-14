@@ -1,0 +1,12 @@
+---
+
+- hosts: tpnv1
+  gather_facts: yes
+
+  roles:
+    - common
+    - python
+    - nodejs
+    - mysql
+    - nginx
+    - vagrant
