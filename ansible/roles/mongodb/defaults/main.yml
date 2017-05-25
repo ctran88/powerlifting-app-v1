@@ -1,0 +1,7 @@
+---
+
+mongo_admin_user: admin
+mongo_admin_pass: TPNadmin01
+
+mongo_test_user: test
+mongo_test_pass: TPNtest01

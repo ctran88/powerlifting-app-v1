@@ -8,7 +8,6 @@
     - common
     - python
     - nodejs
-    - mysql
+    - mongodb
     - pm2
-    - nginx
     - post-provision

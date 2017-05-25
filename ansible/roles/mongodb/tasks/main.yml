@@ -1,0 +1,76 @@
+---
+
+- name: Add MongoDB Key
+  apt_key:
+    id: EA312927
+    keyserver: keyserver.ubuntu.com
+
+- name: Add MongoDB Repository
+  apt_repository:
+    repo: 'deb http://repo.mongodb.org/apt/ubuntu trusty/mongodb-org/3.2 multiverse'
+    update-cache: yes
+
+- name: Install MongoDB
+  apt:
+    pkg: mongodb-org
+    state: present
+
+- name: Disable Transparent Hugepage
+  template:
+    src: disable-transparent-hugepages.j2
+    dest: /etc/init.d/disable-transparent-hugepages
+    owner: root
+    group: root
+    mode: 755
+
+- name: Enable TPH Disabling Service
+  shell: update-rc.d disable-transparent-hugepages defaults
+
+- name: Add MongoDB Init Config
+  template:
+    src: mongod_init.conf.j2
+    dest: /etc/mongod.conf
+    owner: root
+    group: root
+
+- name: Install Pymongo Dependency
+  pip:
+    name: pymongo
+    state: latest
+
+- name: Restart MongoDB
+  service:
+    name: mongod
+    state: restarted
+    enabled: yes
+
+- name: Setup MongoDB TempTRIP Admin User
+  mongodb_user:
+    database: admin
+    name: '{{ mongo_admin_user }}'
+    password: '{{ mongo_admin_pass }}'
+    state: present
+    roles:
+      - { db: 'tpn', role: 'dbOwner' }
+
+- name: Setup MongoDB TempTRIP Test User
+  mongodb_user:
+    database: admin
+    name: '{{ mongo_test_user }}'
+    password: '{{ mongo_test_pass }}'
+    state: present
+    roles:
+      - { db: 'tpnTest', role: 'dbOwner' }
+
+- name: Add MongoDB Config
+  template:
+    src: mongod.conf.j2
+    dest: /etc/mongod.conf
+    owner: root
+    group: root
+
+- name: Restart MongoDB
+  service:
+    name: mongod
+    state: restarted
+    enabled: yes
