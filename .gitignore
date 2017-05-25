@@ -1,6 +1,6 @@
 .vagrant
 node_modules
 npm-debug.log
-test/coverage.html
+./api/logs/*
 cert.pem
 key.pem

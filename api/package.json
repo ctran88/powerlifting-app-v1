@@ -6,7 +6,8 @@
   "scripts": {
     "uninstall:all": "npm uninstall $(ls -1 node_modules | tr '\n' ' ')",
     "deploy": "./deploy.sh",
-    "dev": "NODE_ENV=development AUTH_SECRET=TPNpass01 DB=mysql://root:TPNroot01@0.0.0.0/tpn LOG_LEVEL=level node_modules/.bin/nodemon server.js"
+    "dev": "NODE_ENV=development AUTH_SECRET=TPNsecret01 DB=mongodb://admin:TPNadmin01@0.0.0.0/tpn?authSource=admin LOG_LEVEL=info node_modules/.bin/nodemon server.js",
+    "test": "NODE_ENV=test AUTH_SECRET=TPNsecret01 DB=mongodb://test:TPNtest01@0.0.0.0/tpnTest?authSource=admin LOG_LEVEL=info node_modules/.bin/mocha tests/test.js"
   },
   "author": "Christopher Tran",
   "license": "SEE LICENSE IN Apache-2.0",
@@ -18,13 +19,18 @@
     "bcrypt": "^1.0.2",
     "bluebird": "^3.5.0",
     "body-parser": "^1.17.1",
+    "connect-mongo": "^1.3.2",
+    "cookie-parser": "^1.4.3",
+    "csurf": "^1.9.0",
     "express": "^4.15.2",
-    "jsonwebtoken": "^7.4.0",
-    "mysql": "^2.13.0",
-    "sequelize": "^3.30.4"
+    "express-session": "^1.15.3",
+    "mongoose": "^4.10.0",
+    "morgan": "^1.8.2"
   },
   "devDependencies": {
+    "chai": "^3.5.0",
     "eslint": "^3.19.0",
+    "mocha": "^3.4.2",
     "nodemon": "^1.11.0"
   }
 }
