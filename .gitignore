@@ -1,6 +1,6 @@
 .vagrant
 node_modules
 npm-debug.log
-./api/logs/
+api/logs/
 cert.pem
 key.pem
