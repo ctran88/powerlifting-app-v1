@@ -1,0 +1,19 @@
+{
+  "name": "front-end",
+  "version": "1.0.0",
+  "description": "Front-end for The Powerlifting Notebook web application",
+  "main": "views/index.html",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/ctran88/powerlifting-app-v1.git"
+  },
+  "author": "Christopher Tran",
+  "license": "SEE LICENSE IN Apache-2.0",
+  "bugs": {
+    "url": "https://github.com/ctran88/powerlifting-app-v1/issues"
+  },
+  "homepage": "https://github.com/ctran88/powerlifting-app-v1#readme"
+}
