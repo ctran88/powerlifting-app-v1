@@ -1,13 +1,6 @@
 'use strict';
 
-var common = require('../common');
-var server = common.server;
-var chai = common.chai;
-var should = common.should;
-var mongoose = common.mongoose;
-var User = common.user;
-
-describe('/api/user', function() {
+describe('GET', function() {
 
     beforeEach(function(done) {
 
@@ -64,27 +57,7 @@ describe('/api/user', function() {
 
     });
 
-    it ('should create a new user in the database on /api/user POST', function(done) {
-        
-        chai.request(server)
-            .post('/api/user')
-            .send({
-                'email': 'test@mail.com',
-                'password': 'plaintextpassword',
-                'firstName': 'power',
-                'lastName': 'lifter',
-                'accountType': 'coach'
-            })
-            .end(function(err, res) {
-                res.should.have.status(201);
-                res.should.be.json;
-                res.body.message.should.equal('User saved successfully.');
-                done();
-            });
-
-    });
-
-    it ('should read a list of existing users from the database on /api/user GET', function(done) {
+    it ('should read a list of existing users from the database on GET /api/user', function(done) {
         
         chai.request(server)
             .get('/api/user')
@@ -105,7 +78,7 @@ describe('/api/user', function() {
 
     });
 
-    it ('should read an existing user from the database on /api/user/:email GET', function(done) {
+    it ('should read an existing user from the database on GET /api/user/:email', function(done) {
         
         User.findOne().then(function(doc) {
 
@@ -132,39 +105,4 @@ describe('/api/user', function() {
 
     });
 
-    it ('should update an existing user from the database on /api/user/:email PATCH', function(done) {
-        
-        User.findOne().then(function(doc) {
-
-            var email = doc.email.replace('@', '%40');
-
-            chai.request(server)
-                .patch('/api/user/' + email)
-                .send({
-                    'team': 'team name',
-                    'firstName': 'new first name'
-                })
-                .end(function(err, res) {
-                    res.should.have.status(200);
-                    res.should.be.json;
-                    res.body.message.should.equal('User updated successfully.');
-                    res.body.user.should.be.a('object');
-                    res.body.user.should.have.property('email');
-                    res.body.user.email.should.not.equal(null);
-                    res.body.user.should.have.property('firstName');
-                    res.body.user.should.have.property('lastName');
-                    res.body.user.should.have.property('accountType');
-                    res.body.user.accountType.should.not.equal(null);
-                    done();
-                });
-                
-        });
-
-    });
-
-    it ('should delete an existing user from the database on /api/user/:email DELETE', function(done) {
-        
-        chai.request(server)
-
-    });
 });
