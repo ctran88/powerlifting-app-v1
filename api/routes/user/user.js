@@ -2,7 +2,6 @@
 
 var config = require('../../config/config').config;
 var path = require('path');
-var hash = require('../../utils/hash').hash;
 var get = require(path.join(__dirname, '/../../db/', config.database, '/services/get'));
 var post = require(path.join(__dirname, '/../../db/', config.database, '/services/post'));
 var patch = require(path.join(__dirname, '/../../db/', config.database, '/services/patch'));
@@ -22,9 +21,7 @@ module.exports = {
         get.user(req.body).then((result) => {
 
             if (!result) {
-                res.status(404).json({
-                    message: 'No users found.'
-                });
+                res.status(404).send('No users found.');
             } else {
                 res.status(200).json({
                     message: 'Users retrieved successfully.',
@@ -48,9 +45,7 @@ module.exports = {
         get.user(req.params.email).then((result) => {
 
             if (!result) {
-                res.status(404).json({
-                    message: 'No user found.'
-                });
+                res.status(404).send('No user found.');
             } else {
                 res.status(200).json({
                     message: 'User retrieved successfully.',
@@ -74,30 +69,16 @@ module.exports = {
         get.user(req.body.email).then((found) => {
 
             if (found) {
-                res.status(409).json({
-                    message: 'User already exists.'
-                });
+                res.status(409).send('User already exists.');
             } else {
-                var userInfo = req.body;
+                // save user to database
+                post.user(req.body).then((result) => {
 
-                // hash plain text password
-                hash(config.secret, userInfo.password).then((hash) => {
-                    
-                    userInfo.password = hash;
+                    if (result) {
+                        res.status(201).send('User saved successfully.');
+                    }
 
-                    // save user to database
-                    post.user(userInfo).then((result) => {
-
-                        if (result) {
-                            res.status(201).json({
-                                message: 'User saved successfully.'
-                            });
-                        }
-
-                    });
-                    
                 });
-
             }
 
         });

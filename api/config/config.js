@@ -13,8 +13,8 @@ exports.config = (function() {
     env[nodeEnv]['secret'] = process.env.AUTH_SECRET;
     env[nodeEnv]['logLevel'] = process.env.LOG_LEVEL;
 
-    // Set storage system if using cookies for authentication
-    if (env[nodeEnv]['authentication'] == 'cookies') {
+    // Set storage system (mongo collection name) if using sessions for authentication
+    if (env[nodeEnv]['authentication'] == 'sessions') {
         env[nodeEnv]['sessionStore'] = 'sessions';
     }
 

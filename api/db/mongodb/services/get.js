@@ -5,6 +5,38 @@ var User = require('../models/user');
 module.exports = {
 
     /**
+     * Mongo syntax to query a single user for password comparison.
+     *
+     * @param      {string}  email  The email
+     * @return     {Object}  The query result
+     */
+    userWithPass: function(email) {
+
+        var query = {
+            'email': email
+        };
+        
+        var projection = {
+            '__v': 0
+        };
+
+        return User.findOne(
+            query,
+            projection
+        ).then((doc) => {
+
+            var result = doc ? doc : false;
+            return result;
+
+        }).catch((err) => {
+
+            console.error('Error retrieving user information:', err);
+
+        });
+
+    },
+
+    /**
      * Mongo syntax to query for user(s).
      *
      * @param      {Object|string}  payload  The payload

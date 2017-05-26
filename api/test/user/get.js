@@ -82,10 +82,10 @@ describe('GET', function() {
         
         User.findOne().then(function(doc) {
 
-            var email = doc.email.replace('@', '%40');
+            var formattedEmail = doc.email.replace('@', '%40');
 
             chai.request(server)
-                .get('/api/user/' + email)
+                .get('/api/user/' + formattedEmail)
                 .end(function(err, res) {
                     res.should.have.status(200);
                     res.should.be.json;

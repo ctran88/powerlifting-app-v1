@@ -15,19 +15,38 @@ app.use(session({
 
     name:               'sessionId',
     secret:             config.secret,
-    saveUninitialized:  false,
+    saveUninitialized:  true,
     resave:             false,
     store:              new MongoStore({
         url:        config.db,
-        touchAfter: 24 * 3600 // 24 hours in seconds
+        touchAfter: 24 * 60 * 60, // 24 hours in seconds
+        ttl:        1 * 60 * 60 // 1 hour in seconds
     }),
     cookie: {
         secure:     true,
         httpOnly:   true,
-        sameSite:   true
+        sameSite:   true,
+        maxAge:     30 * 60 * 1000 // 30 minutes in milliseconds
     }
 
 }));
+
+// login method to associate user information with session
+session.Session.prototype.login = function(user, cb) {
+
+    const req = this.req;
+    req.session.regenerate((err) => {
+
+        if (err) {
+            cb(err);
+        }
+
+    });
+
+    req.session.userInfo = user;
+    cb();
+
+};
 
 // initialize csrf protection
 var csrfProtection = csrf({

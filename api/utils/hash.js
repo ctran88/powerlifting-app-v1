@@ -3,31 +3,59 @@
 var Promise = require('bluebird');
 var crypto = require('crypto');
 var bcrypt = Promise.promisifyAll(require('bcrypt'));
+var config = require('../config/config').config;
 
+module.exports = {
 
-/**
- * Hashes a plain text password using hmac + bcrypt
- *
- * @param      {String}  secret             The secret
- * @param      {String}  plainTextPassword  The plain text password
- * @return     {String}  The hashed password
- */
-exports.hash = (secret, plainTextPassword) => {
+    /**
+     * Hashes a plain tesxt password using hmac
+     *
+     * @param      {string}  plainTextPassword  The plaintext password
+     * @return     {string}  The hashed password
+     */
+    hashHmac: function(plainTextPassword) {
 
-    const algorithm = 'sha512';
-    const encoding = 'hex';
-    const saltRounds = 10;
+        const algorithm = 'sha512';
+        const encoding = 'hex';
 
-    // hash password with hmac first
-    var hmac = crypto.createHmac(algorithm, secret)
-                     .update(plainTextPassword)
-                     .digest(encoding);
+        var hmac = crypto.createHmac(algorithm, config.secret)
+                         .update(plainTextPassword)
+                         .digest(encoding);
 
-    // then hash hmac result with bcrypt and return promise to caller
-    return bcrypt.hashAsync(hmac, saltRounds).then((hash) => {
+        return hmac;
 
-        return hash;
+    },
 
-    });
+    /**
+      * Hashes a plain text password using hmac + bcrypt
+      *
+      * @param      {string}  plainTextPassword  The plaintext password
+      * @return     {Promise}  The promise containing the hashed password
+      */ 
+    hashBcrypt: function(plainTextPassword) {
+
+        const saltRounds = 10;
+
+        // hash password with hmac first
+        var hmac = this.hashHmac(plainTextPassword);
+
+        return bcrypt.hashAsync(hmac, saltRounds);
+
+    },
+
+    /**
+     * Compares plaintext password with stored hashed password
+     *
+     * @param      {string}   plainTextPassword  The plaintext password
+     * @param      {string}   storedPassword     The stored password hash
+     * @return     {boolean}  Comparison result
+     */
+    compare: function(plainTextPassword, storedPassword) {
+
+        var hmac = this.hashHmac(plainTextPassword);
+
+        return bcrypt.compareAsync(hmac, storedPassword);
+
+    }
 
 };
