@@ -1,6 +1,0 @@
-README.md
-.gitignore
-npm-debug-log
-./test/coverage.html
-deploy.sh
-./node_modules/

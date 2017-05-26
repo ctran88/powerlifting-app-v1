@@ -1,7 +1,7 @@
 {
-  "name": "api",
+  "name": "the-powerlifting-notebook",
   "version": "1.0.0",
-  "description": "Server and API for The Powerlifting Notebook web application",
+  "description": "A powerlifting application for coaches and clients to communicate their training needs.",
   "main": "server.js",
   "scripts": {
     "uninstall:all": "npm uninstall $(ls -1 node_modules | tr '\n' ' ')",
