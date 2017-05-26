@@ -11,13 +11,13 @@ const userModel = new Schema({
         type:       String,
         required:   true
     },
-    passwordHash: {
+    password: {
         type:       String,
         required:   true
     },
     lastName:       String,
     firstName:      String,
-    team:           Array,
+    team:           String,
     accountType: {
         type:       String,
         enum:       ['coach', 'client', 'admin'],
