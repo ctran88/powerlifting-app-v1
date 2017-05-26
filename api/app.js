@@ -1,5 +1,6 @@
 'use strict';
 var app = module.exports = require('express')();
+var fs = require('fs');
 var path = require('path');
 var config = require('./config/config').config;
 var routes = require('./routes');
@@ -14,7 +15,12 @@ app.locals.db = require(path.join(__dirname, '/db/', config.database, '/services
 app.locals.secret = config.secret;
 
 // initialize logger
-app.use(morgan('dev'));
+if (process.env.NODE_ENV !== 'test') {
+    var logStream = fs.createWriteStream(path.join(__dirname, '/logs/log.log'), { flags: 'a' });
+
+    app.use(morgan('common', { stream: logStream }));
+    app.use(morgan('dev'));
+}
 
 // initialize body-parser middleware
 app.use(bodyParser.json());
