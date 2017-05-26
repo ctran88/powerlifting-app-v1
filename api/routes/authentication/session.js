@@ -52,9 +52,23 @@ module.exports = {
 
     },
 
+    /**
+     * Controller for /api/authentication/session endpoint.  Destroys session.
+     *
+     * @param      {Object}  req     The request
+     * @param      {Object}  res     The response
+     */
     delete: function(req, res) {
         
-        res.status(200)
+        req.session.destroy(function(err) {
+
+            if (err) {
+                console.log(err);
+            } else {
+                res.status(200).redirect('/');
+            }
+
+        });
 
     }
 

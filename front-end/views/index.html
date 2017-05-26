@@ -7,6 +7,44 @@
     <!-- Bootstrap 4.0.0-alpha.6 stylesheet -->
     <link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0-alpha.6/css/bootstrap.min.css' integrity='sha384-rwoIResjU2yc3z8GV/NPeZWAv56rSmLldC3R/AZzGRnGxQQKnKkoFVhFQhNUwEyJ' crossorigin='anonymous'>
 
+
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+    <script>
+      $(document).ready(function(){
+          var email,pass,account;
+          $("#register").click(function(){
+              email=$("#email").val();
+              pass=$("#password").val();
+              account=$("#account").val();
+              /*
+              * Perform some validation here.
+              */
+              $.post("https://192.168.54.54:3000/api/user",{email:email,password:pass,accountType:account},function(data){        
+                  if(data==='done')           
+                  {
+                      window.location.href="/admin";
+                  }
+              });
+          });
+      });
+
+      $(document).ready(function(){
+          var email,pass;
+          $("#login").click(function(){
+              email=$("#email2").val();
+              pass=$("#password2").val();
+              /*
+              * Perform some validation here.
+              */
+              $.post("https://192.168.54.54:3000/api/authentication/session",{email:email,password:pass},function(data){        
+                  if(data==='done')           
+                  {
+                      window.location.href="/admin";
+                  }
+              });
+          });
+      });
+    </script>
   </head>
   <body>
 
@@ -15,8 +53,17 @@
       hey there
     </div>
 
+    <input type="text" size="40" placeholder="Type your email" id="email"><br />
+    <input type="password" size="40" placeholder="Type your password" id="password"><br />
+    <input type="text" size="40" placeholder="Type your account type" id="account"><br />
+    <input type="button" value="Register" id="register"><br />
+
+    <input type="text" size="40" placeholder="Type your email" id="email2"><br />
+    <input type="password" size="40" placeholder="Type your password" id="password2"><br />
+    <input type="button" value="Login" id="login">
+
     <!-- JQuery 3.1.1 -->
-    <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' integrity='sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n' crossorigin='anonymous'></script>
+    <!-- <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' integrity='sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n' crossorigin='anonymous'></script> -->
 
     <!-- Tether 1.4.0 -->
     <script src='https://cdnjs.cloudflare.com/ajax/libs/tether/1.4.0/js/tether.min.js' integrity='sha384-DztdAPBWPRXSA/3eYEEUWrWCy7G5KFbe8fFjk5JAIxUYHKkDx6Qin1DkWx51bBrb' crossorigin='anonymous'></script>

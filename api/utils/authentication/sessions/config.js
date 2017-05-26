@@ -35,16 +35,17 @@ app.use(session({
 session.Session.prototype.login = function(user, cb) {
 
     const req = this.req;
-    req.session.regenerate((err) => {
 
+    req.session.regenerate(function(err) {
+        
         if (err) {
             cb(err);
         }
 
-    });
+        req.session.userInfo = user;
+        cb();
 
-    req.session.userInfo = user;
-    cb();
+    });
 
 };
 
