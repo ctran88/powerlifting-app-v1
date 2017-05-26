@@ -19,11 +19,8 @@
               /*
               * Perform some validation here.
               */
-              $.post("https://192.168.54.54:3000/api/user",{email:email,password:pass,accountType:account},function(data){        
-                  if(data==='done')           
-                  {
-                      window.location.href="/admin";
-                  }
+              $.post("https://192.168.54.54:3000/api/user",{email:email,password:pass,accountType:account},function(){        
+                      window.location.href="/api/user/pac";
               });
           });
       });
@@ -36,11 +33,24 @@
               /*
               * Perform some validation here.
               */
-              $.post("https://192.168.54.54:3000/api/authentication/session",{email:email,password:pass},function(data){        
-                  if(data==='done')           
-                  {
-                      window.location.href="/admin";
-                  }
+              $.post("https://192.168.54.54:3000/api/authentication/session",{email:email,password:pass},function(){        
+                      window.location.href="/api/user";
+              });
+          });
+      });
+
+      $(document).ready(function(){
+          $("#logout").click(function(){
+              $.ajax({
+                url: "https://192.168.54.54:3000/api/authentication/session",
+                type: 'delete',
+                dataType: 'html',
+                success: function() {
+                  alert('logout complete')
+                },
+                error: function(err) {
+                  alert(err)
+                }
               });
           });
       });
@@ -61,6 +71,7 @@
     <input type="text" size="40" placeholder="Type your email" id="email2"><br />
     <input type="password" size="40" placeholder="Type your password" id="password2"><br />
     <input type="button" value="Login" id="login">
+    <input type="button" value="Logout" id="logout">
 
     <!-- JQuery 3.1.1 -->
     <!-- <script src='https://code.jquery.com/jquery-3.1.1.slim.min.js' integrity='sha384-A7FZj7v+d/sdmMqp/nOQwliLvUsJfDHW+k9Omg/a/EheAdgtzNs3hpfag6Ed950n' crossorigin='anonymous'></script> -->

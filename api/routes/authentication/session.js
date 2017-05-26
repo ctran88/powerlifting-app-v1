@@ -60,12 +60,15 @@ module.exports = {
      */
     delete: function(req, res) {
         
+        // destroy session from store
         req.session.destroy(function(err) {
 
             if (err) {
                 console.log(err);
             } else {
-                res.status(200).redirect('/');
+                // redirect to home page with 200 status to signal DELETE operation is complete,
+                // otherwise get 404 error on home page
+                res.redirect(200, '/');
             }
 
         });
