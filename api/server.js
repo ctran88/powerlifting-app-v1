@@ -3,7 +3,8 @@
 var https = require('https');
 var fs = require('fs');
 var app = require('./app');
-var port = process.env.PORT || 3000;
+var config = require('./config/config').config;
+var port = config.port || 3000;
 
 // initialize database connection
 app.locals.db.connect();
@@ -16,8 +17,11 @@ var server = https.createServer({
 
 }, app).listen(port, () => {
 
-    var serverPort = server.address().port;
-
-    console.log('Server is running at port ' + serverPort);
+    if (process.env.NODE_ENV !== 'test') {
+        var serverPort = server.address().port;
+        console.log('Server is running at port ' + serverPort);
+    }
 
 });
+
+module.exports = server;

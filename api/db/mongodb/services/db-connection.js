@@ -15,7 +15,9 @@ exports.connect = () => {
     db.on('error', console.error.bind(console, 'MongoDB connection error'));
     db.once('open', () => {
 
-        console.log('Successfully connected to MongoDB.');
+        if (process.env.NODE_ENV !== 'test') {
+            console.log('Successfully connected to MongoDB database: ' + db.name);
+        }
 
     });
 
