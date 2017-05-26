@@ -1,89 +1,33 @@
 'use strict';
 
-var chai = require('chai');
-var expect = chai.expect();
-var path = require('path');
-
-var mongoose = require('mongoose');
-var User = require(path.join(__dirname, '/../db/', config.database, '/models/user'));
-
-var server = require('../server');
+// workaround for 'DEPTH_ZERO_SELF_SIGNED_CERT' error
+process.env.NODE_TLS_REJECT_UNAUTHORIZED = '0';
 
 
-// test suite 1 - /api/user
-describe('User endpoint', () => {
+/**
+ * Import test separate test files into 'test' suite
+ *
+ * @param      {string}  name    The name of the test suite to import
+ * @param      {string}  path    The path of the test file to import
+ */
+function importTest(name, path) {
 
-    beforeEach((done) => {
-
-        var users = [
-            {
-                'email': 'user1@mail.com',
-                'firstName': 'first1',
-                'lastName': 'last1',
-                'accountType': 'coach',
-                'passwordHash': 'hashedPassword'
-            },
-            {
-                'email': 'user2@mail.com',
-                'firstName': 'first2',
-                'lastName': 'last2',
-                'accountType': 'client',
-                'passwordHash': 'hashedPassword'
-            },
-            {
-                'email': 'user3@mail.com',
-                'firstName': 'first3',
-                'lastName': 'last3',
-                'accountType': 'client',
-                'passwordHash': 'hashedPassword'
-            }
-        ];
-
-        User.insertMany(users).then(() => {
-
-            done();
-
-        });
-
+    describe(name, function() {
+        require(path);
     });
+}
 
-    afterEach((done) => {
+// require common modules
+var common = require('./common');
 
-        // Drop all collections in test db
-        mongoose.connection.db.listCollections().toArray((err, names) => {
+// suppress mongoose logging output to console
+common.mongoose.set('debug', false);
 
-            if (err) {
-                console.error(err);
-            } else {
-                names.forEach((value) => {
+// top of test structure
+// not using lambda function syntax because the lexical binding of 'this' prevents
+// functions from accessing the Mocha context: https://mochajs.org/#arrow-functions
+describe('test', function() {
 
-                    mongoose.connection.db.dropCollection(value.name);
+    importTest('user', './user/user');
 
-                });
-
-                done();
-            }
-
-        });
-
-    });
-
-    it ('should create a new user in the database on /api/user POST', (done) => {
-        chai.request(server)
-            .post('/api/user')
-            .send({
-                'email': 'test@mail.com',
-                'firstName': 'power',
-                'lastName': 'lifter',
-                'accountType': 'coach'
-            })
-            .end((err, res) => {
-                res.expect.to.have.status.(201);
-                res.expect.to.be.json;
-            })
-    });
-    it ('should read a list of existing users from the database on /api/user GET');
-    it ('should read an existing user from the database on /api/user/:id GET');
-    it ('should update an existing user from the database on /api/user/:id PATCH');
-    it ('should delete an existing user from the database on /api/user/:id DELETE');
 });
