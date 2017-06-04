@@ -7,7 +7,7 @@ mongoose.set('debug', true);
 // Use Bluebird for mongoose promise library
 mongoose.Promise = require('bluebird');
 
-exports.connect = () => {
+exports.connect = function() {
 
     // Start MongoDB connection
     mongoose.connect(config.db);

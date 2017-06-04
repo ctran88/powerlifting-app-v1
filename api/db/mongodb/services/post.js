@@ -1,16 +1,18 @@
 'use strict';
 
 var User = require('../models/user');
+var Program = require('../models/program');
+var Log = require('../models/log');
 
 module.exports = {
 
     /**
-     * Mongo syntax to query for user(s).
+     * Mongo syntax to create user.
      *
-     * @param      {Object}  payload  The payload
-     * @return     {Object}  The query result
+     * @param      {Object}   payload  The payload
+     * @return     {boolean}  The creation result
      */
-    user: function(payload) {
+    users: function(payload) {
 
         var user = new User(payload);
 
@@ -22,6 +24,29 @@ module.exports = {
         }).catch((err) => {
 
             console.error('Error saving user information:', err);
+
+        });
+
+    },
+
+    /**
+     * Mongo syntax to create log.
+     *
+     * @param      {Object}   payload  The payload
+     * @return     {boolean}  The creation result
+     */
+    logs: function(payload) {
+
+        var log = new Log(payload);
+
+        return log.save().then((doc) => {
+
+            var result = doc ? true : false;
+            return result;
+
+        }).catch((err) => {
+
+            console.error('Error saving log information:', err);
 
         });
 
