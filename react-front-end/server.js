@@ -21,10 +21,10 @@ new WebpackDevServer(webpack(config), {
       chunks: false,
       chunkModules: false
     }
-}).listen(8080, 'localhost', function (err) {
+}).listen(8080, '192.168.54.54', function (err) {
     if (err) {
         console.log(err);
     }
 
-  console.log('Listening at localhost:8080');
+  console.log('Listening at 192.168.54.54:8080');
 });
