@@ -6,6 +6,7 @@ var config = require('./config/config').config;
 var routes = require('./routes');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
+var validator = require('express-validator');
 
 // import authentication config
 var authConfig = require(path.join(__dirname, '/utils/authentication/', config.authentication, 'config'));
@@ -29,6 +30,9 @@ app.use(bodyParser.urlencoded({
     extended: true
 
 }));
+
+// initialize express-validator middleware
+app.use(validator());
 
 // root path is /* and includes all routes located in 'routes' folder
 app.use('/', routes);
