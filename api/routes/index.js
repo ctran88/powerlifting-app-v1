@@ -3,11 +3,13 @@
 var routes = require('express').Router();
 var path = require('path');
 var authentication = require('./authentication');
-var user = require('./user');
+var users = require('./users');
+var training = require('./training');
 
 // add subroute trees with root path as /api/*
 routes.use('/api/authentication/', authentication);
-routes.use('/api/user/', user);
+routes.use('/api/users/', users);
+routes.use('/api/training/', training);
 
 // send landing page
 routes.get('/', (req, res) => {

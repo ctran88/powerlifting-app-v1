@@ -36,7 +36,7 @@ session.Session.prototype.login = function(user, cb) {
 
     const req = this.req;
 
-    req.session.regenerate(function(err) {
+    req.session.regenerate((err) => {
         
         if (err) {
             cb(err);

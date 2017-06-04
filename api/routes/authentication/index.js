@@ -1,10 +1,10 @@
 'use strict';
 
 var routes = require('express').Router();
-var session = require('./session');
+var sessions = require('./sessions');
 
-// Endpoints for /authentication/*
-routes.post('/session', session.post);
-routes.delete('/session', session.delete);
+// Endpoints for /api/authentication/*
+routes.post('/sessions', sessions.post);
+routes.delete('/sessions', sessions.delete);
 
 module.exports = routes;

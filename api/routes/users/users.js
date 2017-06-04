@@ -10,7 +10,7 @@ var remove = require(path.join(__dirname, '/../../db/', config.database, '/servi
 module.exports = {
 
     /**
-     * Controller for /api/user endpoint.  Queries many or all users.
+     * Controller for /api/users endpoint.  Queries many or all users.
      *
      * @param      {Object}  req     The request
      * @param      {Object}  res     The response
@@ -18,7 +18,7 @@ module.exports = {
     getMany: function(req, res) {
 
         // query users with json body
-        get.user(req.body).then((result) => {
+        get.users(req.body).then((result) => {
 
             if (!result) {
                 res.status(404).send('No users found.');
@@ -34,7 +34,7 @@ module.exports = {
     },
 
     /**
-     * Controller for /api/user/:email endpoint.  Queries one user.
+     * Controller for /api/users/:email endpoint.  Queries one user.
      *
      * @param      {Object}  req     The request
      * @param      {Object}  res     The response
@@ -42,7 +42,7 @@ module.exports = {
     getOne: function(req, res) {
 
         // query user with url params
-        get.user(req.params.email).then((result) => {
+        get.users(req.params.email).then((result) => {
 
             if (!result) {
                 res.status(404).send('No user found.');
@@ -58,7 +58,7 @@ module.exports = {
     },
 
     /**
-     * Controller for /api/user endpoint.  Saves one user.
+     * Controller for /api/users endpoint.  Saves one user.
      *
      * @param      {Object}  req     The request
      * @param      {Object}  res     The response
@@ -66,13 +66,13 @@ module.exports = {
     post: function(req, res) {
 
         // query user with email from json body
-        get.user(req.body.email).then((found) => {
+        get.users(req.body.email).then((found) => {
 
             if (found) {
                 res.status(409).send('User already exists.');
             } else {
                 // save user to database
-                post.user(req.body).then((result) => {
+                post.users(req.body).then((result) => {
 
                     if (result) {
                         res.status(201).send('User saved successfully.');
@@ -85,12 +85,44 @@ module.exports = {
 
     },
 
+    /**
+     * Controller for /api/users endpoint. Updates one user.
+     *
+     * @param      {Object}  req     The request
+     * @param      {Object}  res     The response
+     */
     patch: function(req, res) {
+
+        patch.users(req.body).then((result) => {
+
+            if (!result) {
+                res.status(404).send('No user found');
+            } else {
+                res.status(200).send('User updated successfully.');
+            }
+
+        });
         
     },
 
+    /**
+     * Controller for /api/users endpoint. Deletes one user.
+     *
+     * @param      {Object}  req     The request
+     * @param      {Object}  res     The response
+     */
     delete: function(req, res) {
         
+        remove.users(req.params.email).then((result) => {
+
+            if (!result) {
+                res.status(404).send('No user found');
+            } else {
+                res.status(200).send('User deleted successfully.');
+            }
+
+        });
+
     }
 
 };
