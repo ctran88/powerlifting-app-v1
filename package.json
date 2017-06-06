@@ -5,9 +5,9 @@
   "main": "server.js",
   "scripts": {
     "uninstall:all": "npm uninstall $(ls -1 node_modules | tr '\n' ' ')",
-    "deploy": "./deploy.sh",
-    "dev": "NODE_ENV=development AUTH_SECRET=TPNsecret01 DB=mongodb://admin:TPNadmin01@0.0.0.0/tpn?authSource=admin LOG_LEVEL=info node_modules/.bin/nodemon server.js",
-    "test": "NODE_ENV=test AUTH_SECRET=TPNsecret01 DB=mongodb://test:TPNtest01@0.0.0.0/tpnTest?authSource=admin LOG_LEVEL=info node_modules/.bin/mocha test"
+    "deploy": "api/deploy.sh",
+    "dev": "NODE_ENV=development AUTH_SECRET=TPNsecret01 DB=mongodb://admin:TPNadmin01@0.0.0.0/tpn?authSource=admin LOG_LEVEL=info node_modules/.bin/nodemon api/server.js",
+    "test": "NODE_ENV=test AUTH_SECRET=TPNsecret01 DB=mongodb://test:TPNtest01@0.0.0.0/tpnTest?authSource=admin LOG_LEVEL=info node_modules/.bin/mocha api/test"
   },
   "author": "Christopher Tran",
   "license": "SEE LICENSE IN Apache-2.0",

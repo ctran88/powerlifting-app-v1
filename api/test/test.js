@@ -11,9 +11,16 @@ mongoose.set('debug', false);
 // functions from accessing the Mocha context: https://mochajs.org/#arrow-functions
 describe('top', function() {
 
-    describe('/api/user', function() {
-        require('./user/get');
-        require('./user/post');
+    describe('/api/authentication/sessions', function() {
+        require('./authentication/sessions/post');
+        require('./authentication/sessions/delete');
+    });
+
+    describe('/api/users', function() {
+        require('./users/get');
+        require('./users/post');
+        require('./users/patch');
+        require('./users/delete');
     });
 
 });
