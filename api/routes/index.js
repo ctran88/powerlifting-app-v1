@@ -14,7 +14,7 @@ routes.use('/api/training/', training);
 // send landing page
 routes.get('/', (req, res) => {
 
-    var pagePath = path.resolve('../front-end/views/index.html');
+    var pagePath = path.resolve('front-end/views/index.html');
     res.sendFile(pagePath);
 
 });

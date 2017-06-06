@@ -9,7 +9,7 @@ var users = require('./users');
 // Endpoints for /api/users/*
 routes.get('/', verification.verifyCookie, users.getMany);
 routes.get('/:email', verification.verifyCookie, users.getOne);
-routes.post('/', verification.verifyCookie, users.post);
+routes.post('/', users.post);
 routes.patch('/:email', verification.verifyCookie, users.patch);
 routes.delete('/:email', verification.verifyCookie, users.delete);
 

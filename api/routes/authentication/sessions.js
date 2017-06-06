@@ -64,9 +64,7 @@ module.exports = {
             if (err) {
                 console.log(err);
             } else {
-                // redirect to home page with 200 status to signal DELETE operation is complete,
-                // otherwise get 404 error on home page
-                res.redirect(200, '/');
+                res.status(200).send('Logout successful.');
             }
 
         });

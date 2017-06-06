@@ -22,7 +22,7 @@ module.exports = {
             query
         ).then((doc) => {
 
-            var result = !doc ? true : false;
+            var result = doc ? true : false;
             return result;
 
         }).catch((err) => {
@@ -47,7 +47,7 @@ module.exports = {
             query
         ).then((doc) => {
 
-            var result = !doc ? true : false;
+            var result = doc ? true : false;
             return result;
 
         }).catch((err) => {
@@ -72,7 +72,7 @@ module.exports = {
             query
         ).then((doc) => {
 
-            var result = !doc ? true : false;
+            var result = doc ? true : false;
             return result;
 
         }).catch((err) => {

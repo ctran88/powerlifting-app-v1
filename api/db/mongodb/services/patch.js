@@ -9,15 +9,18 @@ module.exports = {
     /**
      * Mongo syntax to update user.
      *
+     * @param      {string}   email    The email
      * @param      {Object}   payload  The payload
      * @return     {boolean}  The update result
      */
-    users: function(payload) {
+    users: function(email, payload) {
 
         var query = {
-            'email': payload.email
+            'email': email
         };
-        var update = new User(payload);
+        var update = {
+            $set: payload
+        };
         var options = {
             new: true,
             runValidators: true
@@ -52,7 +55,9 @@ module.exports = {
         var query = {
             'email': payload.email
         };
-        var update = new Program(payload);
+        var update = {
+            $set: payload
+        };
         var options = {
             new: true,
             runValidators: true
@@ -87,7 +92,9 @@ module.exports = {
         var query = {
             'email': payload.email
         };
-        var update = new Log(payload);
+        var update = {
+            $set: payload
+        };
         var options = {
             new: true,
             runValidators: true

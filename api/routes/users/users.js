@@ -93,7 +93,7 @@ module.exports = {
      */
     patch: function(req, res) {
 
-        patch.users(req.body).then((result) => {
+        patch.users(req.params.email, req.body).then((result) => {
 
             if (!result) {
                 res.status(404).send('No user found');
