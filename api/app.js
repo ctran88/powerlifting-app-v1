@@ -32,7 +32,29 @@ app.use(bodyParser.urlencoded({
 }));
 
 // initialize express-validator middleware
-app.use(validator());
+app.use(validator({
+    customValidators: {
+        isArray: (value) => {
+
+            return Array.isArray(value);
+
+        },
+        isArrayObjects: (array) => {
+
+            return array.every((current, index) => {
+
+                return typeof current === 'object';
+
+            });
+
+        },
+        notEmptyArray: (array) => {
+
+            return array.length > 0;
+            
+        }
+    }
+}));
 
 // root path is /* and includes all routes located in 'routes' folder
 app.use('/', routes);
