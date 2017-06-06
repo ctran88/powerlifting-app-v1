@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Microcycle = require('microcycle');
+const Microcycle = require('./microcycle');
 
 // Use Bluebird for mongoose promise library
 mongoose.Promise = require('bluebird');

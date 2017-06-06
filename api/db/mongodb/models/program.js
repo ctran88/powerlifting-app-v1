@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Mesocycle = require('mesocycle');
+const Mesocycle = require('./mesocycle');
 
 // Use Bluebird for mongoose promise library
 mongoose.Promise = require('bluebird');
@@ -20,7 +20,11 @@ const programModel = new Schema({
         client:         String,
         status: {
             type:       String,
-            enum:       ['template', 'draft', 'published'],
+            enum: [
+                'template',
+                'draft',
+                'published'
+            ],
             required:   true
         },
         created:        Date,

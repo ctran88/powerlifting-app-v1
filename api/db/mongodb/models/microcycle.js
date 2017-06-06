@@ -2,14 +2,17 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Session = require('session');
+const Session = require('./session');
 
 // Use Bluebird for mongoose promise library
 mongoose.Promise = require('bluebird');
 
 const microcycleModel = new Schema({
     metadata: {
-        week: Number
+        week: {
+            type:       Number,
+            required:   true
+        }
     },
     sessions: [
         Session.schema

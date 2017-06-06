@@ -9,45 +9,21 @@ mongoose.Promise = require('bluebird');
 const sessionModel = new Schema({
     metadata: {
         day: {
-            type:       Number,
-            min:        1,
-            max:        7,
-            required:   true
+            type:           Number,
+            min:            1,
+            max:            7,
+            required:       true
         }
     },
     mainLift: {
-        type: String,
+        type:               String,
         enum: [
             'squat',
             'bench press',
             'deadlift'
         ]
     },
-    mainVariationLibrary: {
-        type: [
-            String
-        ],
-        enum: [
-            'low bar',
-            'high bar',
-            'front',
-            'ssb',
-            'duffalo',
-            'pause',
-            '1-ct pause',
-            'tempo',
-            'pin',
-            'tng',
-            'close grip',
-            'board',
-            'conventional',
-            'sumo',
-            'sldl',
-            'snatch grip',
-            'deficit',
-            'block'
-        ]
-    },
+    mainVariation:          [String],
     mainScheme: [
         {
             sets:           Number,

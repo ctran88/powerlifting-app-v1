@@ -10,6 +10,7 @@ mongoose.Promise = require('bluebird');
 const userModel = new Schema({
     email: {
         type:       String,
+        unique:     true,
         required:   true
     },
     password: {
@@ -21,10 +22,19 @@ const userModel = new Schema({
     team:           String,
     accountType: {
         type:       String,
-        enum:       ['coach', 'client', 'admin'],
+        enum: [
+            'coach',
+            'client',
+            'admin'
+        ],
         required:   true
     },
-    memberStart:    Date,
+    coach:          String,
+    clients:        [String],
+    memberStart:    {
+        type:       Date,
+        required:   true
+    },
     lastLogin:      Date
 });
 
