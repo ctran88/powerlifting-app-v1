@@ -8,7 +8,6 @@ exports.config = (function() {
     const nodeEnv = process.env.NODE_ENV || 'development';
 
     // Set environmental variables from command line
-    // TODO: Environment does not change command line variables
     env[nodeEnv]['db'] = process.env.DB;
     env[nodeEnv]['secret'] = process.env.AUTH_SECRET;
     env[nodeEnv]['logLevel'] = process.env.LOG_LEVEL;

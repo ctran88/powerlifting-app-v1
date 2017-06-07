@@ -4,7 +4,7 @@ module.exports = {
 
     log: function(req, res, next) {
 
-        
+        req.check('metadata.date').isISO8601();
 
         req.getValidationResult().then((result) => {
 

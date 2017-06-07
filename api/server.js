@@ -4,7 +4,7 @@ var https = require('https');
 var fs = require('fs');
 var app = require('./app');
 var config = require('./config/config').config;
-var port = config.port || 3000;
+var port = config.port;
 
 // initialize database connection
 app.locals.db.connect();
