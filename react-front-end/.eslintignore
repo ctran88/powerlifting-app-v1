@@ -1,9 +1,0 @@
-README.md
-.gitignore
-npm-debug-log
-api/deploy.sh
-api/node_modules
-front-end/node_modules
-front-end/dist
-front-end/webpack.*.js
-front-end/server.js

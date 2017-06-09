@@ -2,6 +2,9 @@
 
 var User = require('../models/user');
 var Program = require('../models/program');
+var Mesocycle = require('../models/mesocycle');
+var Microcycle = require('../models/microcycle');
+var Session = require('../models/session');
 var Log = require('../models/log');
 
 module.exports = {
@@ -101,6 +104,84 @@ module.exports = {
         }).catch((err) => {
 
             console.error('Error retrieving program information:', err);
+
+        });
+
+    },
+
+    /**
+     * Mongo syntax to query for mesocycle(s).
+     *
+     * @param      {Object|string}  payload  The payload
+     * @return     {Object}  The query result
+     */
+    mesocycles: function(payload) {
+
+        // query for single, many, or all mesocycles
+        var query = payload;
+
+        return Mesocycle.find(
+            query
+        ).then((doc) => {
+
+            var result = doc.length > 0 ? doc : false;
+            return result;
+
+        }).catch((err) => {
+
+            console.error('Error retrieving mesocycle information:', err);
+
+        });
+
+    },
+
+    /**
+     * Mongo syntax to query for microcycle(s).
+     *
+     * @param      {Object|string}  payload  The payload
+     * @return     {Object}  The query result
+     */
+    microcycles: function(payload) {
+
+        // query for single, many, or all microcycles
+        var query = payload;
+
+        return Microcycle.find(
+            query
+        ).then((doc) => {
+
+            var result = doc.length > 0 ? doc : false;
+            return result;
+
+        }).catch((err) => {
+
+            console.error('Error retrieving microcycle information:', err);
+
+        });
+
+    },
+
+    /**
+     * Mongo syntax to query for session(s).
+     *
+     * @param      {Object|string}  payload  The payload
+     * @return     {Object}  The query result
+     */
+    sessions: function(payload) {
+
+        // query for single, many, or all sessions
+        var query = payload;
+
+        return Session.find(
+            query
+        ).then((doc) => {
+
+            var result = doc.length > 0 ? doc : false;
+            return result;
+
+        }).catch((err) => {
+
+            console.error('Error retrieving session information:', err);
 
         });
 

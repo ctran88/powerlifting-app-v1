@@ -19,4 +19,11 @@ routes.get('/', (req, res) => {
 
 });
 
+routes.get('/test', (req, res) => {
+
+    var pagePath2 = path.resolve('front-end/views/index2.html');
+    res.sendFile(pagePath2);
+
+});
+
 module.exports = routes;
