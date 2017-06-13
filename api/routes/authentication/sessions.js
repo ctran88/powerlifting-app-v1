@@ -9,8 +9,25 @@ var remove = require(path.join(__dirname, '/../../db/', config.database, '/servi
 module.exports = {
 
     /**
+     * Controller for /api/authentication/sessions endpoint.  Retrieves session
+     * information.
+     *
+     * @param      {Object}  req     The request
+     * @param      {Object}  res     The response
+     */
+    get: function(req, res) {
+
+        if (req.session.userInfo) {
+            res.status(200).send('Signed in.');
+        } else {
+            res.status(200).send('Not signed in.');
+        }
+
+    },
+
+    /**
      * Controller for /api/authentication/sessions endpoint.  Generates a cookie
-     * with a session id upon successful login.
+     * with a session id upon successful signin.
      *
      * @param      {Object}  req     The request
      * @param      {Object}  res     The response
@@ -32,12 +49,12 @@ module.exports = {
                         res.status(401).send('Invalid email and/or password.');
                     } else {
                         // attach user email to session
-                        req.session.login(req.body.email, (err) => {
+                        req.session.signin(req.body.email, (err) => {
 
                             if (err) {
-                                res.status(500).send('There was an error logging in. Please try again later.');
+                                res.status(500).send('There was an error signing in. Please try again later.');
                             } else {
-                                res.status(200).send('Login successful.');
+                                res.status(200).send('Signin successful.');
                             }
 
                         });
@@ -64,7 +81,7 @@ module.exports = {
             if (err) {
                 console.log(err);
             } else {
-                res.status(200).send('Logout successful.');
+                res.status(200).send('Signout successful.');
             }
 
         });
