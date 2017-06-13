@@ -7,6 +7,7 @@ var routes = require('./routes');
 var morgan = require('morgan');
 var bodyParser = require('body-parser');
 var validator = require('express-validator');
+var cors = require('cors');
 
 // import authentication config
 var authConfig = require(path.join(__dirname, '/utils/authentication/', config.authentication, 'config'));
@@ -22,6 +23,13 @@ if (process.env.NODE_ENV !== 'test') {
     app.use(morgan('common', { stream: logStream }));
     app.use(morgan('dev'));
 }
+
+// allow CORS
+var corsOptions = {
+    origin: 'https://192.168.54.54:8080',
+    credentials: true
+};
+app.use(cors(corsOptions));
 
 // initialize body-parser middleware
 app.use(bodyParser.json());
