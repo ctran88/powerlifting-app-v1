@@ -31,8 +31,8 @@ app.use(session({
 
 }));
 
-// login method to associate user information with session
-session.Session.prototype.login = function(user, cb) {
+// signin method to associate user information with session
+session.Session.prototype.signin = function(user, cb) {
 
     const req = this.req;
 

@@ -12,6 +12,7 @@ mongoose.set('debug', false);
 describe('top', function() {
 
     describe('/api/authentication/sessions', function() {
+        require('./authentication/sessions/get');
         require('./authentication/sessions/post');
         require('./authentication/sessions/delete');
     });

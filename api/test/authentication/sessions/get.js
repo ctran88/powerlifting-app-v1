@@ -1,6 +1,8 @@
 'use strict';
 
-describe('DELETE', function() {
+describe('GET', function() {
+
+    var agent = chai.request.agent(server);
 
     beforeEach(function(done) {
 
@@ -10,12 +12,22 @@ describe('DELETE', function() {
             'lastName': 'last1',
             'accountType': 'coach',
             'password': 'password',
-            'memberStart': '2017-05-10T09:25:10.000Z'
+            'memberStart': '2017-05-10T09:25:10.000Z',
         });
 
         user.save().then(function() {
 
-            done();
+            agent
+                .post('/api/authentication/sessions')
+                .send({
+                    'email': 'user1@mail.com',
+                    'password': 'password'
+                })
+                .end(function(err, res) {
+
+                    done();
+
+                });
 
         });
 
@@ -35,20 +47,26 @@ describe('DELETE', function() {
 
                 });
 
-                done();
+                agent
+                    .delete('/api/authentication/sessions')
+                    .end(function(err, res) {
+
+                        done();
+
+                    });
             }
 
         });
 
     });
 
-    it ('should delete the current user session at successful signout on DELETE /api/authentication/sessions', function(done) {
+    it ('should retrieve the current session status on GET /api/authentication/sessions', function(done) {
         
-        chai.request(server)
-            .delete('/api/authentication/sessions')
+        agent
+            .get('/api/authentication/sessions')
             .end(function(err, res) {
                 res.should.have.status(200);
-                res.text.should.equal('Signout successful.');
+                res.text.should.equal('Signed in.');
                 done();
             });
 

@@ -42,7 +42,7 @@ describe('POST', function() {
 
     });
 
-    it ('should set a user session at successful login on POST /api/authentication/sessions', function(done) {
+    it ('should set a user session at successful signin on POST /api/authentication/sessions', function(done) {
         
         chai.request(server)
             .post('/api/authentication/sessions')
@@ -52,7 +52,7 @@ describe('POST', function() {
             })
             .end(function(err, res) {
                 res.should.have.status(200);
-                res.text.should.equal('Login successful.');
+                res.text.should.equal('Signin successful.');
                 done();
             });
 
