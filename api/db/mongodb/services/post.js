@@ -2,10 +2,10 @@
 
 var User = require('../models/user');
 var Program = require('../models/program');
-var Mesocycle = require('../models/mesocycle');
 var Microcycle = require('../models/microcycle');
 var Session = require('../models/session');
 var Log = require('../models/log');
+var Library = require('../models/library');
 
 module.exports = {
 
@@ -50,29 +50,6 @@ module.exports = {
         }).catch((err) => {
 
             console.error('Error saving program information:', err);
-
-        });
-
-    },
-
-    /**
-     * Mongo syntax to create mesocycle.
-     *
-     * @param      {Object}   payload  The payload
-     * @return     {boolean}  The creation result
-     */
-    mesocycles: function(payload) {
-
-        var mesocycle = new Mesocycle(payload);
-
-        return mesocycle.save().then((doc) => {
-
-            var result = doc ? true : false;
-            return result;
-
-        }).catch((err) => {
-
-            console.error('Error saving mesocycle information:', err);
 
         });
 
@@ -142,6 +119,39 @@ module.exports = {
         }).catch((err) => {
 
             console.error('Error saving log information:', err);
+
+        });
+
+    },
+
+    /**
+     * Mongo syntax to create a single library entry.
+     *
+     * @param      {Object}   payload  The payload
+     * @return     {boolean}  The delete result
+     */
+    library: function(payload) {
+        
+        var query = {
+            type: payload.type
+        };
+        var payload = {
+            $addToSet: {
+                list: payload.id
+            }
+        };
+        
+        return Library.update(
+            query,
+            payload
+        ).then((doc) => {
+
+            var result = doc ? true : false;
+            return result;
+
+        }).catch((err) => {
+
+            console.error('Error saving library entry information:', err);
 
         });
 

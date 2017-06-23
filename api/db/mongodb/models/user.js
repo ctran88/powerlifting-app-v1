@@ -50,6 +50,10 @@ userModel.pre('save', function(next) {
         this.password = hashed;
         next();
         
+    }).catch((error) => {
+
+        console.log('Error with user pre-save hook: ', error);
+        
     });
 
 });

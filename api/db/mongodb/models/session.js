@@ -30,15 +30,13 @@ const sessionModel = new Schema({
             reps:           Number,
             weight:         Number,
             rpe:            Number,
-            percent: {
-                type:       Number,
-                of: {
-                    type:   String,
-                    enum: [
-                        'ts',
-                        '1rm'
-                    ]
-                }
+            percent:        Number,
+            percentOf: {
+                type:   String,
+                enum: [
+                    'ts',
+                    '1rm'
+                ]
             },
             backoff:        Boolean,
             workupSets:     Boolean
@@ -51,15 +49,13 @@ const sessionModel = new Schema({
             reps:           Number,
             weight:         Number,
             rpe:            Number,
-            percent: {
-                type:       Number,
-                of: {
-                    type:   String,
-                    enum: [
-                        'ts',
-                        '1rm'
-                    ]
-                }
+            percent:        Number,
+            percentOf: {
+                type:   String,
+                enum: [
+                    'ts',
+                    '1rm'
+                ]
             },
             backoff:        Boolean,
             workupSets:     Boolean

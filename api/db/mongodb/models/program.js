@@ -2,7 +2,7 @@
 
 const mongoose = require('mongoose');
 const Schema = mongoose.Schema;
-const Mesocycle = require('./mesocycle');
+const Microcycle = require('./microcycle');
 
 // Use Bluebird for mongoose promise library
 mongoose.Promise = require('bluebird');
@@ -27,11 +27,13 @@ const programModel = new Schema({
             ],
             required:   true
         },
+        active:         Boolean,
         created:        Date,
-        lastUpdated:    Date
+        lastUpdated:    Date,
+        cycle:          Number
     },
-    mesocycles: [
-        Mesocycle.schema
+    microcycles: [
+        Microcycle.schema
     ]
 });
 

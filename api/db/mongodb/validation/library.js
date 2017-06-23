@@ -2,12 +2,10 @@
 
 module.exports = {
 
-    mesocycle: function(req, res, next) {
+    library: function(req, res, next) {
 
-        req.check('metadata').isJSON();
-        req.check('metadata.name').isAlphanumeric();
-        req.check('metadata.cycle').isInt();
-        req.check('microcycles').isArrayObjects();
+        req.check('type').isAlpha();
+        req.check('list').isArray();
 
         req.getValidationResult().then((result) => {
 

@@ -2,10 +2,10 @@
 
 var User = require('../models/user');
 var Program = require('../models/program');
-var Mesocycle = require('../models/mesocycle');
 var Microcycle = require('../models/microcycle');
 var Session = require('../models/session');
 var Log = require('../models/log');
+var Library = require('../models/library');
 
 module.exports = {
 
@@ -49,15 +49,13 @@ module.exports = {
     /**
      * Mongo syntax to update program.
      *
+     * @param      {string}   id       The document id
      * @param      {Object}   payload  The payload
      * @return     {boolean}  The update result
      */
-    programs: function(payload) {
+    programs: function(id, payload) {
 
-        // TODO: UPDATE THIS QUERY
-        var query = {
-            'email': payload.email
-        };
+        var query = id;
         var update = {
             $set: payload
         };
@@ -66,7 +64,7 @@ module.exports = {
             runValidators: true
         };
 
-        return Program.findOneAndUpdate(
+        return Program.findByIdAndUpdate(
             query,
             update,
             options
@@ -84,54 +82,15 @@ module.exports = {
     },
 
     /**
-     * Mongo syntax to update mesocycle.
-     *
-     * @param      {Object}   payload  The payload
-     * @return     {boolean}  The update result
-     */
-    mesocycles: function(payload) {
-
-        // TODO: UPDATE THIS QUERY
-        var query = {
-            'email': payload.email
-        };
-        var update = {
-            $set: payload
-        };
-        var options = {
-            new: true,
-            runValidators: true
-        };
-
-        return Mesocycle.findOneAndUpdate(
-            query,
-            update,
-            options
-        ).then((doc) => {
-
-            var result = doc ? true : false;
-            return result;
-
-        }).catch((err) => {
-
-            console.error('Error updating mesocycle information:', err);
-
-        });
-
-    },
-
-    /**
      * Mongo syntax to update microcycle.
      *
+     * @param      {string}   id       The document id
      * @param      {Object}   payload  The payload
      * @return     {boolean}  The update result
      */
-    microcycles: function(payload) {
+    microcycles: function(id, payload) {
 
-        // TODO: UPDATE THIS QUERY
-        var query = {
-            'email': payload.email
-        };
+        var query = id;
         var update = {
             $set: payload
         };
@@ -140,7 +99,7 @@ module.exports = {
             runValidators: true
         };
 
-        return Microcycle.findOneAndUpdate(
+        return Microcycle.findByIdAndUpdate(
             query,
             update,
             options
@@ -160,15 +119,13 @@ module.exports = {
     /**
      * Mongo syntax to update session.
      *
+     * @param      {string}   id       The document id
      * @param      {Object}   payload  The payload
      * @return     {boolean}  The update result
      */
-    sessions: function(payload) {
+    sessions: function(id, payload) {
 
-        // TODO: UPDATE THIS QUERY
-        var query = {
-            'email': payload.email
-        };
+        var query = id;
         var update = {
             $set: payload
         };
@@ -177,7 +134,7 @@ module.exports = {
             runValidators: true
         };
 
-        return Session.findOneAndUpdate(
+        return Session.findByIdAndUpdate(
             query,
             update,
             options
@@ -197,15 +154,13 @@ module.exports = {
     /**
      * Mongo syntax to update log.
      *
+     * @param      {string}   id       The document id
      * @param      {Object}   payload  The payload
      * @return     {boolean}  The update result
      */
-    logs: function(payload) {
+    logs: function(id, payload) {
 
-        // TODO: UPDATE THIS QUERY
-        var query = {
-            'email': payload.email
-        };
+        var query = id;
         var update = {
             $set: payload
         };
@@ -214,7 +169,7 @@ module.exports = {
             runValidators: true
         };
 
-        return Log.findOneAndUpdate(
+        return Log.findByIdAndUpdate(
             query,
             update,
             options
@@ -226,6 +181,60 @@ module.exports = {
         }).catch((err) => {
 
             console.error('Error updating log information:', err);
+
+        });
+
+    },
+
+    /**
+     * Mongo syntax to update a single library entry.
+     *
+     * @param      {Object}   query    The query
+     * @param      {string}   payload  The payload
+     * @return     {boolean}  The delete result
+     */
+    library: function(query, payload) {
+        
+        var query = {
+            type: query.type
+        };
+        var deleteCondition = {
+            $pull: {
+                list: query.id
+            }
+        };
+        var update = {
+            $push: {
+                list: payload
+            }
+        }
+        
+        // first delete original element
+        return Library.update(
+            query,
+            deleteCondition
+        ).then((doc) => {
+
+            if (doc) {
+                // then add new element to array
+                return Library.update(
+                    query,
+                    update
+                ).then((doc) => {
+
+                    var result = doc ? true : false;
+                    return result;
+
+                }).catch((err) => {
+
+                    console.error('Error updating library entry information:', err);
+
+                });
+            }
+
+        }).catch((err) => {
+
+            console.error('Error updating library entry information:', err);
 
         });
 

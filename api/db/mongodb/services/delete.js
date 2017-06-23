@@ -2,10 +2,10 @@
 
 var User = require('../models/user');
 var Program = require('../models/program');
-var Mesocycle = require('../models/mesocycle');
 var Microcycle = require('../models/microcycle');
 var Session = require('../models/session');
 var Log = require('../models/log');
+var Library = require('../models/library');
 
 module.exports = {
 
@@ -18,7 +18,7 @@ module.exports = {
     users: function(payload) {
 
         var query = {
-            'email': payload
+            email: payload
         };
 
         return User.findOneAndRemove(
@@ -46,7 +46,7 @@ module.exports = {
 
         var query = payload;
 
-        return Program.findOneAndRemove(
+        return Program.findByIdAndRemove(
             query
         ).then((doc) => {
 
@@ -62,31 +62,6 @@ module.exports = {
     },
 
     /**
-     * Mongo syntax to delete a single mesocycle.
-     *
-     * @param      {string}   payload  The payload
-     * @return     {boolean}  The delete result
-     */
-    mesocycles: function(payload) {
-
-        var query = payload;
-
-        return Mesocycle.findOneAndRemove(
-            query
-        ).then((doc) => {
-
-            var result = doc ? true : false;
-            return result;
-
-        }).catch((err) => {
-
-            console.error('Error deleting mesocycle information:', err);
-
-        });
-
-    },
-
-    /**
      * Mongo syntax to delete a single microcycle.
      *
      * @param      {string}   payload  The payload
@@ -96,7 +71,7 @@ module.exports = {
 
         var query = payload;
 
-        return Microcycle.findOneAndRemove(
+        return Microcycle.findByIdAndRemove(
             query
         ).then((doc) => {
 
@@ -121,7 +96,7 @@ module.exports = {
 
         var query = payload;
 
-        return Session.findOneAndRemove(
+        return Session.findByIdAndRemove(
             query
         ).then((doc) => {
 
@@ -146,7 +121,7 @@ module.exports = {
 
         var query = payload;
 
-        return Log.findOneAndRemove(
+        return Log.findByIdAndRemove(
             query
         ).then((doc) => {
 
@@ -156,6 +131,39 @@ module.exports = {
         }).catch((err) => {
 
             console.error('Error deleting log information:', err);
+
+        });
+
+    },
+
+    /**
+     * Mongo syntax to delete a single library entry.
+     *
+     * @param      {Object}   payload  The payload
+     * @return     {boolean}  The delete result
+     */
+    library: function(payload) {
+        
+        var query = {
+            type: payload.type
+        };
+        var deleteCondition = {
+            $pull: {
+                list: payload.id
+            }
+        };
+
+        return Library.update(
+            query,
+            deleteCondition
+        ).then((doc) => {
+
+            var result = doc ? true : false;
+            return result;
+
+        }).catch((err) => {
+
+            console.error('Error deleting library entry information:', err);
 
         });
 

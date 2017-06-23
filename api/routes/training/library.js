@@ -10,22 +10,25 @@ var remove = require(path.join(__dirname, '/../../db/', config.database, '/servi
 module.exports = {
 
     /**
-     * Controller for /api/training/mesocycles endpoint.  Queries one, many, or all mesocycles.
+     * Controller for /api/training/library/:type endpoint.  Queries a single library type.
      *
      * @param      {Object}  req     The request
      * @param      {Object}  res     The response
      */
     get: function(req, res) {
+        var query = {
+            type: req.params.type
+        };
 
-        // query mesocycles with json body
-        get.mesocycles(req.body).then((result) => {
+        get.library(query).then((result) => {
 
             if (!result) {
-                res.status(404).send('No mesocycles found.');
+                res.status(404).send('No library found.');
             } else {
+                // Should return an array of only 1 element, so hardcode first element
                 res.status(200).json({
-                    message: 'Mesocycles retrieved successfully.',
-                    mesocycles: result
+                    message: 'Library retrieved successfully.',
+                    library: result[0]
                 });
             }
 
@@ -34,47 +37,45 @@ module.exports = {
     },
 
     /**
-     * Controller for /api/training/mesocycles endpoint.  Saves one mesocycle.
+     * Controller for /api/training/library/:type/:id endpoint.  Saves entry to a specific library type.
      *
      * @param      {Object}  req     The request
      * @param      {Object}  res     The response
      */
     post: function(req, res) {
 
-        // create mesocycle from json body
-        post.mesocycles(req.body).then((found) => {
+        get.library(req.params).then((found) => {
 
             if (found) {
-                res.status(409).send('Mesocycle already exists.');
+                res.status(409).send('Library entry already exists.');
             } else {
-                // save mesocycle to database
-                post.mesocycles(req.body).then((result) => {
+                // create library entry from params
+                post.library(req.params).then((result) => {
 
                     if (result) {
-                        res.status(201).send('Mesocycle saved successfully.');
+                        res.status(201).send('Library entry saved successfully.');
                     }
 
                 });
             }
-
-        });
+        })
 
     },
 
     /**
-     * Controller for /api/training/mesocycles endpoint. Updates one mesocycle.
+     * Controller for /api/training/library/:type/:id endpoint. Updates one library entry.
      *
      * @param      {Object}  req     The request
      * @param      {Object}  res     The response
      */
     patch: function(req, res) {
 
-        patch.mesocycles(req.body).then((result) => {
+        patch.library(req.params, req.body.id).then((result) => {
 
             if (!result) {
-                res.status(404).send('No mesocycle found');
+                res.status(404).send('No library entry found');
             } else {
-                res.status(200).send('Mesocycle updated successfully.');
+                res.status(200).send('Library entry updated successfully.');
             }
 
         });
@@ -82,19 +83,19 @@ module.exports = {
     },
 
     /**
-     * Controller for /api/training/mesocycles endpoint. Deletes one mesocycle.
+     * Controller for /api/training/library/:type/:id endpoint. Deletes one library entry.
      *
      * @param      {Object}  req     The request
      * @param      {Object}  res     The response
      */
     delete: function(req, res) {
         
-        remove.mesocycles(req.body).then((result) => {
+        remove.library(req.params).then((result) => {
 
             if (!result) {
-                res.status(404).send('No mesocycle found');
+                res.status(404).send('No library entry found');
             } else {
-                res.status(200).send('Mesocycle deleted successfully.');
+                res.status(200).send('Library entry deleted successfully.');
             }
 
         });

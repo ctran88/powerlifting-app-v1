@@ -11,7 +11,7 @@ module.exports = {
         req.check('metadata.status.type').notEmpty().matches('template', 'draft', 'published');
         req.check('metadata.created').isISO8601();
         req.check('metadata.lastUpdated').isISO8601();
-        req.check('mesocycles').isArrayObjects();
+        req.check('microcycles').isArrayObjects();
 
         req.getValidationResult().then((result) => {
 

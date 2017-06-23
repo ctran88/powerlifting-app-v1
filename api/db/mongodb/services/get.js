@@ -2,10 +2,10 @@
 
 var User = require('../models/user');
 var Program = require('../models/program');
-var Mesocycle = require('../models/mesocycle');
 var Microcycle = require('../models/microcycle');
 var Session = require('../models/session');
 var Log = require('../models/log');
+var Library = require('../models/library');
 
 module.exports = {
 
@@ -13,13 +13,13 @@ module.exports = {
      * Mongo syntax to query a single user for password comparison.
      * Used for login password comparison.
      *
-     * @param      {string}  email  The email
+     * @param      {string}  payload  The payload
      * @return     {Object}  The query result
      */
-    userWithPass: function(email) {
+    userWithPass: function(payload) {
 
         var query = {
-            'email': email
+            email: payload
         };
         
         var projection = {
@@ -58,7 +58,7 @@ module.exports = {
             query = payload;
         } else if (typeof payload === 'string') {
             query = {
-                'email': payload
+                email: payload
             };
         }
         
@@ -104,32 +104,6 @@ module.exports = {
         }).catch((err) => {
 
             console.error('Error retrieving program information:', err);
-
-        });
-
-    },
-
-    /**
-     * Mongo syntax to query for mesocycle(s).
-     *
-     * @param      {Object|string}  payload  The payload
-     * @return     {Object}  The query result
-     */
-    mesocycles: function(payload) {
-
-        // query for single, many, or all mesocycles
-        var query = payload;
-
-        return Mesocycle.find(
-            query
-        ).then((doc) => {
-
-            var result = doc.length > 0 ? doc : false;
-            return result;
-
-        }).catch((err) => {
-
-            console.error('Error retrieving mesocycle information:', err);
 
         });
 
@@ -208,6 +182,31 @@ module.exports = {
         }).catch((err) => {
 
             console.error('Error retrieving log information:', err);
+
+        });
+
+    },
+
+    /**
+     * Mongo syntax to get a single library type.
+     *
+     * @param      {string}   payload  The payload
+     * @return     {boolean}  The delete result
+     */
+    library: function(payload) {
+
+        var query = payload;
+
+        return Library.find(
+            query
+        ).then((doc) => {
+
+            var result = doc.length > 0 ? doc : false;
+            return result;
+
+        }).catch((err) => {
+
+            console.error('Error deleting library entry information:', err);
 
         });
 
