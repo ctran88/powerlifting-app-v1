@@ -17,8 +17,17 @@ module.exports = {
      */
     get: function(req, res) {
 
+        var query = {};
+
+        // if req.query object is not empty
+        if (Object.keys(req.query).length !== 0) {
+            query = {
+                'metadata.coach': req.query.coach
+            };
+        }
+
         // query programs with json body
-        get.programs(req.body).then((result) => {
+        get.programs(query).then((result) => {
 
             if (!result) {
                 res.status(404).send('No programs found.');
@@ -41,13 +50,19 @@ module.exports = {
      */
     post: function(req, res) {
 
-        // create program from json body
-        post.programs(req.body).then((found) => {
+        var query = {
+            'metadata.name': req.body.metadata.name,
+            'metadata.coach': req.body.metadata.coach,
+            'metadata.created': req.body.metadata.created
+        };
+
+        // query programs with json body
+        get.programs(query).then((found) => {
 
             if (found) {
                 res.status(409).send('Program already exists.');
             } else {
-                // save program to database
+                // create program from json body
                 post.programs(req.body).then((result) => {
 
                     if (result) {
@@ -56,8 +71,7 @@ module.exports = {
 
                 });
             }
-
-        });
+        })
 
     },
 
@@ -69,7 +83,7 @@ module.exports = {
      */
     patch: function(req, res) {
 
-        patch.programs(req.body).then((result) => {
+        patch.programs(req.params.id, req.body).then((result) => {
 
             if (!result) {
                 res.status(404).send('No program found');
@@ -89,7 +103,7 @@ module.exports = {
      */
     delete: function(req, res) {
         
-        remove.programs(req.body).then((result) => {
+        remove.programs(req.params.id, req.body).then((result) => {
 
             if (!result) {
                 res.status(404).send('No program found');

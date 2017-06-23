@@ -18,7 +18,17 @@ module.exports = {
     get: function(req, res) {
 
         if (req.session.userInfo) {
-            res.status(200).send('Signed in.');
+            // get user information
+            get.users(req.session.userInfo).then((result) => {
+
+                if (result) {
+                    res.status(200).json({
+                        message: req.session.userInfo,
+                        info: result[0]
+                    });
+                }
+
+            });
         } else {
             res.status(200).send('Not signed in.');
         }
@@ -54,7 +64,17 @@ module.exports = {
                             if (err) {
                                 res.status(500).send('There was an error signing in. Please try again later.');
                             } else {
-                                res.status(200).send('Signin successful.');
+                                // get user information without password field
+                                get.users(req.body.email).then((result) => {
+
+                                    if (result) {
+                                        res.status(200).json({
+                                            message: 'Signin successful.',
+                                            info: result[0]
+                                        });
+                                    }
+
+                                });
                             }
 
                         });

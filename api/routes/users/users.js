@@ -16,9 +16,18 @@ module.exports = {
      * @param      {Object}  res     The response
      */
     getMany: function(req, res) {
+        var query = {};
+
+        if (Array.isArray(req.query.email)) {
+            query = {
+                email: {
+                    $in: req.query.email
+                }
+            };
+        }
 
         // query users with json body
-        get.users(req.body).then((result) => {
+        get.users(query).then((result) => {
 
             if (!result) {
                 res.status(404).send('No users found.');
