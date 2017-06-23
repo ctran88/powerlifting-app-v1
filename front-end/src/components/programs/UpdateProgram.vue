@@ -1,14 +1,14 @@
 <template>
-<div id="dash">
+<main id="update-program">
   <b-card id="main-content-card">
-    hello i'm the dash
+    hello i'm update program
   </b-card>
-</div>
+</main>
 </template>
 
 <script>
 export default {
-  name: 'dash'
+  name: 'update-program'
 };
 </script>
 

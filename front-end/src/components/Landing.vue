@@ -1,6 +1,5 @@
 <template>
   <div id="container">
-    <app-nav></app-nav>
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
@@ -94,13 +93,8 @@
 </template>
 
 <script>
-import AppNav from './AppNav';
-
 export default {
   name: 'landing',
-  components: {
-    AppNav
-  },
   data () {
     return {
       message: 'Hello app!'
@@ -110,5 +104,7 @@ export default {
 </script>
 
 <style scoped>
-
+.container {
+  color: #C8D80D;
+}
 </style>
