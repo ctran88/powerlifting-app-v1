@@ -7,3 +7,11 @@ export const setSignedIn = (context) => {
 export const setSignedOut = (context) => {
     context.commit('SET_SIGNED_OUT');
 };
+
+export const setUserInfo = (context, userInfo) => {
+    context.commit('SET_USER_INFO', userInfo);
+};
+
+export const apiFailure = (context, error) => {
+    context.commit('API_FAILURE', error);
+};

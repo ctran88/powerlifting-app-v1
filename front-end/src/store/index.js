@@ -5,12 +5,18 @@ import Vuex from 'vuex';
 import * as actions from './actions';
 import * as mutations from './mutations';
 import * as getters from './getters';
+import programsModule from './modules/programs';
 
 Vue.use(Vuex);
 
 const store = new Vuex.Store({
+    modules: {
+        programs: programsModule
+    },
     state: {
-        signedIn: false
+        signedIn: false,
+        user: {},
+        apiError: ''
     },
     actions,
     mutations,
