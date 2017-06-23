@@ -1,79 +1,81 @@
 'use strict';
 
-var axios = require('axios');
+import api from './api';
+import Router from 'vue-router';
+import store from '@/store';
 
-axios.defaults.withCredentials = true;
-
-const api = 'https://192.168.54.54:3000/api/';
+var router = new Router();
 const client = 'https://192.168.54.54:8080';
 
-module.exports = {
+export function signin(email, password) {
 
-    signin: function(email, password) {
+    var sanitizedEmail = email.toLowerCase();
 
-        var sanitizedEmail = email.toLowerCase();
+    if (sanitizedEmail == '') {
+        alert('You must enter an email.');
+    } else if (password == '') {
+        alert('You must enter a password.');
+    } else {
+        var payload = {
+            email: sanitizedEmail,
+            password: password
+        };
 
-        if (sanitizedEmail == '') {
-            alert('You must enter an email.');
-        } else if (password == '') {
-            alert('You must enter a password.');
-        } else {
-            axios.post(api + 'authentication/sessions', {
-                email: sanitizedEmail,
-                password: password
-            })
-            .then((res) => {
+        api.post('/authentication/sessions', payload)
+            .then((response) => {
 
-                if (res.status === 200) {
-                    window.location.hash = 'dash';
+                if (response.status === 200) {
+                    store.dispatch('setUserInfo', response.data.info);
+                    router.push('/dash');
                 }
 
             })
-            .catch((err) => {
-                alert('Invalid email and/or password. ', err);
+            .catch((error) => {
+
+                console.log('Error signing in: ', error);
 
             });
-        }
+    }
 
-    },
+}
 
-    signout: function() {
+export function signout() {
 
-        axios.delete(api + 'authentication/sessions')
-        .then((res) => {
+    api.delete('/authentication/sessions')
+        .then((response) => {
 
-            if (res.status === 200) {
+            if (response.status === 200) {
                 window.location.replace(client);
             }
 
         })
-        .catch((err) => {
-            alert('Error signing out: ', err);
+        .catch((error) => {
+
+            console.log('Error signing out: ', error);
+
         });
 
-    },
+}
 
-    isSignedIn: function() {
+export function isSignedIn() {
 
-        return axios.get(api + 'authentication/sessions');
+    return api.get('/authentication/sessions');
 
-    },
+}
 
-    requireAuth: async function(to, from, next) {
+export async function requireAuth(to, from, next) {
 
-        var response = await module.exports.isSignedIn();
+    var response = await isSignedIn();
 
-        if (response.data === 'Signed in.') {
-            next();
-        } else {
-            next({
-                path: '/signin',
-                query: {
-                    redirect: to.fullPath
-                }
-            });
-        }
-        
+    if (response.data === 'Not signed in.') {
+        next({
+            path: '/signin',
+            query: {
+                redirect: to.fullPath
+            }
+        });
+    } else {
+        next();
     }
-
-};
+    
+}
