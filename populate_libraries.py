@@ -4,11 +4,20 @@ from pymongo import MongoClient
 mongo_uri = 'mongodb://admin:TPNadmin01@0.0.0.0/tpn?authSource=admin'
 mongo_client = MongoClient(mongo_uri)
 mongo_db = mongo_client.tpn
-mongo_library = mongo_db.library
+mongo_libraries = mongo_db.libraries
 
 # Global defaults
+main_defaults = {
+    'type': 'main',
+    'list': [
+        'squat',
+        'bench press',
+        'deadlift'
+    ]
+}
+
 main_variation_defaults = {
-    'type': 'mainVariation',
+    'type': 'variations',
     'list': [
         'low bar',
         'high bar',
@@ -21,6 +30,7 @@ main_variation_defaults = {
         'pin',
         'tng',
         'close grip',
+        'wide grip',
         'board',
         'conventional',
         'sumo',
@@ -31,14 +41,26 @@ main_variation_defaults = {
     ]
 }
 
+accessory_defaults = {
+    'type': 'accessories',
+    'list': [
+        'romanian deadlift',
+        'hip thrust',
+        'overhead press'
+    ]
+}
 
-# Executes sql query and returns the results array
-def populate_library(defaults):
-    mongo_library.insert(defaults)
+
+# Populate library collection wwith default exercises
+def populate_libraries(defaults):
+    mongo_libraries.insert(defaults)
 
 
 def main():
-    populate_library(main_variation_defaults)
+    mongo_libraries.drop()
+    populate_libraries(main_defaults)
+    populate_libraries(main_variation_defaults)
+    populate_libraries(accessory_defaults)
 
     mongo_client.close()
     print("Populated.")
