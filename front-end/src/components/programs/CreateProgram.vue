@@ -1,38 +1,52 @@
 <template>
 <div id="create-program">
   <b-card id="main-content-card">
-    <b-form-input v-model="name" type="text" placeholder="Program name"></b-form-input>
-    <b-button class="btn-save" variant="success" @click="saveProgram">Save program</b-button>
+    <div class="row">
+      <small class="text-muted">Program name</small>
+      <b-form-input v-model="name" type="text" />
 
-    <b-tabs pills card v-for="(week, index) in weeks" :key="index" id="workout-week">
-      <b-tab disabled id="week-label" :title="'Week ' + (index + 1)"></b-tab>
+      <small class="text-muted">Client</small>
+      <b-form-select :options="clientList" v-model="client" />
+
+      <b-form-checkbox v-model="active" id="program-active" value=true unchecked-value=false>Make this the active program?</b-form-checkbox>
+
+      <b-button-group class="ml-auto">
+        <b-button class="btn-save-draft" variant="success" @click="handleSaveDraft">Save draft</b-button>
+        <b-button class="btn-save-published" variant="primary" @click="handlePublish">Publish</b-button>
+      </b-button-group>
+    </div>
+
+    <hr />
+
+    <b-tabs pills card id="workout-week" v-for="(week, index) in weeks" :key="index">
+      <b-tab disabled id="week-label" :title="'Week ' + (index + 1)" />
       <b-tab title="Day 1">
-        <create-session :day='1' :week='week'></create-session>
+        <create-session :day="1" :week="week" />
       </b-tab>
       <b-tab title="Day 2">
-        <create-session :day='2' :week='week'></create-session>
+        <create-session :day="2" :week="week" />
       </b-tab>
       <b-tab title="Day 3">
-        <create-session :day='3' :week='week'></create-session>
+        <create-session :day="3" :week="week" />
       </b-tab>
       <b-tab title="Day 4">
-        <create-session :day='4' :week='week'></create-session>
+        <create-session :day="4" :week="week" />
       </b-tab>
       <b-tab title="Day 5">
-        <create-session :day='5' :week='week'></create-session>
+        <create-session :day="5" :week="week" />
       </b-tab>
       <b-tab title="Day 6">
-        <create-session :day='6' :week='week'></create-session>
+        <create-session :day="6" :week="week" />
       </b-tab>
       <b-tab title="Day 7">
-        <create-session :day='7' :week='week'></create-session>
+        <create-session :day="7" :week="week" />
       </b-tab>
       <template slot="tabs">
-        <b-button class="ml-auto btn-week" variant="danger" @click="deleteWeek(index)">Delete</b-button>
+        <b-button class="ml-auto btn-week" variant="danger" @click="handleDeleteWeek(index)">Delete</b-button>
       </template>
     </b-tabs>
 
-    <b-button class="btn-week" variant="primary" @click="addWeek">Add a week</b-button>
+    <b-button class="btn-week" variant="primary" @click="handleAddWeek">Add a week</b-button>
   </b-card>
 </div>
 </template>
@@ -40,7 +54,9 @@
 <script>
 import CreateSession from './CreateSession';
 import api from '@/../utils/api';
-import Vue from 'vue';
+import Router from 'vue-router';
+
+var router = new Router();
 
 export default {
   name: 'create-program',
@@ -50,20 +66,77 @@ export default {
   data() {
     return {
       name: '',
-      week: 0,
-      weeks: []
+      client: ' ',
+      new: true,
+      id: '',
+      created: '',
+      clientList: [' '],
+      active: false,
+      weeks: [],
+      week: 0
     };
   },
+  mounted() {
+    // this function is called before the setUserInfo acton can be completed (from App.vue), so user object is not set yet.  Set timetout as a workaround.
+    setTimeout(() => {
+      var clients = this.$store.state.user.clients;
+
+      for (var i = 0; i < clients.length; i++) {
+        this.clientList.push(clients[i]);
+      }
+    }, 100);
+  },
   methods: {
-    addWeek() {
+    handleAddWeek() {
       this.weeks.push(++this.week);
     },
-    deleteWeek(index) {
+    handleDeleteWeek(index) {
       this.weeks.splice(index, 1);
     },
-    saveProgram() {
+    handleSaveDraft() {
+      this.saveProgram('draft')
+        .then((result) => {
+          alert(result);
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+    handlePublish() {
+      this.saveProgram('published')
+        .then((result) => {
+          alert('Program published successfully!');
+          router.push('/programs');
+        })
+        .catch((error) => {
+          alert(error);
+        });
+    },
+    saveProgram(saveStatus) {
+      if (this.name === '') {
+        return Promise.reject('Program name required.');
+      }
+
       // overwrite entire program with every save
       this.$store.dispatch('resetProgram');
+
+      // sets the created time only once
+      if (this.new) {
+        this.created = new Date().toISOString();
+      }
+
+      var metadata = {
+        name: this.name,
+        coach: this.$store.state.user.email,
+        status: saveStatus,
+        active: this.active,
+        created: this.created,
+        lastUpdated: new Date().toISOString()
+      };
+
+      if (this.client !== ' ') {
+        metadata.client = this.client;
+      }
 
       var array = this.$children[0].$children;
 
@@ -83,7 +156,7 @@ export default {
               },
               main: [],
               accessories: [],
-              rest: false
+              rest: true
             };
 
             // format exercise object and push to session object
@@ -125,13 +198,15 @@ export default {
                   break;
               }
 
-              // push exercise object to appropriate array in session object, or set rest day to true
+              // push exercise object to appropriate array in session object, or set rest day to true.  if no lift type provided (nothing at all selected) default to rest = true.
               switch (day.exercises[k].liftType) {
                 case 'main':
                   session.main.push(exerciseObj);
+                  session.rest = false;
                   break;
                 case 'accessories':
                   session.accessories.push(exerciseObj);
+                  session.rest = false;
                   break;
                 case 'rest':
                   session.rest = true;
@@ -139,13 +214,38 @@ export default {
               }
             }
 
-            // populate microcycle state in store
+            // populate microcycle state with one session (day)
             this.$store.dispatch('updateMicrocycle', session);
           }
 
-          // push microcycle to program state before reset
-          this.$store.dispatch('updateProgram', this.name);
+          // push one microcycle (week) to program state before reset
+          this.$store.dispatch('updateProgram', metadata);
         } // end of iterating through each week
+      }
+
+      // if first save, use POST API, else use PATCH API
+      if (this.new) {
+        return api.post('/training/programs', this.$store.state.programs.program)
+          .then((response) => {
+            if (response.status === 201) {
+              this.new = false;
+              this.id = response.data.id;
+              return response.data.message;
+            }
+          })
+          .catch((error) => {
+            console.log('API error saving program: ', error);
+          });
+      } else {
+        return api.patch('/training/programs/' + this.id, this.$store.state.programs.program)
+          .then((response) => {
+            if (response.status === 200) {
+              return response.data;
+            }
+          })
+          .catch((error) => {
+            console.log('API error updating program: ', error);
+          });
       }
     }
   }
@@ -160,7 +260,10 @@ export default {
 </style>
 
 <style scoped>
-.btn-week {
+button {
   cursor: pointer;
+}
+.form-control {
+  width: inherit;
 }
 </style>

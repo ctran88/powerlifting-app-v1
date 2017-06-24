@@ -1,7 +1,5 @@
 'use strict';
 
-import api from '@/../utils/api';
-
 const state = {
     microcycle: {
         metadata: {},
@@ -48,8 +46,8 @@ const mutations = {
         state.microcycle.metadata.week = payload.metadata.week;
         state.microcycle.sessions.push(session);
     },
-    UPDATE_PROGRAM: function(state, name) {
-        state.program.metadata.name = name;
+    UPDATE_PROGRAM: function(state, metadata) {
+        state.program.metadata = metadata;
         state.program.microcycles.push(state.microcycle);
     }
 };
@@ -64,9 +62,9 @@ const actions = {
     updateMicrocycle: function(context, session) {
         context.commit('UPDATE_MICROCYCLE', session);
     },
-    updateProgram: function({ commit, dispatch }, name) {
-        commit('UPDATE_PROGRAM', name);
-        dispatch('resetMicrocycle');
+    updateProgram: function(context, metadata) {
+        context.commit('UPDATE_PROGRAM', metadata);
+        context.dispatch('resetMicrocycle');
     }
 };
 
