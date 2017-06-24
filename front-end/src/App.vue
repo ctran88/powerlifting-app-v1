@@ -1,7 +1,7 @@
 <template>
 <div id='app'>
-  <app-nav v-show="['Sign in', 'Page not found'].indexOf($route.name) == -1"></app-nav>
-  <router-view></router-view>
+  <app-nav v-show="['Sign in', 'Page not found'].indexOf($route.name) == -1" />
+  <router-view />
 </div>
 </template>
 
@@ -48,11 +48,11 @@ body {
 #main-content-card {
   margin: 100px 40px 60px 180px;
   padding: 60px;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-              0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-                   0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-                      0 6px 20px 0 rgba(0, 0, 0, 0.19);
+  box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2),
+              0 1px 8px 0 rgba(0, 0, 0, 0.19);
+  -moz-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2),
+                   0 1px 8px 0 rgba(0, 0, 0, 0.19);
+  -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2),
+                      0 1px 8px 0 rgba(0, 0, 0, 0.19);
 }
 </style>

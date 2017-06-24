@@ -5,7 +5,7 @@
       <b-button to="create-program" variant="success">Create a program</b-button>
 
       <b-form-fieldset horizontal label="Filter" class="col-6" :label-size="2">
-        <b-form-input v-model="filter" placeholder="Type to search"></b-form-input>
+        <b-form-input v-model="filter" placeholder="Type to search" />
       </b-form-fieldset>
     </div>
 
@@ -34,7 +34,7 @@
       </template>
       <template slot="actions" scope="item">
         <b-btn size="sm" v-b-modal="'program-preview-modal'" @click="handleDetails(item.item)">Details</b-btn>
-        <b-btn size="sm" v-b-modal="'delete-confirmation-modal'" @click="handleDetails(item.item)">Delete</b-btn>
+        <b-btn size="sm" variant="danger" v-b-modal="'delete-confirmation-modal'" @click="handleDetails(item.item)">Delete</b-btn>
       </template>
     </b-table>
 
@@ -49,7 +49,7 @@
     <b-modal id="delete-confirmation-modal" size="sm" title="Confirm delete">
       Are you sure you want to delete {{ details.metadata.name }}?
       <footer slot="modal-footer">
-        <b-btn variant="secondary" @click="handleClose">Cancel</b-btn>
+        <b-btn variant="secondary" @click="handleClose('delete-confirmation-modal')">Cancel</b-btn>
         <b-btn variant="danger" @click="handleDelete">Delete</b-btn>
       </footer>
     </b-modal>
@@ -153,15 +153,17 @@ export default {
     },
     handleCopy() {
       var copy = {
-        metadata: {}
+        metadata: {},
+        microcycles: []
       };
 
+      copy.metadata = this.details.metadata;
       copy.metadata.name = this.details.metadata.name + '-copy';
-      copy.metadata.coach = this.details.metadata.coach;
-      copy.metadata.status = this.details.metadata.status;
+      copy.metadata.status = 'draft';
       copy.metadata.created = new Date().toISOString();
       copy.metadata.lastUpdated = new Date().toISOString();
       copy.metadata.cycle = 1;
+      copy.microcycles = this.details.microcycles;
 
       api.post('/training/programs', copy)
         .then((response) => {
@@ -182,4 +184,7 @@ export default {
 </script>
 
 <style scoped>
+button {
+  cursor: pointer;
+}
 </style>

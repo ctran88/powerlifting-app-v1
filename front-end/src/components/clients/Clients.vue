@@ -3,7 +3,7 @@
   <b-card id="main-content-card">
     <div class="row">
       <b-form-fieldset horizontal label="Filter" class="col-6" :label-size="2">
-        <b-form-input v-model="filter" placeholder="Type to search"></b-form-input>
+        <b-form-input v-model="filter" placeholder="Type to search" />
       </b-form-fieldset>
     </div>
 
@@ -31,6 +31,10 @@
 
     <b-modal id="client-preview-modal" title="Client preview">
       {{ details }}
+      <footer slot="modal-footer">
+        <b-btn variant="secondary" @click="handleClose('client-preview-modal')">Close</b-btn>
+        <b-btn variant="primary" @click="handleClose('client-preview-modal')">OK</b-btn>
+      </footer>
     </b-modal>
   </b-card>
 </div>
@@ -132,10 +136,16 @@ export default {
     },
     handleDetails(item) {
       this.details = item;
+    },
+    handleClose(modalId) {
+      this.$root.$emit('hide::modal', modalId);
     }
   }
 };
 </script>
 
 <style scoped>
+button {
+  cursor: pointer;
+}
 </style>

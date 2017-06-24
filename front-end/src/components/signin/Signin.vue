@@ -3,8 +3,10 @@
   <b-card>
     <form @submit.prevent="handleSignin">
       <h2>Please sign in</h2>
-      <b-form-input v-model="email" id="input-email" type="email" placeholder="Email" required autofocus></b-form-input>
-      <b-form-input v-model="password" id="input-password" type="password" placeholder="Password" required></b-form-input>
+      <small class="text-muted">Email</small>
+      <b-form-input v-model="email" id="input-email" type="email" required autofocus />
+      <small class="text-muted">Password</small>
+      <b-form-input v-model="password" id="input-password" type="password" required />
       <b-form-checkbox v-model="remember" id="remember-me" value=true unchecked-value=false>Remember me</b-form-checkbox>
       <b-button id="btn-signin">Sign in</b-button>
     </form>
@@ -43,7 +45,7 @@ export default {
   padding: 15px 0px;
   border-color: #cccccc;
   background-color: #f6f6f6;
-  height: 300px;
+  height: 345px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
               0 6px 20px 0 rgba(0, 0, 0, 0.19);
   -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
@@ -61,20 +63,11 @@ h2 {
           box-sizing: border-box;
   padding: 10px;
   font-size: 16px;
+  margin-bottom: 10px;
 }
 .form-control:focus {
   z-index: 2;
   border-color: #C8D80D;
-}
-#input-email {
-  margin-bottom: -1px;
-  border-bottom-left-radius: 0;
-  border-bottom-right-radius: 0;
-}
-#input-password {
-  margin-bottom: 10px;
-  border-top-left-radius: 0;
-  border-top-right-radius: 0;
 }
 .custom-checkbox {
   margin-bottom: 10px;
