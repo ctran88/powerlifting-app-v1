@@ -1,5 +1,5 @@
 <template>
-  <div id="container">
+  <div id="home">
     <!-- Main jumbotron for a primary marketing message or call to action -->
     <div class="jumbotron">
       <div class="container">
@@ -94,7 +94,7 @@
 
 <script>
 export default {
-  name: 'landing',
+  name: 'home',
   data () {
     return {
       message: 'Hello app!'

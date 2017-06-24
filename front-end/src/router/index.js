@@ -1,12 +1,13 @@
 import Vue from 'vue';
 import Router from 'vue-router';
-import Landing from '@/components/Landing';
+import Home from '@/components/Home';
+import Register from '@/components/signin/Register';
+import Signin from '@/components/signin/Signin';
 import Dash from '@/components/Dash';
 import Clients from '@/components/clients/Clients';
 import Programs from '@/components/programs/Programs';
 import CreateProgram from '@/components/programs/CreateProgram';
 import UpdateProgram from '@/components/programs/UpdateProgram';
-import Signin from '@/components/signin/Signin';
 import PageNotFound from '@/components/navigation/PageNotFound';
 import { requireAuth } from '@/../utils/auth';
 
@@ -17,7 +18,17 @@ export default new Router({
     {
       path: '/',
       name: 'Home',
-      component: Landing
+      component: Home
+    },
+    {
+      path: '/register',
+      name: 'Register',
+      component: Register
+    },
+    {
+      path: '/signin',
+      name: 'Sign in',
+      component: Signin
     },
     {
       path: '/dash',
@@ -48,11 +59,6 @@ export default new Router({
       name: 'Update program',
       beforeEnter: requireAuth,
       component: UpdateProgram
-    },
-    {
-      path: '/signin',
-      name: 'Sign in',
-      component: Signin
     },
     {
       path: '*',
