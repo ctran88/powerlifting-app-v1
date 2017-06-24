@@ -13,7 +13,7 @@ module.exports = {
      * Mongo syntax to update user.
      *
      * @param      {string}   email    The email
-     * @param      {Object}   payload  The payload
+     * @param      {Object}   payload  The entire document, not just updates
      * @return     {boolean}  The update result
      */
     users: function(email, payload) {
@@ -21,11 +21,10 @@ module.exports = {
         var query = {
             'email': email
         };
-        var update = {
-            $set: payload
-        };
+        var update = payload;
         var options = {
             new: true,
+            overwrite: true,
             runValidators: true
         };
 
@@ -50,17 +49,16 @@ module.exports = {
      * Mongo syntax to update program.
      *
      * @param      {string}   id       The document id
-     * @param      {Object}   payload  The payload
+     * @param      {Object}   payload  The entire document, not just updates
      * @return     {boolean}  The update result
      */
     programs: function(id, payload) {
 
         var query = id;
-        var update = {
-            $set: payload
-        };
+        var update = payload;
         var options = {
             new: true,
+            overwrite: true,
             runValidators: true
         };
 
@@ -85,17 +83,16 @@ module.exports = {
      * Mongo syntax to update microcycle.
      *
      * @param      {string}   id       The document id
-     * @param      {Object}   payload  The payload
+     * @param      {Object}   payload  The entire document, not just updates
      * @return     {boolean}  The update result
      */
     microcycles: function(id, payload) {
 
         var query = id;
-        var update = {
-            $set: payload
-        };
+        var update = payload;
         var options = {
             new: true,
+            overwrite: true,
             runValidators: true
         };
 
@@ -120,17 +117,16 @@ module.exports = {
      * Mongo syntax to update session.
      *
      * @param      {string}   id       The document id
-     * @param      {Object}   payload  The payload
+     * @param      {Object}   payload  The entire document, not just updates
      * @return     {boolean}  The update result
      */
     sessions: function(id, payload) {
 
         var query = id;
-        var update = {
-            $set: payload
-        };
+        var update = payload;
         var options = {
             new: true,
+            overwrite: true,
             runValidators: true
         };
 
@@ -155,17 +151,16 @@ module.exports = {
      * Mongo syntax to update log.
      *
      * @param      {string}   id       The document id
-     * @param      {Object}   payload  The payload
+     * @param      {Object}   payload  The entire document, not just updates
      * @return     {boolean}  The update result
      */
     logs: function(id, payload) {
 
         var query = id;
-        var update = {
-            $set: payload
-        };
+        var update = payload;
         var options = {
             new: true,
+            overwrite: true,
             runValidators: true
         };
 
@@ -187,54 +182,36 @@ module.exports = {
     },
 
     /**
-     * Mongo syntax to update a single library entry.
+     * Mongo syntax to update a library entry.
      *
-     * @param      {Object}   query    The query
-     * @param      {string}   payload  The payload
-     * @return     {boolean}  The delete result
+     * @param      {string}   type     The library type
+     * @param      {Object}   payload  The entire document, not just updates
+     * @return     {boolean}  The update result
      */
-    library: function(query, payload) {
+    library: function(type, payload) {
         
         var query = {
-            type: query.type
+            'type': type
         };
-        var deleteCondition = {
-            $pull: {
-                list: query.id
-            }
+        var update = payload;
+        var options = {
+            new: true,
+            overwrite: true,
+            runValidators: true
         };
-        var update = {
-            $push: {
-                list: payload
-            }
-        }
         
-        // first delete original element
-        return Library.update(
+        return Library.findOneAndUpdate(
             query,
-            deleteCondition
+            update,
+            options
         ).then((doc) => {
 
-            if (doc) {
-                // then add new element to array
-                return Library.update(
-                    query,
-                    update
-                ).then((doc) => {
-
-                    var result = doc ? true : false;
-                    return result;
-
-                }).catch((err) => {
-
-                    console.error('Error updating library entry information:', err);
-
-                });
-            }
+            var result = doc ? true : false;
+            return result;
 
         }).catch((err) => {
 
-            console.error('Error updating library entry information:', err);
+            console.error('Error updating library information:', err);
 
         });
 

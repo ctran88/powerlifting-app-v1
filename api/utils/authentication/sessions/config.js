@@ -26,7 +26,7 @@ app.use(session({
         secure:     true,
         httpOnly:   true,
         sameSite:   true,
-        maxAge:     30 * 60 * 1000 // 30 minutes in milliseconds
+        maxAge:     6 * 60 * 60 * 1000 // 6 hours in milliseconds
     }
 
 }));

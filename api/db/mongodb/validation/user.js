@@ -6,8 +6,7 @@ module.exports = {
 
         req.check('email').notEmpty().isEmail();
         req.check('password').notEmpty().isAscii().isLength({
-            min: 8,
-            max: 20
+            min: 8
         });
         req.check('accountType').notEmpty().matches('coach', 'client', 'admin');
         req.check('lastName').isAlpha();

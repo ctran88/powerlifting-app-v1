@@ -44,7 +44,7 @@ module.exports = {
 
         return program.save().then((doc) => {
 
-            var result = doc ? true : false;
+            var result = doc ? doc : false;
             return result;
 
         }).catch((err) => {

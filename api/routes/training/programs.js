@@ -66,7 +66,10 @@ module.exports = {
                 post.programs(req.body).then((result) => {
 
                     if (result) {
-                        res.status(201).send('Program saved successfully.');
+                        res.status(201).json({
+                            message: 'Program saved successfully.',
+                            id: result._id
+                        });
                     }
 
                 });

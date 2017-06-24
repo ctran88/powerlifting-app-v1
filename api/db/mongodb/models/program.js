@@ -21,7 +21,6 @@ const programModel = new Schema({
         status: {
             type:       String,
             enum: [
-                'template',
                 'draft',
                 'published'
             ],

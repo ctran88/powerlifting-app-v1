@@ -15,52 +15,35 @@ const sessionModel = new Schema({
             required:       true
         }
     },
-    mainLift: {
-        type:               String,
-        enum: [
-            'squat',
-            'bench press',
-            'deadlift'
-        ]
-    },
-    mainVariation:          [String],
-    mainScheme: [
+    main: [
         {
+            exercise:       String,
+            variation:      String,
             sets:           Number,
             reps:           Number,
-            weight:         Number,
             rpe:            Number,
             percent:        Number,
-            percentOf: {
-                type:   String,
-                enum: [
-                    'ts',
-                    '1rm'
-                ]
-            },
-            backoff:        Boolean,
-            workupSets:     Boolean
+            percentOf:      String,
+            weight:         Number,
+            workupSets:     Boolean,
+            backoff:        Boolean
         }
     ],
     accessories: [
         {
             exercise:       String,
+            variation:      String,
             sets:           Number,
             reps:           Number,
-            weight:         Number,
             rpe:            Number,
             percent:        Number,
-            percentOf: {
-                type:   String,
-                enum: [
-                    'ts',
-                    '1rm'
-                ]
-            },
-            backoff:        Boolean,
-            workupSets:     Boolean
+            percentOf:      String,
+            weight:         Number,
+            workupSets:     Boolean,
+            backoff:        Boolean
         }
-    ]
+    ],
+    rest:                   Boolean
 });
 
 module.exports = mongoose.model('session', sessionModel);

@@ -21,7 +21,6 @@ module.exports = {
         var query = {
             email: payload
         };
-        
         var projection = {
             '__v': 0
         };
@@ -93,9 +92,13 @@ module.exports = {
 
         // query for single, many, or all programs
         var query = payload;
+        var projection = {
+            '__v': 0
+        };
 
         return Program.find(
-            query
+            query,
+            projection
         ).then((doc) => {
 
             var result = doc.length > 0 ? doc : false;
@@ -119,9 +122,13 @@ module.exports = {
 
         // query for single, many, or all microcycles
         var query = payload;
+        var projection = {
+            '__v': 0
+        };
 
         return Microcycle.find(
-            query
+            query,
+            projection
         ).then((doc) => {
 
             var result = doc.length > 0 ? doc : false;
@@ -145,9 +152,13 @@ module.exports = {
 
         // query for single, many, or all sessions
         var query = payload;
+        var projection = {
+            '__v': 0
+        };
 
         return Session.find(
-            query
+            query,
+            projection
         ).then((doc) => {
 
             var result = doc.length > 0 ? doc : false;
@@ -171,9 +182,13 @@ module.exports = {
 
         // query for single, many, or all logs
         var query = payload;
-
+        var projection = {
+            '__v': 0
+        };
+        
         return Log.find(
-            query
+            query,
+            projection
         ).then((doc) => {
 
             var result = doc.length > 0 ? doc : false;
@@ -196,9 +211,13 @@ module.exports = {
     library: function(payload) {
 
         var query = payload;
-
+        var projection = {
+            '__v': 0
+        };
+        
         return Library.find(
-            query
+            query,
+            projection
         ).then((doc) => {
 
             var result = doc.length > 0 ? doc : false;
