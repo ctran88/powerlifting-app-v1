@@ -30,8 +30,17 @@ const userModel = new Schema({
         required:   true
     },
     coach:          String,
-    clients:        [String],
-    memberStart:    {
+    _activeProgram: {
+        type: Schema.Types.ObjectId,
+        ref: 'program'
+    },
+    _clients: [
+        {
+            type: Schema.Types.ObjectId,
+            ref: 'user'
+        }
+    ],
+    memberStart: {
         type:       Date,
         required:   true
     },

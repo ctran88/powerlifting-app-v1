@@ -12,19 +12,17 @@ module.exports = {
     /**
      * Mongo syntax to update user.
      *
-     * @param      {string}   email    The email
-     * @param      {Object}   payload  The entire document, not just updates
+     * @param      {Object}   payload  The query and update
      * @return     {boolean}  The update result
      */
-    users: function(email, payload) {
+    users: function(payload) {
 
         var query = {
-            'email': email
+            email: payload.query
         };
-        var update = payload;
+        var update = payload.update;
         var options = {
             new: true,
-            overwrite: true,
             runValidators: true
         };
 
@@ -34,7 +32,7 @@ module.exports = {
             options
         ).then((doc) => {
 
-            var result = doc ? true : false;
+            var result = doc ? doc : false;
             return result;
 
         }).catch((err) => {
@@ -48,14 +46,15 @@ module.exports = {
     /**
      * Mongo syntax to update program.
      *
-     * @param      {string}   id       The document id
-     * @param      {Object}   payload  The entire document, not just updates
+     * @param      {Object}   payload  The query and update (entire document)
      * @return     {boolean}  The update result
      */
-    programs: function(id, payload) {
+    programs: function(payload) {
 
-        var query = id;
-        var update = payload;
+        var query = {
+            _id: payload.query
+        };
+        var update = payload.update;
         var options = {
             new: true,
             overwrite: true,
@@ -68,7 +67,43 @@ module.exports = {
             options
         ).then((doc) => {
 
-            var result = doc ? true : false;
+            var result = doc ? doc : false;
+            return result;
+
+        }).catch((err) => {
+
+            console.error('Error updating program information:', err);
+
+        });
+
+    },
+
+    /**
+     * Mongo syntax to update all of a client's programs with the active field set to false.
+     *
+     * @param      {Object}   payload  The query and update
+     * @return     {boolean}  The update result
+     */
+    programsMany: function(payload) {
+
+        var query = {
+            'metadata.client': payload.query
+        };
+        var update = {
+            'metadata.active': payload.update.active
+        };
+        var options = {
+            multi: true,
+            runValidators: true
+        };
+
+        return Program.update(
+            query,
+            update,
+            options
+        ).then((raw) => {
+
+            var result = raw ? true : false;
             return result;
 
         }).catch((err) => {
@@ -150,27 +185,27 @@ module.exports = {
     /**
      * Mongo syntax to update log.
      *
-     * @param      {string}   id       The document id
-     * @param      {Object}   payload  The entire document, not just updates
+     * @param      {Object}   payload  The query and update
      * @return     {boolean}  The update result
      */
-    logs: function(id, payload) {
+    logs: function(payload) {
 
-        var query = id;
-        var update = payload;
+        var query = {
+            _id: payload.query
+        };
+        var update = payload.update;
         var options = {
-            new: true,
             overwrite: true,
             runValidators: true
         };
 
-        return Log.findByIdAndUpdate(
+        return Log.update(
             query,
             update,
             options
-        ).then((doc) => {
+        ).then((raw) => {
 
-            var result = doc ? true : false;
+            var result = raw ? true : false;
             return result;
 
         }).catch((err) => {
@@ -184,29 +219,27 @@ module.exports = {
     /**
      * Mongo syntax to update a library entry.
      *
-     * @param      {string}   type     The library type
-     * @param      {Object}   payload  The entire document, not just updates
+     * @param      {Object}   payload  The query and update (entire array)
      * @return     {boolean}  The update result
      */
-    library: function(type, payload) {
+    library: function(payload) {
         
         var query = {
-            'type': type
+            'type': payload.query
         };
-        var update = payload;
+        var update = payload.update;
         var options = {
-            new: true,
             overwrite: true,
             runValidators: true
         };
         
-        return Library.findOneAndUpdate(
+        return Library.update(
             query,
             update,
             options
-        ).then((doc) => {
+        ).then((raw) => {
 
-            var result = doc ? true : false;
+            var result = raw ? true : false;
             return result;
 
         }).catch((err) => {

@@ -4,6 +4,7 @@ var config = require('../../config/config').config;
 var path = require('path');
 var get = require(path.join(__dirname, '/../../db/', config.database, '/services/get'));
 var post = require(path.join(__dirname, '/../../db/', config.database, '/services/post'));
+var patch = require(path.join(__dirname, '/../../db/', config.database, '/services/patch'));
 var remove = require(path.join(__dirname, '/../../db/', config.database, '/services/delete'));
 
 module.exports = {
@@ -21,11 +22,53 @@ module.exports = {
             // get user information
             get.users(req.session.userInfo).then((result) => {
 
-                if (result) {
-                    res.status(200).json({
-                        message: req.session.userInfo,
-                        info: result[0]
-                    });
+                if (result.length > 0) {
+                    // if user is a coach, fill clients array
+                    if (result[0].accountType === 'coach') {
+                        var clientQuery = {
+                            coach: result[0].email
+                        };
+
+                        // get all clients with this user as a coach
+                        get.users(clientQuery).then((result) => {
+
+                            var payload = {
+                                query: req.session.userInfo,
+                                update: {
+                                    $set: {
+                                        _clients: result.map((el) => el._id)
+                                    }
+                                }
+                            };
+
+                            // set clients array
+                            patch.users(payload).then((result) => {
+
+                            }).catch((error) => {
+
+                                return next(new Error([error]));
+
+                            });
+                            
+                        });
+
+                        // get coach document again to repopulate active program and clients fields
+                        get.users(req.session.userInfo).then((result) => {
+
+                            res.status(200).json({
+                                message: result[0].email,
+                                info: result[0]
+                            });
+
+                        });
+                    } else {
+                        res.status(200).json({
+                            message: req.session.userInfo,
+                            info: result[0]
+                        });
+                    }
+                } else {
+                    res.status(404).send('User not found.');
                 }
 
             });
@@ -67,11 +110,54 @@ module.exports = {
                                 // get user information without password field
                                 get.users(req.body.email).then((result) => {
 
-                                    if (result) {
-                                        res.status(200).json({
-                                            message: 'Signin successful.',
-                                            info: result[0]
-                                        });
+                                    if (result.length > 0) {
+
+                                        // if user is a coach, fill clients array
+                                        if (result[0].accountType === 'coach') {
+                                            var clientQuery = {
+                                                coach: result[0].email
+                                            };
+
+                                            // get all clients with this user as a coach
+                                            get.users(clientQuery).then((result) => {
+
+                                                var payload = {
+                                                    query: req.body.email,
+                                                    update: {
+                                                        $set: {
+                                                            _clients: result.map((el) => el._id)
+                                                        }
+                                                    }
+                                                };
+
+                                                // set clients array
+                                                patch.users(payload).then((result) => {
+
+                                                }).catch((error) => {
+
+                                                    return next(new Error([error]));
+
+                                                });
+                                                
+                                            });
+
+                                            // get coach document again to repopulate active program and clients fields
+                                            get.users(result[0].email).then((result) => {
+
+                                                res.status(200).json({
+                                                    message: result[0].email,
+                                                    info: result[0]
+                                                });
+
+                                            });
+                                        } else {
+                                            res.status(200).json({
+                                                message: 'Signin successful.',
+                                                info: result[0]
+                                            });
+                                        }
+                                    } else {
+                                        res.status(404).send('User not found.');
                                     }
 
                                 });

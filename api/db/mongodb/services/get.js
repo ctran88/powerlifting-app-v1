@@ -51,6 +51,7 @@ module.exports = {
 
         // query value for all users
         var query = {};
+        var clientPopulation = '';
 
         // query for many users or single user
         if (typeof payload === 'object') {
@@ -59,16 +60,32 @@ module.exports = {
             query = {
                 email: payload
             };
+            clientPopulation = {
+                path: '_clients',
+                match: {
+                    coach: payload
+                }
+            };
         }
         
         var projection = {
             '__v': 0,
             'password': 0
         };
+        var programPopulation = {
+            path: '_activeProgram',
+            match: {
+                'metadata.active': true
+            }
+        };
 
         return User.find(
             query,
             projection
+        ).populate(
+            programPopulation
+        ).populate(
+            clientPopulation
         ).then((doc) => {
 
             var result = doc.length > 0 ? doc : false;
@@ -85,13 +102,24 @@ module.exports = {
     /**
      * Mongo syntax to query for program(s).
      *
-     * @param      {Object|string}  payload  The payload
+     * @param      {Object}  payload  The payload
      * @return     {Object}  The query result
      */
     programs: function(payload) {
 
-        // query for single, many, or all programs
         var query = payload;
+        var queryKeys = Object.keys(query);
+        var queryValues = queryKeys.map((key) => query[key]);
+
+        // if query key/value is array, format to mongo query syntax
+        for (var i = 0; i < queryKeys.length; i++) {
+            if (Array.isArray(queryValues[i])) {
+                query[queryKeys[i]] = {
+                    $in: queryValues[i]
+                };
+            }
+        }
+
         var projection = {
             '__v': 0
         };

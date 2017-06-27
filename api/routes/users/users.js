@@ -18,12 +18,16 @@ module.exports = {
     getMany: function(req, res) {
         var query = {};
 
-        if (Array.isArray(req.query.email)) {
-            query = {
-                email: {
-                    $in: req.query.email
-                }
-            };
+        if (req.query) {
+            if (Array.isArray(req.query.email)) {
+                query = {
+                    email: {
+                        $in: req.query.email
+                    }
+                };
+            } else {
+                query = req.query;
+            }
         }
 
         // query users with json body
@@ -45,17 +49,49 @@ module.exports = {
     /**
      * Controller for /api/users/:email endpoint.  Queries one user.
      *
-     * @param      {Object}  req     The request
-     * @param      {Object}  res     The response
+     * @param      {Object}    req     The request
+     * @param      {Object}    res     The response
+     * @param      {Function}  next    The next
      */
-    getOne: function(req, res) {
+    getOne: function(req, res, next) {
 
-        // query user with url params
-        get.users(req.params.email).then((result) => {
+        var query = req.params.email;
 
-            if (!result) {
+        get.users(query).then((result) => {
+
+            if (result.length  === 0) {
                 res.status(404).send('No user found.');
             } else {
+                // if user is a coach, fill clients array
+                if (result[0].accountType === 'coach') {
+                    var clientQuery = {
+                        coach: result[0].email
+                    };
+
+                    // get all clients with this user as a coach
+                    get.users(clientQuery).then((result) => {
+
+                        var payload = {
+                            query: query,
+                            update: {
+                                $set: {
+                                    _clients: result.map((el) => el._id)
+                                }
+                            }
+                        };
+
+                        // set clients array
+                        patch.users(payload).then((result) => {
+
+                        }).catch((error) => {
+
+                            return next(new Error([error]));
+
+                        });
+                        
+                    });
+                }
+
                 res.status(200).json({
                     message: 'User retrieved successfully.',
                     user: result
@@ -74,14 +110,18 @@ module.exports = {
      */
     post: function(req, res) {
 
-        // query user with email from json body
-        get.users(req.body.email).then((found) => {
+        var query = req.body.email;
+
+        // check if user already exists
+        get.users(query).then((found) => {
 
             if (found) {
                 res.status(409).send('User already exists.');
             } else {
-                // save user to database
-                post.users(req.body).then((result) => {
+                var payload = req.body;
+
+                // does not exist, so post user
+                post.users(payload).then((result) => {
 
                     if (result) {
                         res.status(201).send('User saved successfully.');
@@ -102,7 +142,12 @@ module.exports = {
      */
     patch: function(req, res) {
 
-        patch.users(req.params.email, req.body).then((result) => {
+        var payload = {
+            query: req.params.email,
+            update: req.body
+        };
+
+        patch.users(payload).then((result) => {
 
             if (!result) {
                 res.status(404).send('No user found');
@@ -121,8 +166,10 @@ module.exports = {
      * @param      {Object}  res     The response
      */
     delete: function(req, res) {
+
+        var query = req.params.email;
         
-        remove.users(req.params.email).then((result) => {
+        remove.users(query).then((result) => {
 
             if (!result) {
                 res.status(404).send('No user found');

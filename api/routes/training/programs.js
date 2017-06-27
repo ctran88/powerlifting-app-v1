@@ -16,14 +16,11 @@ module.exports = {
      * @param      {Object}  res     The response
      */
     get: function(req, res) {
-
         var query = {};
 
         // if req.query object is not empty
         if (Object.keys(req.query).length !== 0) {
-            query = {
-                'metadata.coach': req.query.coach
-            };
+            query = req.query;
         }
 
         // query programs with json body
@@ -45,36 +42,63 @@ module.exports = {
     /**
      * Controller for /api/training/programs endpoint.  Saves one program.
      *
-     * @param      {Object}  req     The request
-     * @param      {Object}  res     The response
+     * @param      {Object}    req     The request
+     * @param      {Object}    res     The response
+     * @param      {Function}  next    The next
      */
-    post: function(req, res) {
+    post: function(req, res, next) {
 
-        var query = {
-            'metadata.name': req.body.metadata.name,
-            'metadata.coach': req.body.metadata.coach,
-            'metadata.created': req.body.metadata.created
-        };
+        // if active flag is set to true
+        if (req.body.metadata.active) {
+            var patchPayload = {
+                query: req.body.metadata.client,
+                update: {
+                    active: false
+                }
+            };
 
-        // query programs with json body
-        get.programs(query).then((found) => {
+            // set all client's programs' active flags to false
+            patch.programsMany(patchPayload).then((result) => {
 
-            if (found) {
-                res.status(409).send('Program already exists.');
-            } else {
-                // create program from json body
-                post.programs(req.body).then((result) => {
+            }).catch((error) => {
 
-                    if (result) {
-                        res.status(201).json({
-                            message: 'Program saved successfully.',
-                            id: result._id
-                        });
-                    }
+                return next(new Error([error]));
 
+            });
+        }
+
+        var payload = req.body;
+
+        // then post new program if no error occured
+        post.programs(payload).then((result) => {
+
+            if (result) {
+                // if new program active flag is true and is assigned to a client
+                if (result.metadata.active && result.metadata.client) {
+                    var userPayload = {
+                        query: result.metadata.client,
+                        update: {
+                            _activeProgram: result._id
+                        }
+                    };
+
+                    // update client's active progarm to this one
+                    patch.users(userPayload).then((result) => {
+
+                    }).catch((error) => {
+
+                        return next(new Error([error]));
+
+                    });
+                }
+
+                res.status(201).json({
+                    message: 'Program saved successfully.',
+                    id: result._id
                 });
             }
-        })
+
+        });
 
     },
 
@@ -86,11 +110,55 @@ module.exports = {
      */
     patch: function(req, res) {
 
-        patch.programs(req.params.id, req.body).then((result) => {
+        // if active flag is set to true
+        if (req.body.metadata.active) {
+            var patchPayload = {
+                query: req.body.metadata.client,
+                update: {
+                    active: false
+                }
+            };
+
+            // set all client's programs' active flags to false
+            patch.programsMany(patchPayload).then((result) => {
+
+            }).catch((error) => {
+
+                return next(new Error([error]));
+
+            });
+        }
+
+        var payload = {
+            query: req.params.id,
+            update: req.body
+        };
+
+        // then patch program if no error occured
+        patch.programs(payload).then((result) => {
 
             if (!result) {
                 res.status(404).send('No program found');
             } else {
+                // if program active flag is true and is assigned to a client
+                if (result.metadata.active && result.metadata.client) {
+                    var userPayload = {
+                        query: result.metadata.client,
+                        update: {
+                            _activeProgram: result._id
+                        }
+                    };
+
+                    // update client's active progarm to this one
+                    patch.users(userPayload).then((result) => {
+
+                    }).catch((error) => {
+
+                        return next(new Error([error]));
+
+                    });
+                }
+
                 res.status(200).send('Program updated successfully.');
             }
 
@@ -105,8 +173,10 @@ module.exports = {
      * @param      {Object}  res     The response
      */
     delete: function(req, res) {
+
+        var query = req.params.id;
         
-        remove.programs(req.params.id, req.body).then((result) => {
+        remove.programs(query).then((result) => {
 
             if (!result) {
                 res.status(404).send('No program found');
