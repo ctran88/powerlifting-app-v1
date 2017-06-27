@@ -1,28 +1,28 @@
 <template>
 <div id="create-session">
-  <div class="row" v-for="(exercise, mainIndex) in exercises" :key="mainIndex">
+  <div id="exercise-row" class="row" v-for="(exercise, mainIndex) in exercises" :key="mainIndex">
     <small class="text-muted">Lift type</small>
     <b-form-select id="list-lift-type" :options="liftType" @input="handleSelect('liftType', $event, mainIndex)" />
-  <div v-show="exercises[mainIndex].liftType === 'accessories'">
-    <small class="text-muted">Accessories</small>
-    <b-form-select :options="accessories" @input="handleSelect('exercise', $event, mainIndex)" />
-  </div>
-  <div v-show="exercises[mainIndex].liftType === 'main'">
-    <small class="text-muted">Exercise</small>
-    <b-form-select :options="mainLifts" @input="handleSelect('exercise', $event, mainIndex)" />
-    <small class="text-muted">Variations</small>
-    <b-form-select :options="mainVariations" @input="handleSelect('variations', $event, mainIndex)" />
-  </div>
-  <div v-show="exercises[mainIndex].liftType === 'main' || exercises[mainIndex].liftType === 'accessories'">
-    <small class="text-muted">Sets</small>
-    <b-form-select :options="setReps" @input="handleSelect('sets', $event, mainIndex)" />
-    <small class="text-muted">Reps</small>
-    <b-form-select :options="setReps" @input="handleSelect('reps', $event, mainIndex)" />
-    <small class="text-muted">Load type</small>
-    <b-form-select :options="loadType" @input="handleSelect('loadType', $event, mainIndex)" />
-    <small class="text-muted">Load</small>
-    <input type="text" class="form-control" @input="handleSelect('load', $event, mainIndex)" />
-  </div>
+    <div v-show="exercises[mainIndex].liftType === 'accessories'">
+      <small class="text-muted">Accessories</small>
+      <b-form-select :options="accessories" @input="handleSelect('exercise', $event, mainIndex)" />
+    </div>
+    <div v-show="exercises[mainIndex].liftType === 'main'">
+      <small class="text-muted">Exercise</small>
+      <b-form-select :options="mainLifts" @input="handleSelect('exercise', $event, mainIndex)" />
+      <small class="text-muted">Variations</small>
+      <b-form-select :options="mainVariations" @input="handleSelect('variations', $event, mainIndex)" />
+    </div>
+    <div v-show="exercises[mainIndex].liftType === 'main' || exercises[mainIndex].liftType === 'accessories'">
+      <small class="text-muted">Sets</small>
+      <b-form-select :options="setReps" @input="handleSelect('sets', $event, mainIndex)" />
+      <small class="text-muted">Reps</small>
+      <b-form-select :options="setReps" @input="handleSelect('reps', $event, mainIndex)" />
+      <small class="text-muted">Load type</small>
+      <b-form-select :options="loadType" @input="handleSelect('loadType', $event, mainIndex)" />
+      <small class="text-muted">Load</small>
+      <input type="text" class="form-control" @input="handleSelect('load', $event, mainIndex)" />
+    </div>
 
     <b-button class="ml-auto btn-exercise" variant="danger" @click="deleteExercise(mainIndex)">Delete</b-button>
   </div>
@@ -156,6 +156,9 @@ export default {
 </style>
 
 <style scoped>
+#exercise-row {
+  margin-bottom: 15px;
+}
 .btn-exercise {
   cursor: pointer;
 }

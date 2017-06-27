@@ -11,9 +11,3 @@ export const userInfo = (state) => {
     return state.user;
 
 };
-
-export const apiError = (state) => {
-
-    return state.apiError;
-
-};

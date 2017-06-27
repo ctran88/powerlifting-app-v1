@@ -12,8 +12,3 @@ export const SET_SIGNED_OUT = (state) => {
 export const SET_USER_INFO = (state, userInfo) => {
     state.user = userInfo;
 }
-
-export const API_FAILURE = (state, error) => {
-    state.apiError = error;
-    console.log('API error: ', error);
-};

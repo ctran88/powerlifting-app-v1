@@ -17,6 +17,9 @@
 
 <script>
 import { signin } from '@/../utils/auth';
+import Router from 'vue-router';
+
+var router = new Router();
 
 export default {
   name: 'signin',
@@ -29,7 +32,15 @@ export default {
   },
   methods: {
     handleSignin() {
-      signin(this.email, this.password);
+      signin(this.email, this.password)
+        .then((result) => {
+          if (result) {
+            router.push('/dash');
+          }
+        })
+        .catch((error) => {
+          console.log('Error signing in: ', error);
+        });
     }
   }
 };

@@ -37,7 +37,17 @@ export default {
   },
   methods: {
     handleSignout() {
-      signout();
+      var client = 'https://192.168.54.54:8080';
+      
+      signout()
+        .then((result) => {
+          if (result) {
+            window.location.replace(client);
+          }
+        })
+        .catch((error) => {
+          console.log('Error signing out: ', error);
+        });
     }
   }
 };

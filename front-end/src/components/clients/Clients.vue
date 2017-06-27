@@ -2,21 +2,21 @@
 <div id="clients">
   <b-card id="main-content-card">
     <div class="row">
-      <b-form-fieldset horizontal label="Filter" class="col-6" :label-size="2">
+      <b-form-fieldset horizontal label="Filter" class="col-3 ml-auto" :label-size="2">
         <b-form-input v-model="filter" placeholder="Type to search" />
       </b-form-fieldset>
     </div>
 
     <!-- Main table element -->
-    <b-table striped hover :items="clients" :fields="fields" :filter="filter">
+    <b-table striped hover :items="clientList" :fields="fields" :filter="filter">
       <template slot="name" scope="item">
         {{ item.item.email }}
       </template>
       <template slot="team" scope="item">
         {{ item.item.team }}
       </template>
-      <template slot="program" scope="item">
-        {{ item.item.email }}
+      <template slot="activeProgram" scope="item">
+        {{ item.item._activeProgramName }}
       </template>
       <template slot="memberStart" scope="item">
         {{ item.item.memberStart }}
@@ -47,7 +47,7 @@ export default {
   name: 'clients',
   data() {
     return {
-      clients: [],
+      clientList: [],
       details: {},
       filter: null,
       fields: {
@@ -59,8 +59,8 @@ export default {
           label: 'Team',
           sortable: true
         },
-        program: {
-          label: 'Current program',
+        activeProgram: {
+          label: 'Active program',
           sortable: true
         },
         memberStart: {
@@ -78,60 +78,44 @@ export default {
     };
   },
   mounted() {
-    // this function is called before the setUserInfo acton can be completed (from App.vue), so user object is not set yet.  Set timetout as a workaround.
-    setTimeout(this.updateClients, 100);
+    this.getProgramNames();
   },
   methods: {
-    updateClients() {
-      var clients = this.$store.state.user.clients;
+    getProgramNames() {
+      // deep copy state array to avoid mutating it directly with vm.$set
+      this.clientList = JSON.parse(JSON.stringify(this.$store.state.user._clients));
+
+      var programNames = [];
       var query = '?';
 
-      for (var i = 0; i < clients.length; i++) {
-        query += 'email=' + clients[i];
-
-        if (i < (clients.length - 1)) {
-          query += '&';
+      // build query string
+      for (var i = 0; i < this.clientList.length; i++) {
+        if (this.clientList[i]._activeProgram) {
+          query += '_id=' + this.clientList[i]._activeProgram + '&';
         }
       }
 
-      api.get('/users' + query)
+      // remove '&' if there is one at the end of the query string
+      query = query.replace(/&$/, '');
+
+      // get list of program names
+      api.get('/training/programs' + query)
         .then((response) => {
-          if (response.status === 200) {
-            this.clients = [];
+          programNames = response.data.programs.map((el) => {
+            return {
+              _id: el._id,
+              name: el.metadata.name
+            }
+          });
 
-            response.data.users.forEach((current) => {
-              this.clients.push(current);
-            });
-          } else {
-            alert(response.data);
+          // match program ids and assign program name
+          for (var i = 0; i < this.clientList.length; i++) {
+            for (var k = 0; k < programNames.length; k++) {
+              if (this.clientList[i]._activeProgram === programNames[k]._id) {
+                this.$set(this.clientList[i], '_activeProgramName', programNames[k].name);
+              }
+            }
           }
-        })
-        .catch((error) => {
-          console.log('API error retrieving users: ', error);
-        });
-    },
-    updateActivePrograms() {
-      var query = {
-        client: {
-          $in: this.$state.user.clients
-        },
-        active: true
-      };
-
-      api.get('/training/programs', query)
-        .then((response) => {
-          if (response.status === 200) {
-            this.clients = [];
-
-            response.data.users.forEach((current) => {
-              this.clients.push(current);
-            });
-          } else {
-            alert(response.data);
-          }
-        })
-        .catch((error) => {
-          console.log('API error retrieving programs: ', error);
         });
     },
     handleDetails(item) {

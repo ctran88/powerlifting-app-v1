@@ -2,9 +2,9 @@
 <div id="programs">
   <b-card id="main-content-card">
     <div class="row">
-      <b-button to="create-program" variant="success">Create a program</b-button>
+      <b-button id="btn-create-program" to="create-program" variant="success">Create a program</b-button>
 
-      <b-form-fieldset horizontal label="Filter" class="col-6" :label-size="2">
+      <b-form-fieldset horizontal label="Filter" class="col-3 ml-auto" :label-size="2">
         <b-form-input v-model="filter" placeholder="Type to search" />
       </b-form-fieldset>
     </div>
@@ -20,6 +20,9 @@
       <template slot="client" scope="item">
         {{ item.item.metadata.client }}
       </template>
+      <template slot="active" scope="item">
+        {{ item.item.metadata.active }}
+      </template>
       <template slot="status" scope="item">
         {{ item.item.metadata.status }}
       </template>
@@ -28,9 +31,6 @@
       </template>
       <template slot="lastUpdated" scope="item">
         {{ item.item.metadata.lastUpdated }}
-      </template>
-      <template slot="cycle" scope="item">
-        {{ item.item.metadata.cycle }}
       </template>
       <template slot="actions" scope="item">
         <b-btn size="sm" v-b-modal="'program-preview-modal'" @click="handleDetails(item.item)">Details</b-btn>
@@ -82,6 +82,10 @@ export default {
           label: 'Client',
           sortable: true
         },
+        active: {
+          label: 'Active',
+          sortable: true
+        },
         status: {
           label: 'Status',
           sortable: true
@@ -92,10 +96,6 @@ export default {
         },
         lastUpdated: {
           label: 'Last Updated',
-          sortable: true
-        },
-        cycle: {
-          label: 'Cycles',
           sortable: true
         },
         actions: {
@@ -110,7 +110,7 @@ export default {
   },
   methods: {
     updatePrograms() {
-      var query = '?coach=' + this.$store.state.user.email;
+      var query = '?metadata.coach=' + this.$store.state.user.email;
       
       api.get('/training/programs' + query)
         .then((response) => {
@@ -186,5 +186,8 @@ export default {
 <style scoped>
 button {
   cursor: pointer;
+}
+#btn-create-program {
+  margin-bottom: 1rem;
 }
 </style>

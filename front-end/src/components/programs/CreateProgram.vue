@@ -2,19 +2,33 @@
 <div id="create-program">
   <b-card id="main-content-card">
     <div class="row">
-      <small class="text-muted">Program name</small>
+      <span class="text-muted">Program name</span>
       <b-form-input v-model="name" type="text" />
 
-      <small class="text-muted">Client</small>
+      <span class="text-muted">Client</span>
       <b-form-select :options="clientList" v-model="client" />
 
       <b-form-checkbox v-model="active" id="program-active" value=true unchecked-value=false>Make this the active program?</b-form-checkbox>
 
       <b-button-group class="ml-auto">
-        <b-button class="btn-save-draft" variant="success" @click="handleSaveDraft">Save draft</b-button>
-        <b-button class="btn-save-published" variant="primary" @click="handlePublish">Publish</b-button>
+        <b-button class="btn-save-draft" variant="success" v-b-modal="'save-draft-modal'" @click="handleSaveDraft">Save draft</b-button>
+        <b-button class="btn-save-published" variant="primary" v-b-modal="'published-modal'" @click="handlePublish">Publish</b-button>
       </b-button-group>
     </div>
+
+    <b-modal id="save-draft-modal" :title="message.title">
+      {{ message.details }}
+      <footer slot="modal-footer">
+        <b-btn variant="secondary" to="programs">Go back</b-btn>
+        <b-btn variant="success" @click="handleClose('save-draft-modal')">Continue editing</b-btn>
+      </footer>
+    </b-modal>
+    <b-modal id="published-modal" :title="message.title">
+      {{ message.details }}
+      <footer slot="modal-footer">
+        <b-btn variant="primary" @click="handleClose('published-modal')">Ok</b-btn>
+      </footer>
+    </b-modal>
 
     <hr />
 
@@ -46,6 +60,8 @@
       </template>
     </b-tabs>
 
+    <hr />
+
     <b-button class="btn-week" variant="primary" @click="handleAddWeek">Add a week</b-button>
   </b-card>
 </div>
@@ -72,21 +88,35 @@ export default {
       created: '',
       clientList: [' '],
       active: false,
-      weeks: [],
-      week: 0
+      weeks: [1],
+      week: 1,
+      message: {
+        title: '',
+        details: ''
+      }
     };
   },
   mounted() {
     // this function is called before the setUserInfo acton can be completed (from App.vue), so user object is not set yet.  Set timetout as a workaround.
     setTimeout(() => {
-      var clients = this.$store.state.user.clients;
+      var clients = this.$store.state.user._clients;
 
       for (var i = 0; i < clients.length; i++) {
-        this.clientList.push(clients[i]);
+        var fullName = clients[i].lastName + ', ' + clients[i].firstName;
+
+        this.clientList.push({
+          text: fullName,
+          value: clients[i].email
+        });
       }
+
+      this.clientList.sort();
     }, 100);
   },
   methods: {
+    handleClose(modalId) {
+      this.$root.$emit('hide::modal', modalId);
+    },
     handleAddWeek() {
       this.weeks.push(++this.week);
     },
@@ -96,20 +126,24 @@ export default {
     handleSaveDraft() {
       this.saveProgram('draft')
         .then((result) => {
-          alert(result);
+          this.message.title = 'Draft saved';
+          this.message.details = result;
         })
         .catch((error) => {
-          alert(error);
+          this.message.title = 'Error';
+          this.message.details = error;
         });
     },
     handlePublish() {
       this.saveProgram('published')
         .then((result) => {
-          alert('Program published successfully!');
+          this.message.title = 'Program published';
+          this.message.details = 'Program published successfully!';
           router.push('/programs');
         })
         .catch((error) => {
-          alert(error);
+          this.message.title = 'Error';
+          this.message.details = error;
         });
     },
     saveProgram(saveStatus) {
@@ -263,7 +297,14 @@ export default {
 button {
   cursor: pointer;
 }
+span {
+  margin: 0px 10px;
+}
 .form-control {
   width: inherit;
+  margin-right: 30px;
+}
+.custom-control {
+  margin: 0px 40px;
 }
 </style>
