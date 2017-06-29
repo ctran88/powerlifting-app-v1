@@ -49,6 +49,13 @@ const mutations = {
     UPDATE_PROGRAM: function(state, metadata) {
         state.program.metadata = metadata;
         state.program.microcycles.push(state.microcycle);
+    },
+    SET_PROGRAM_ID: function(state, programId) {
+        state.program._id = programId;
+    },
+    SET_PROGRAM: function(state, program) {
+        state.program.metadata = program.metadata;
+        state.program.microcycles = program.microcycles;
     }
 };
 
@@ -65,6 +72,12 @@ const actions = {
     updateProgram: function(context, metadata) {
         context.commit('UPDATE_PROGRAM', metadata);
         context.dispatch('resetMicrocycle');
+    },
+    setProgramId: function(context, programId) {
+        context.commit('SET_PROGRAM_ID', programId);
+    },
+    setProgram: function(context, program) {
+        context.commit('SET_PROGRAM', program);
     }
 };
 

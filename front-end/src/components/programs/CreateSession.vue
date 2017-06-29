@@ -2,26 +2,26 @@
 <div id="create-session">
   <div id="exercise-row" class="row" v-for="(exercise, mainIndex) in exercises" :key="mainIndex">
     <small class="text-muted">Lift type</small>
-    <b-form-select id="list-lift-type" :options="liftType" @input="handleSelect('liftType', $event, mainIndex)" />
+    <b-form-select id="list-lift-type" :options="liftType" v-model="exercises[mainIndex].liftType" @input="handleSelect('liftType', $event, mainIndex)" />
     <div v-show="exercises[mainIndex].liftType === 'accessories'">
       <small class="text-muted">Accessories</small>
-      <b-form-select :options="accessories" @input="handleSelect('exercise', $event, mainIndex)" />
+      <b-form-select id="list-accessories" :options="accessories" v-model="exercises[mainIndex].accessories" />
     </div>
     <div v-show="exercises[mainIndex].liftType === 'main'">
       <small class="text-muted">Exercise</small>
-      <b-form-select :options="mainLifts" @input="handleSelect('exercise', $event, mainIndex)" />
+      <b-form-select id="list-main" :options="mainLifts" v-model="exercises[mainIndex].exercise" @input="handleSelect('exercise', $event, mainIndex)" />
       <small class="text-muted">Variations</small>
-      <b-form-select :options="mainVariations" @input="handleSelect('variations', $event, mainIndex)" />
+      <b-form-select id="list-variations" :options="mainVariations" v-model="exercises[mainIndex].variations" />
     </div>
     <div v-show="exercises[mainIndex].liftType === 'main' || exercises[mainIndex].liftType === 'accessories'">
       <small class="text-muted">Sets</small>
-      <b-form-select :options="setReps" @input="handleSelect('sets', $event, mainIndex)" />
+      <b-form-select id="list-sets" :options="setReps" v-model="exercises[mainIndex].sets" />
       <small class="text-muted">Reps</small>
-      <b-form-select :options="setReps" @input="handleSelect('reps', $event, mainIndex)" />
+      <b-form-select id="list-reps" :options="setReps" v-model="exercises[mainIndex].reps" />
       <small class="text-muted">Load type</small>
-      <b-form-select :options="loadType" @input="handleSelect('loadType', $event, mainIndex)" />
+      <b-form-select id="list-load-type" :options="loadType" v-model="exercises[mainIndex].loadType" />
       <small class="text-muted">Load</small>
-      <input type="text" class="form-control" @input="handleSelect('load', $event, mainIndex)" />
+      <b-form-input id="input-load" type="text" v-model="exercises[mainIndex].load" />
     </div>
 
     <b-button class="ml-auto btn-exercise" variant="danger" @click="deleteExercise(mainIndex)">Delete</b-button>
@@ -38,7 +38,7 @@ import api from '@/../utils/api';
 
 export default {
   name: 'create-session',
-  props: ['day', 'week'],
+  props: ['day', 'week'], // used as session properties for parent component to save
   data() {
     return {
       liftType: ['main', 'accessories', 'rest'],
@@ -49,6 +49,13 @@ export default {
       loadType: ['rpe', '%/1rm', '%/ts', 'weight'],
       exercises: []
     };
+  },
+  mounted() {
+    if (this.$root.$children[0].$children[1].$el.id === 'update-program') {
+      this.getLibrary('main');
+      this.getLibrary('accessories');
+      this.getLibrary('variations');
+    }
   },
   methods: {
     getLibrary(library) {
@@ -80,7 +87,7 @@ export default {
     handleSelect(list, item, index) {
       switch (list) {
         case 'liftType':
-          this.exercises[index].liftType = item;
+          this.exercises[index].accessories = undefined;
           this.exercises[index].exercise = undefined;
           this.exercises[index].variations = undefined;
           this.exercises[index].sets = undefined;
@@ -88,11 +95,11 @@ export default {
           this.exercises[index].loadType = undefined;
           this.exercises[index].load = '';
 
-          // index 0 is the 'Add Exercise' button, indices 1-8 make up each exercise row
-          // there are 8 elements in each 'exercise' row, last element is the 'Delete' button
-          // setting these values loops through only the specific exercise row, add 1 to each to account for single 'Add exercise' button at index 0
-          var indexStart = (index * 8) + 1;
-          var childrenLength = ((index + 1) * 8) + 1;
+          // there are 10 elements in each 'exercise' row, first element [0] is the 'Add Exercise' button, last two elements [8] and [9] are an input field (no selection) and the 'Delete' button
+          // indexStart: add 1 to account for index[0]
+          // childrenLength: add 7 to indexStart to account for indices[8] and [9]
+          var indexStart = (index * 9) + 1;
+          var childrenLength = indexStart + 7;
 
           // set dropdown default selection to undefined
           for (var i = indexStart; i < childrenLength; i++) {
@@ -107,32 +114,14 @@ export default {
           }
           break;
         case 'exercise':
-          this.exercises[index].exercise = item;
-
-          if (this.exercises[index].liftType === 'main') {
-            this.getLibrary('variations');
-          }
-          break;
-        case 'variations':
-          this.exercises[index].variations = item;
-          break;
-        case 'sets':
-          this.exercises[index].sets = Number(item);
-          break;
-        case 'reps':
-          this.exercises[index].reps = Number(item);
-          break;
-        case 'loadType':
-          this.exercises[index].loadType = item;
-          break;
-        case 'load':
-          this.exercises[index].load = Number(item);
+          this.getLibrary('variations');
           break;
       }
     },
     addExercise() {    
       this.exercises.push({
         liftType: undefined,
+        accessories: undefined,
         exercise: undefined,
         variations: undefined,
         sets: undefined,

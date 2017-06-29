@@ -3,23 +3,31 @@
   <b-card id="main-content-card">
     <div class="row">
       <span class="text-muted">Program name</span>
-      <b-form-input v-model="name" type="text" />
+      <b-form-input id="program-name" v-model="name" type="text" />
 
       <span class="text-muted">Client</span>
-      <b-form-select :options="clientList" v-model="client" />
+      <b-form-select id="client-selection" :options="clientList" v-model="client" />
 
-      <b-form-checkbox v-model="active" id="program-active" value=true unchecked-value=false>Make this the active program?</b-form-checkbox>
+      <b-form-checkbox id="program-active" v-model="active" value=true unchecked-value=false>Make this the active program?</b-form-checkbox>
 
       <b-button-group class="ml-auto">
+        <b-button class="btn-cancel" variant="warning" v-b-modal="'cancellation-modal'">Cancel</b-button>
         <b-button class="btn-save-draft" variant="success" v-b-modal="'save-draft-modal'" @click="handleSaveDraft">Save draft</b-button>
         <b-button class="btn-save-published" variant="primary" v-b-modal="'published-modal'" @click="handlePublish">Publish</b-button>
       </b-button-group>
     </div>
 
+    <b-modal id="cancellation-modal" size="sm" title="Cancellation confirmation">
+      Are you sure you want to cancel and leave this page?
+      <footer slot="modal-footer">
+        <b-btn variant="secondary" @click="handleClose('cancellation-modal')">No</b-btn>
+        <b-btn variant="warning" @click="handleCancel">Yes, cancel</b-btn>
+      </footer>
+    </b-modal>
     <b-modal id="save-draft-modal" :title="message.title">
       {{ message.details }}
       <footer slot="modal-footer">
-        <b-btn variant="secondary" to="programs">Go back</b-btn>
+        <b-btn variant="secondary" @click="handleGoBack">Go back</b-btn>
         <b-btn variant="success" @click="handleClose('save-draft-modal')">Continue editing</b-btn>
       </footer>
     </b-modal>
@@ -72,8 +80,6 @@ import CreateSession from './CreateSession';
 import api from '@/../utils/api';
 import Router from 'vue-router';
 
-var router = new Router();
-
 export default {
   name: 'create-program',
   components: {
@@ -87,7 +93,7 @@ export default {
       id: '',
       created: '',
       clientList: [' '],
-      active: false,
+      active: 'false',
       weeks: [1],
       week: 1,
       message: {
@@ -98,7 +104,10 @@ export default {
   },
   mounted() {
     // this function is called before the setUserInfo acton can be completed (from App.vue), so user object is not set yet.  Set timetout as a workaround.
-    setTimeout(() => {
+    setTimeout(this.getClients(), 100);
+  },
+  methods: {
+    getClients() {
       var clients = this.$store.state.user._clients;
 
       for (var i = 0; i < clients.length; i++) {
@@ -111,9 +120,7 @@ export default {
       }
 
       this.clientList.sort();
-    }, 100);
-  },
-  methods: {
+    },
     handleClose(modalId) {
       this.$root.$emit('hide::modal', modalId);
     },
@@ -122,6 +129,18 @@ export default {
     },
     handleDeleteWeek(index) {
       this.weeks.splice(index, 1);
+    },
+    handleCancel() {
+      var router = new Router();
+
+      this.handleClose('cancellation-modal');
+      router.push('/programs');
+    },
+    handleGoBack() {
+      var router = new Router();
+
+      this.handleClose('save-draft-modal');
+      router.push('/programs');
     },
     handleSaveDraft() {
       this.saveProgram('draft')
@@ -135,6 +154,8 @@ export default {
         });
     },
     handlePublish() {
+      var router = new Router();
+      
       this.saveProgram('published')
         .then((result) => {
           this.message.title = 'Program published';
@@ -197,7 +218,7 @@ export default {
             for (var k = 0; k < day.exercises.length; k++) {
               var exerciseObj = {
                 exercise: '',
-                variation: '',
+                variations: '',
                 sets: 0,
                 reps: 0,
                 weight: 0,
@@ -209,8 +230,13 @@ export default {
               };
 
               // set exercise object values
-              exerciseObj.exercise = day.exercises[k].exercise;
-              exerciseObj.variation = day.exercises[k].variation;
+              if (day.exercises[k].accessories !== undefined) {
+                exerciseObj.exercise = day.exercises[k].accessories;
+              } else if (day.exercises[k].exercise !== undefined) {
+                exerciseObj.exercise = day.exercises[k].exercise;
+              }
+              
+              exerciseObj.variations = day.exercises[k].variations;
               exerciseObj.sets = day.exercises[k].sets;
               exerciseObj.reps = day.exercises[k].reps;
 

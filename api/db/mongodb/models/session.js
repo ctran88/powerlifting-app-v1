@@ -18,7 +18,7 @@ const sessionModel = new Schema({
     main: [
         {
             exercise:       String,
-            variation:      String,
+            variations:     String,
             sets:           Number,
             reps:           Number,
             rpe:            Number,
@@ -32,7 +32,7 @@ const sessionModel = new Schema({
     accessories: [
         {
             exercise:       String,
-            variation:      String,
+            variations:     String,
             sets:           Number,
             reps:           Number,
             rpe:            Number,

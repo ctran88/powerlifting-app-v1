@@ -42,7 +42,7 @@
       {{ details }}
       <footer slot="modal-footer">
         <b-btn variant="secondary" @click="handleCopy">Copy</b-btn>
-        <b-btn variant="primary" to="update-program">Update</b-btn>
+        <b-btn variant="primary" @click="handleUpdate">Update</b-btn>
       </footer>
     </b-modal>
 
@@ -59,6 +59,7 @@
 
 <script>
 import api from '@/../utils/api';
+import Router from 'vue-router';
 
 export default {
   name: 'programs',
@@ -178,6 +179,13 @@ export default {
         });
 
       this.handleClose('program-preview-modal');
+    },
+    handleUpdate() {
+      var router = new Router();
+
+      this.$store.dispatch('setProgramId', this.details._id);
+      this.handleClose('program-preview-modal');
+      router.push('/update-program');
     }
   }
 };
