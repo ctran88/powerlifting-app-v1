@@ -181,6 +181,33 @@ module.exports = {
             if (!result) {
                 res.status(404).send('No program found');
             } else {
+                var userQuery = {
+                    _activeProgram: req.params.id
+                };
+
+                get.users(userQuery).then((result) => {
+
+                    for (var i = 0; i < result.length; i++) {
+                        var payload = {
+                            query: result[i].email,
+                            update: {
+                                $unset: {
+                                    _activeProgram: ''
+                                }
+                            }
+                        };
+
+                        patch.users(payload).then((result) => {
+
+                        }).catch((error) => {
+
+                            return next(new Error([error]));
+
+                        });
+                    }
+
+                });
+                
                 res.status(200).send('Program deleted successfully.');
             }
 
