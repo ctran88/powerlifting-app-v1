@@ -15,7 +15,8 @@ const store = new Vuex.Store({
     },
     state: {
         signedIn: false,
-        user: {}
+        user: {},
+        sideNavHidden: false
     },
     actions,
     mutations,

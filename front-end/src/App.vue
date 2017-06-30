@@ -1,18 +1,21 @@
 <template>
-<div id='app'>
-  <app-nav v-show="['Sign in', 'Page not found'].indexOf($route.name) == -1" />
+<div id="app">
+  <top-nav v-show="['Sign in', 'Create an account', 'Page not found'].indexOf($route.name) == -1" />
+  <side-nav v-if="$store.state.signedIn && ['Home', 'Sign in', 'Create an account', 'Page not found'].indexOf($route.name) === -1" />
   <router-view />
 </div>
 </template>
 
 <script>
-import AppNav from './components/navigation/AppNav';
+import TopNav from './components/navigation/TopNav';
+import SideNav from './components/navigation/SideNav';
 import { isSignedIn } from '@/../utils/auth';
 
 export default {
   name: 'app',
   components: {
-    AppNav
+    TopNav,
+    SideNav
   },
   beforeCreate() {
     this.$nextTick(function() {
@@ -44,9 +47,14 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   color: #2c3e50;
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
 }
 #main-content-card {
-  margin: 100px 40px 60px 180px;
+  margin: 130px 30px 60px 310px;
   padding: 60px;
   box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2),
               0 1px 8px 0 rgba(0, 0, 0, 0.19);

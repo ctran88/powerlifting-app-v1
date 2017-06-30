@@ -12,3 +12,11 @@ export const SET_SIGNED_OUT = (state) => {
 export const SET_USER_INFO = (state, userInfo) => {
     state.user = userInfo;
 }
+
+export const SET_SIDE_NAV_HIDDEN_ON = (state) => {
+    state.sideNavHidden = true;
+};
+
+export const SET_SIDE_NAV_HIDDEN_OFF = (state) => {
+    state.sideNavHidden = false;
+};
