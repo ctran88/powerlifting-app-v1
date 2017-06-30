@@ -1,8 +1,8 @@
 <template>
-<div class="register">
+<div class="create-account">
   <b-card>
     <form @submit.prevent="handleSubmit">
-      <h2>Register</h2>
+      <h2>Create an account</h2>
 
       <small class="text-muted">First Name</small>
       <b-form-input v-model="firstName" id="input-name" type="text" required autofocus />
@@ -17,24 +17,28 @@
 
       <b-form-radio v-model="accountType" :options="accountOptions" required />
 
-      <b-button id="btn-register">Register</b-button>
+      <b-button id="btn-create-account">Create an account</b-button>
     </form>
-    <b-button id="already-member" variant="link" to="signin">Already a member?</b-button>
+    <hr class='hr-text' data-content='or' />
+    <div id="already-member">
+      <span>Already a member? </span>
+      <b-button id="sign-in" variant="link" to="signin">Sign in</b-button>
+    </div>
   </b-card>
 
-  <b-modal id="register-client-modal" title="Coach selection">
+  <b-modal id="create-client-modal" title="Coach selection">
     Who is your coach?
     <b-form-select :options="coachList" v-model="coach" />
     <footer slot="modal-footer">
       <b-btn variant="secondary" @click="handleCancel">Cancel</b-btn>
-      <b-btn variant="primary" @click="handleRegisterClient">Select</b-btn>
+      <b-btn variant="primary" @click="handleCreateClient">Select</b-btn>
     </footer>
   </b-modal>
 
-  <b-modal id="registration-results-modal" title="Registration confirmation">
+  <b-modal id="create-account-results-modal" title="Create account confirmation">
     {{ message }}
     <footer slot="modal-footer">
-      <b-btn variant="primary" @click="handleClose('registration-results-modal')">Ok</b-btn>
+      <b-btn variant="primary" @click="handleClose('create-account-results-modal')">Ok</b-btn>
     </footer>
   </b-modal>
 </div>
@@ -45,10 +49,8 @@ import api from '@/../utils/api';
 import { signin } from '@/../utils/auth';
 import Router from 'vue-router';
 
-var router = new Router();
-
 export default {
-  name: 'register',
+  name: 'create-account',
   data () {
     return {
       firstName: '',
@@ -104,33 +106,33 @@ export default {
     handleSubmit() {
       if (this.password !== this.password2) {
         this.message = 'Your passwords do not match.';
-        this.handleOpen('registration-results-modal');
+        this.handleOpen('create-account-results-modal');
       } else if (this.accountType === '') {
         this.message = 'Account type is required.';
-        this.handleOpen('registration-results-modal');
+        this.handleOpen('create-account-results-modal');
       } else if (this.accountType === 'client') {
-        this.handleRegister()
+        this.handleCreateAccount()
           .then((result) => {
             if (result) {
               signin(this.email, this.password)
                 .then((result) => {
                   if (result) {
                     this.getCoachList();
-                    this.handleOpen('register-client-modal');
+                    this.handleOpen('create-client-modal');
                   }
                 });
             } else {
-              this.handleOpen('registration-results-modal');
+              this.handleOpen('create-account-results-modal');
             }
           });
       } else {
-        this.handleRegister()
+        this.handleCreateAccount()
           .then((result) => {
-            this.handleOpen('registration-results-modal');
+            this.handleOpen('create-account-results-modal');
           });
       }
     },
-    handleRegister() {
+    handleCreateAccount() {
       var payload = {
         firstName: this.firstName,
         lastName: this.lastName,
@@ -153,6 +155,8 @@ export default {
         });
     },
     handleOk() {
+      var router = new Router();
+
       if (this.message === 'Your account was created successfully!') {
         signin(this.email, this.password)
           .then((result) => {
@@ -161,10 +165,11 @@ export default {
             }
           });
       } else {
-        this.handleClose('registration-results-modal');
+        this.handleClose('create-account-results-modal');
       }
     },
-    handleRegisterClient() {
+    handleCreateClient() {
+      var router = new Router();
       var query = this.email;
       var payload = {
         coach: this.coach
@@ -175,12 +180,12 @@ export default {
           if (response.status === 200) {
             router.push('/dash');
           } else {
-            this.handleClose('register-client-modal');
+            this.handleClose('create-client-modal');
           }
         })
         .catch((error) => {
           console.log('There was an error assigning your coach: ', error);
-          this.handleClose('register-client-modal');
+          this.handleClose('create-client-modal');
         });
     },
     handleCancel() {
@@ -196,7 +201,7 @@ export default {
 
       this.coach = undefined;
       this.coachList = [];
-      this.handleClose('register-client-modal');
+      this.handleClose('create-client-modal');
     }
   }
 };
@@ -206,16 +211,14 @@ export default {
 button {
   cursor: pointer;
 }
-.register {
+.create-account {
   max-width: 330px;
   padding: 60px 15px;
   margin: 0 auto;
 }
 .card {
-  padding: 15px 0px;
   border-color: #cccccc;
   background-color: #f6f6f6;
-  height: 575px;
   box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
               0 6px 20px 0 rgba(0, 0, 0, 0.19);
   -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
@@ -239,18 +242,52 @@ h2 {
   z-index: 2;
   border-color: #0A3E65;
 }
-#btn-register {
+#btn-create-account {
   color: #ffffff;
   background-color: #0A3E65;
   display: block;
   width: 100%;
 }
-#btn-register:hover, #btn-register:active {
+#btn-create-account:hover, #btn-create-account:active {
   background-color: #225174;
 }
 #already-member {
+  text-align: center;
+}
+#already-member span {
+  font-size: 0.9rem;
+}
+#sign-in {
   color: #C8D80D;
   padding: 8px 0px;
-  font-size: 0.9rem;
+}
+.hr-text {
+  line-height: 1em;
+  position: relative;
+  outline: 0;
+  border: 0;
+  color: black;
+  text-align: center;
+  height: 1.5em;
+  opacity: .5;
+}
+.hr-text::before {
+  content: '';
+  background: linear-gradient(to right, transparent, #818078, transparent);
+  position: absolute;
+  left: 0;
+  top: 50%;
+  width: 100%;
+  height: 1px;
+}
+.hr-text::after {
+  content: attr(data-content);
+  position: relative;
+  display: inline-block;
+  color: black;
+  padding: 0 .5em;
+  line-height: 1.5em;
+  color: #818078;
+  background-color: #f6f6f6;
 }
 </style>
