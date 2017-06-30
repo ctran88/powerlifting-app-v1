@@ -1,32 +1,30 @@
 <template>
 <main id="view-program">
-  <b-card id="main-content-card">
-    <span class="program-name">Program name</span>
+  <span class="program-name">Program name</span>
 
-    <div class="program-wrapper">
+  <div class="program-wrapper">
 
-      <div class="program-month">
-        <div class="program-header">
-          <span></span>
-          <span class="day-label" v-for="n in days">Day {{ n }}</span>
+    <div class="program-month">
+      <div class="program-header">
+        <span></span>
+        <span class="day-label" v-for="n in days">Day {{ n }}</span>
+      </div>
+      <div class="program-week" v-for="n in weeks">
+        <span class="week-label">Week {{ n }}</span>
+        <div class="program-day">
+          Paused Low Bar Squat 3x10 @75%/1rm
+          Close Grip Bench press 3x10 @8/rpe
+          Conventional Block Deadlift 3x10 @90%/ts
         </div>
-        <div class="program-week" v-for="n in weeks">
-          <span class="week-label">Week {{ n }}</span>
-          <div class="program-day">
-            Paused Low Bar Squat 3x10 @75%/1rm
-            Close Grip Bench press 3x10 @8/rpe
-            Conventional Block Deadlift 3x10 @90%/ts
-          </div>
-          <div class="program-day"></div>
-          <div class="program-day"></div>
-          <div class="program-day"></div>
-          <div class="program-day"></div>
-          <div class="program-day"></div>
-          <div class="program-day"></div>
-        </div>
+        <div class="program-day"></div>
+        <div class="program-day"></div>
+        <div class="program-day"></div>
+        <div class="program-day"></div>
+        <div class="program-day"></div>
+        <div class="program-day"></div>
       </div>
     </div>
-  </b-card>
+  </div>
 </main>
 </template>
 

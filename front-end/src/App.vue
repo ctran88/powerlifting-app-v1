@@ -2,7 +2,10 @@
 <div id="app">
   <top-nav v-show="['Sign in', 'Create an account', 'Page not found'].indexOf($route.name) == -1" />
   <side-nav v-if="$store.state.signedIn && ['Home', 'Sign in', 'Create an account', 'Page not found'].indexOf($route.name) === -1" />
-  <router-view />
+  
+  <b-card id="main-content-card" :class="{ hide: $store.state.sideNavHidden }">
+    <router-view />
+  </b-card>
 </div>
 </template>
 
@@ -62,5 +65,9 @@ body {
                    0 1px 8px 0 rgba(0, 0, 0, 0.19);
   -webkit-box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.2),
                       0 1px 8px 0 rgba(0, 0, 0, 0.19);
+  transition: margin-left 0.8s;
+}
+#main-content-card.hide {
+  margin-left: 30px;
 }
 </style>

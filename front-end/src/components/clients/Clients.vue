@@ -1,42 +1,40 @@
 <template>
 <div id="clients">
-  <b-card id="main-content-card">
-    <div class="row">
-      <b-form-fieldset horizontal label="Filter" class="col-3 ml-auto" :label-size="2">
-        <b-form-input v-model="filter" placeholder="Type to search" />
-      </b-form-fieldset>
-    </div>
+  <div class="row">
+    <b-form-fieldset horizontal label="Filter" class="col-3 ml-auto" :label-size="2">
+      <b-form-input v-model="filter" placeholder="Type to search" />
+    </b-form-fieldset>
+  </div>
 
-    <!-- Main table element -->
-    <b-table striped hover :items="clientList" :fields="fields" :filter="filter">
-      <template slot="name" scope="item">
-        {{ item.item.email }}
-      </template>
-      <template slot="team" scope="item">
-        {{ item.item.team }}
-      </template>
-      <template slot="activeProgram" scope="item">
-        {{ item.item._activeProgramName }}
-      </template>
-      <template slot="memberStart" scope="item">
-        {{ item.item.memberStart }}
-      </template>
-      <template slot="lastLogin" scope="item">
-        {{ item.item.lastLogin }}
-      </template>
-      <template slot="actions" scope="item">
-        <b-btn size="sm" v-b-modal="'client-preview-modal'" @click="handleDetails(item.item)">Details</b-btn>
-      </template>
-    </b-table>
+  <!-- Main table element -->
+  <b-table striped hover :items="clientList" :fields="fields" :filter="filter">
+    <template slot="name" scope="item">
+      {{ item.item.email }}
+    </template>
+    <template slot="team" scope="item">
+      {{ item.item.team }}
+    </template>
+    <template slot="activeProgram" scope="item">
+      {{ item.item._activeProgramName }}
+    </template>
+    <template slot="memberStart" scope="item">
+      {{ item.item.memberStart }}
+    </template>
+    <template slot="lastLogin" scope="item">
+      {{ item.item.lastLogin }}
+    </template>
+    <template slot="actions" scope="item">
+      <b-btn size="sm" v-b-modal="'client-preview-modal'" @click="handleDetails(item.item)">Details</b-btn>
+    </template>
+  </b-table>
 
-    <b-modal id="client-preview-modal" title="Client preview">
-      {{ details }}
-      <footer slot="modal-footer">
-        <b-btn variant="secondary" @click="handleClose('client-preview-modal')">Close</b-btn>
-        <b-btn variant="primary" @click="handleClose('client-preview-modal')">OK</b-btn>
-      </footer>
-    </b-modal>
-  </b-card>
+  <b-modal id="client-preview-modal" title="Client preview">
+    {{ details }}
+    <footer slot="modal-footer">
+      <b-btn variant="secondary" @click="handleClose('client-preview-modal')">Close</b-btn>
+      <b-btn variant="primary" @click="handleClose('client-preview-modal')">OK</b-btn>
+    </footer>
+  </b-modal>
 </div>
 </template>
 

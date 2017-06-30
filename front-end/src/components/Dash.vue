@@ -1,8 +1,6 @@
 <template>
 <div id="dash">
-  <b-card id="main-content-card">
-    hello i'm the dash
-  </b-card>
+  hello i'm the dash
 </div>
 </template>
 
