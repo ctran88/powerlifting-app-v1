@@ -191,7 +191,7 @@ export default {
         metadata.client = this.client;
       }
 
-      var array = this.$children[0].$children;
+      var array = this.$children;
 
       // find which children are the workout weeks
       for (var i = 0; i < array.length; i++) {

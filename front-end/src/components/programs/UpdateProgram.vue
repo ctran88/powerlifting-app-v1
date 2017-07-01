@@ -148,7 +148,7 @@ export default {
 
       // delay needed to let dom render the updates above
       setTimeout(() => {
-        var updateProgram = this.$children[0].$children;
+        var updateProgram = this.$children;
 
         for (var i = 0; i < updateProgram.length; i++) {
           if (updateProgram[i].id === 'workout-week') {
@@ -160,7 +160,7 @@ export default {
     },
     setExerciseDefaults(weekIndex) {
       var microcycle = JSON.parse(JSON.stringify(this.$store.state.programs.program.microcycles));
-      var workoutWeek = this.$children[0].$children[weekIndex].$children;
+      var workoutWeek = this.$children[weekIndex].$children;
 
       // day 1 starts at index[2]
       for (var i = 2; i < workoutWeek.length; i++) {
@@ -185,8 +185,6 @@ export default {
                   };
 
                   createSession.exercises.push(exerciseObj);
-                  // var length = createSession.exercises.length;
-                  // this.$set(createSession.exercises, length, exerciseObj);
                 } else {
                   // load any main exercises first
                   for (var l = 0; l < sessions[k].main.length; l++) {
@@ -219,8 +217,6 @@ export default {
                     }
 
                     createSession.exercises.push(exerciseObj);
-                    // var length = createSession.exercises.length;
-                    // this.$set(createSession.exercises, length, exerciseObj);
                   }
                   // then load any accessories
                   for (var l = 0; l < sessions[k].accessories.length; l++) {
@@ -253,8 +249,6 @@ export default {
                     }
 
                     createSession.exercises.push(exerciseObj);
-                    // var length = createSession.exercises.length;
-                    // this.$set(createSession.exercises, length, exerciseObj);
                   }
                 }
               }
@@ -322,7 +316,7 @@ export default {
         metadata.client = this.client;
       }
 
-      var array = this.$children[0].$children;
+      var array = this.$children;
 
       // find which children are the workout weeks
       for (var i = 0; i < array.length; i++) {

@@ -20,7 +20,7 @@
   
     <!-- create account/sign in buttons -->
     <b-nav is-nav-bar class="ml-auto">
-      <b-button id="btn-signout" @click="handleSignout" v-if="$store.state.signedIn" :class="{ hide: $store.state.sideNavHidden }">Sign out</b-button>
+      <b-button id="btn-signout" @click="handleSignout" v-if="$store.state.signedIn" :class="{ hide: $store.state.sideNavHidden, home: atHome }">Sign out</b-button>
       <div v-else>
         <b-button id="btn-create-account" to="create-account">Create an account</b-button>
         <b-button id="btn-signin" to="signin">Sign in</b-button>
@@ -50,10 +50,16 @@ export default {
     this.setStyles();
     this.$watch('$route', this.setStyles);
   },
+  computed: {
+    atHome() {
+      return this.$route.name === 'Home' ? true : false;
+    }
+  },
   methods: {
     setStyles() {
       if (this.$route.name === 'Home') {
         this.styles.left = '0';
+        this.$store.dispatch('setSideNavHiddenOff');
       } else {
         this.styles.left = '280px';
       }
@@ -144,7 +150,8 @@ export default {
   transform: translateX(-280px);
   transition: transform 0.8s;
 }
-#btn-signout.hide {
+#btn-signout.hide,
+#btn-signout.home {
   transform: translateX(0);
 }
 </style>

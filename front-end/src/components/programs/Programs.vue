@@ -40,6 +40,7 @@
   <b-modal id="program-preview-modal" title="Program preview">
     {{ details }}
     <footer slot="modal-footer">
+      <b-btn variant="secondary" @click="handlePreview">Preview</b-btn>
       <b-btn variant="secondary" @click="handleCopy">Copy</b-btn>
       <b-btn variant="primary" @click="handleUpdate">Update</b-btn>
     </footer>
@@ -149,6 +150,13 @@ export default {
         });
 
       this.handleClose('delete-confirmation-modal');
+    },
+    handlePreview() {
+      var router = new Router();
+
+      this.$store.dispatch('setProgramId', this.details._id);
+      this.handleClose('program-preview-modal');
+      router.push('/view-program');
     },
     handleCopy() {
       var copy = {
