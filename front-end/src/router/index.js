@@ -9,6 +9,7 @@ import Programs from '@/components/programs/Programs';
 import CreateProgram from '@/components/programs/CreateProgram';
 import UpdateProgram from '@/components/programs/UpdateProgram';
 import ViewProgram from '@/components/programs/ViewProgram';
+import TrainingLog from '@/components/logs/TrainingLog';
 import PageNotFound from '@/components/navigation/PageNotFound';
 import { requireAuth } from '@/../utils/auth';
 
@@ -66,6 +67,12 @@ export default new Router({
       name: 'View program',
       beforeEnter: requireAuth,
       component: ViewProgram
+    },
+    {
+      path: '/training-log',
+      name: 'Training log',
+      beforeEnter: requireAuth,
+      component: TrainingLog
     },
     {
       path: '*',

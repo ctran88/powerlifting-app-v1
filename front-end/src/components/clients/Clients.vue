@@ -1,6 +1,8 @@
 <template>
 <div id="clients">
   <div class="row">
+    <b-btn id="btn-invite-client" variant="success" v-b-modal="'invite-client-modal'">Invite a client</b-btn>
+
     <b-form-fieldset horizontal label="Filter" class="col-3 ml-auto" :label-size="2">
       <b-form-input v-model="filter" placeholder="Type to search" />
     </b-form-fieldset>
@@ -25,6 +27,7 @@
     </template>
     <template slot="actions" scope="item">
       <b-btn size="sm" v-b-modal="'client-preview-modal'" @click="handleDetails(item.item)">Details</b-btn>
+      <b-btn size="sm" variant="danger" v-b-modal="'remove-confirmation-modal'" @click="handleDetails(item.item)">Remove</b-btn>
     </template>
   </b-table>
 
@@ -33,6 +36,22 @@
     <footer slot="modal-footer">
       <b-btn variant="secondary" @click="handleClose('client-preview-modal')">Close</b-btn>
       <b-btn variant="primary" @click="handleClose('client-preview-modal')">OK</b-btn>
+    </footer>
+  </b-modal>
+
+  <b-modal id="remove-confirmation-modal" size="sm" title="Confirm remove">
+    Are you sure you want to remove {{ details }}?
+    <footer slot="modal-footer">
+      <b-btn variant="secondary" @click="handleClose('remove-confirmation-modal')">Cancel</b-btn>
+      <b-btn variant="danger" @click="handleRemove">remove</b-btn>
+    </footer>
+  </b-modal>
+
+  <b-modal id="invite-client-modal" title="Invite client">
+    Invitation details here
+    <footer slot="modal-footer">
+      <b-btn variant="secondary" @click="handleClose('invite-client-modal')">Cancel</b-btn>
+      <b-btn variant="primary" @click="handleInvite">Invite</b-btn>
     </footer>
   </b-modal>
 </div>
@@ -121,6 +140,21 @@ export default {
     },
     handleClose(modalId) {
       this.$root.$emit('hide::modal', modalId);
+    },
+    handleRemove() {
+      // need to finish
+      // 
+      // 
+      // 
+      this.handleClose('remove-confirmation-modal');
+    },
+    handleInvite() {
+      // need to finish
+      // 
+      // 
+      // 
+      // 
+      this.handleClose('invite-client-modal');
     }
   }
 };
@@ -129,5 +163,8 @@ export default {
 <style scoped>
 button {
   cursor: pointer;
+}
+#btn-invite-client {
+  margin-bottom: 1rem;
 }
 </style>

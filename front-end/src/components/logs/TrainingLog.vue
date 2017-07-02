@@ -1,6 +1,6 @@
 <template>
-<div id="view-program">
-  <span class="program-name">{{ $store.state.programs.program.metadata.name }}</span>
+<div id="training-log">
+  <span class="program-name">{{ $store.state.programs.program.metadata.name }} Training Log</span>
 
   <div class="program-wrapper">
     <div class="program-month" :style="{ gridTemplateColumns: columns }">
@@ -10,7 +10,7 @@
       </div>
       <div class="program-week" v-for="(week, index) in weeks">
         <span class="week-label">Week {{ index + 1 }}</span>
-        <div class="program-day" v-for="day in week">
+        <div class="program-day" v-for="day in week" @click="handleDetails(day)">
           <ul class="exercise-list">
             <li v-for="exercise in day">
               <strong>{{ exercise.name }}</strong>
@@ -22,6 +22,23 @@
       </div>
     </div>
   </div>
+
+  <b-modal id="session-details-modal" title="Session details">
+    <div class="session-details">
+      <span class="header-fields" v-for="field in headerFields">{{ field }}</span>
+    </div>
+    <div class="session-details" v-for="exercise in details">
+      <span>{{ exercise.name }}</span>
+      <span>{{ exercise.scheme.sets }}</span>
+      <span>{{ exercise.scheme.reps }}</span>
+      <span>{{ exercise.scheme.load }}</span>
+      <span>{{ exercise.scheme.loadType }}</span>
+    </div>
+    <footer slot="modal-footer">
+      <b-btn variant="secondary" @click="handleCancel">Cancel</b-btn>
+      <b-btn variant="success" @click="handleSave">Save</b-btn>
+    </footer>
+  </b-modal>
 </div>
 </template>
 
@@ -29,12 +46,19 @@
 import api from '@/../utils/api';
 
 export default {
-  name: 'view-program',
+  name: 'training-log',
   data() {
     return {
       columns: '0.125fr',
       days: 7,
       weeks: [],
+      headerFields: [
+        'Exercise',
+        'Sets',
+        'Reps',
+        'Load',
+        'Load Type'
+      ],
       details: ''
     };
   },
@@ -98,6 +122,48 @@ export default {
         name: name,
         scheme: scheme + ' @ ' + load
       };
+    },
+    handleClose(modalId) {
+      this.$root.$emit('hide::modal', modalId);
+    },
+    handleOpen(modalId) {
+      this.$root.$emit('show::modal', modalId);
+    },
+    handleDetails(session) {
+      var formattedSession = JSON.parse(JSON.stringify(session));
+      var formattedScheme = formattedSession.map(this.splitSchemeString);
+
+      for (var i = 0; i < formattedSession.length; i++) {
+        formattedSession[i].scheme = JSON.parse(JSON.stringify(formattedScheme[i]));
+      }
+
+      this.details = formattedSession;
+      this.handleOpen('session-details-modal');
+    },
+    splitSchemeString(value) {
+      var regex = /\d*(%|rpe|$)/g;
+      var x = value.scheme.indexOf('x');
+      var at = value.scheme.indexOf(' @');
+
+      var sets = value.scheme.slice(0, x);
+      var reps = value.scheme.slice(x + 1, at);
+      var load = value.scheme.match(regex)[0].replace('rpe', '');
+
+      var loadTypeStart = value.scheme.indexOf(load);
+      var loadType = value.scheme.slice(loadTypeStart + load.length).replace('/', '');
+
+      return {
+        sets: sets,
+        reps: reps,
+        load: load,
+        loadType: loadType
+      };
+    },
+    handleCancel() {
+      this.handleClose('session-details-modal');
+    },
+    handleSave() {
+      this.handleClose('session-details-modal');
     }
   }
 };
@@ -145,6 +211,7 @@ button {
   min-height: 100px;
   background-color: #ffffff;
   padding: 5px;
+  cursor: pointer;
 }
 .program-day:hover {
   background-color: #f9f9f9;
@@ -152,5 +219,9 @@ button {
 .exercise-list {
   margin-bottom: 0;
   padding-left: 20px;
+}
+.session-details {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1fr;
 }
 </style>

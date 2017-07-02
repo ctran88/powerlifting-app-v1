@@ -1,7 +1,7 @@
 <template>
 <div id="programs">
   <div class="row">
-    <b-button id="btn-create-program" to="create-program" variant="success">Create a program</b-button>
+    <b-btn id="btn-create-program" to="create-program" variant="success">Create a program</b-btn>
 
     <b-form-fieldset horizontal label="Filter" class="col-3 ml-auto" :label-size="2">
       <b-form-input v-model="filter" placeholder="Type to search" />
@@ -40,8 +40,8 @@
   <b-modal id="program-preview-modal" title="Program preview">
     {{ details }}
     <footer slot="modal-footer">
-      <b-btn variant="secondary" @click="handlePreview">Preview</b-btn>
       <b-btn variant="secondary" @click="handleCopy">Copy</b-btn>
+      <b-btn variant="success" @click="handlePreview">Preview</b-btn>
       <b-btn variant="primary" @click="handleUpdate">Update</b-btn>
     </footer>
   </b-modal>
