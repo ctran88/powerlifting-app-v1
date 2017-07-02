@@ -161,6 +161,7 @@ export default {
         signin(this.email, this.password)
           .then((result) => {
             if (result) {
+              this.handleClose('create-account-results-modal');
               router.push('/dash');
             }
           });
@@ -178,6 +179,7 @@ export default {
       api.patch('/users/' + query, payload)
         .then((response) => {
           if (response.status === 200) {
+            this.handleClose('create-client-modal');
             router.push('/dash');
           } else {
             this.handleClose('create-client-modal');
@@ -193,14 +195,13 @@ export default {
 
       api.delete('/users/' + query)
         .then((response) => {
-
+          this.coach = undefined;
+          this.coachList = [];
         })
         .catch((error) => {
-
+          console.log('There was an error deleting the user.');
         });
 
-      this.coach = undefined;
-      this.coachList = [];
       this.handleClose('create-client-modal');
     }
   }

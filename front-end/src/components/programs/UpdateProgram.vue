@@ -11,8 +11,8 @@
 
     <b-button-group class="ml-auto">
       <b-button class="btn-cancel-changes" variant="warning" v-b-modal="'cancellation-modal'">Cancel changes</b-button>
-      <b-button class="btn-save-draft" variant="success" v-b-modal="'save-draft-modal'" @click="handleSaveDraft">Save draft</b-button>
-      <b-button class="btn-save-published" variant="primary" v-b-modal="'published-modal'" @click="handlePublish">Publish</b-button>
+      <b-button class="btn-save-draft" variant="success" @click="handleSaveDraft">Save draft</b-button>
+      <b-button class="btn-save-published" variant="primary" @click="handlePublish">Publish</b-button>
     </b-button-group>
   </div>
 
@@ -26,14 +26,14 @@
   <b-modal id="save-draft-modal" :title="message.title">
     {{ message.details }}
     <footer slot="modal-footer">
-      <b-btn variant="secondary" to="programs">Go back</b-btn>
+      <b-btn variant="secondary" @click="handleGoBack">Go back</b-btn>
       <b-btn variant="success" @click="handleClose('save-draft-modal')">Continue editing</b-btn>
     </footer>
   </b-modal>
   <b-modal id="published-modal" :title="message.title">
     {{ message.details }}
     <footer slot="modal-footer">
-      <b-btn variant="primary" @click="handleClose('published-modal')">Ok</b-btn>
+      <b-btn variant="primary" @click="handlePublishedOk">Ok</b-btn>
     </footer>
   </b-modal>
 
@@ -260,6 +260,9 @@ export default {
     handleClose(modalId) {
       this.$root.$emit('hide::modal', modalId);
     },
+    handleOpen(modalId) {
+      this.$root.$emit('show::modal', modalId);
+    },
     handleAddWeek() {
       this.weeks.push(++this.week);
     },
@@ -272,6 +275,18 @@ export default {
       this.handleClose('cancellation-modal');
       router.push('/programs');
     },
+    handleGoBack() {
+      var router = new Router();
+
+      this.handleClose('save-draft-modal');
+      router.push('/programs');
+    },
+    handlePublishedOk() {
+      var router = new Router();
+
+      this.handleClose('published-modal');
+      router.push('/programs');
+    },
     handleSaveDraft() {
       this.saveProgram('draft')
         .then((result) => {
@@ -282,18 +297,21 @@ export default {
           this.message.title = 'Error';
           this.message.details = error;
         });
+
+      this.handleOpen('save-draft-modal');
     },
     handlePublish() {
       this.saveProgram('published')
         .then((result) => {
           this.message.title = 'Program published';
           this.message.details = 'Program published successfully!';
-          router.push('/programs');
         })
         .catch((error) => {
           this.message.title = 'Error';
           this.message.details = error;
         });
+
+      this.handleOpen('published-modal');
     },
     saveProgram(saveStatus) {
       if (this.name === '') {
