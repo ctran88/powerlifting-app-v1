@@ -16,6 +16,7 @@ module.exports = {
      * @param      {Object}  res     The response
      */
     get: function(req, res) {
+        
         var query = {
             type: req.params.type
         };

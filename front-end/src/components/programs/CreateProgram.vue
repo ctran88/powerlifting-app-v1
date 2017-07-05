@@ -1,75 +1,75 @@
 <template>
-<div id="create-program">
-  <div class="row">
-    <span class="text-muted">Program name</span>
-    <b-form-input id="program-name" v-model="name" type="text" />
+<div id='create-program'>
+  <div class='row'>
+    <span class='text-muted'>Program name</span>
+    <b-form-input id='program-name' v-model='name' type='text' />
 
-    <span class="text-muted">Client</span>
-    <b-form-select id="client-selection" :options="clientList" v-model="client" />
+    <span class='text-muted'>Client</span>
+    <b-form-select id='client-selection' :options='clientList' v-model='client' />
 
-    <b-form-checkbox id="program-active" v-model="active" value=true unchecked-value=false>Make this the active program?</b-form-checkbox>
+    <b-form-checkbox id='program-active' v-model='active' value=true unchecked-value=false>Make this the active program?</b-form-checkbox>
 
-    <b-button-group class="ml-auto">
-      <b-button class="btn-cancel" variant="warning" v-b-modal="'cancellation-modal'">Cancel</b-button>
-      <b-button class="btn-save-draft" variant="success" @click="handleSaveDraft">Save draft</b-button>
-      <b-button class="btn-save-published" variant="primary" @click="handlePublish">Publish</b-button>
+    <b-button-group class='ml-auto'>
+      <b-button class='btn-cancel' variant='warning' v-b-modal='"cancellation-modal"'>Cancel</b-button>
+      <b-button class='btn-save-draft' variant='success' @click='handleSaveDraft'>Save draft</b-button>
+      <b-button class='btn-save-published' variant='primary' @click='handlePublish'>Publish</b-button>
     </b-button-group>
   </div>
 
-  <b-modal id="cancellation-modal" size="sm" title="Cancellation confirmation">
+  <b-modal id='cancellation-modal' size='sm' title='Cancellation confirmation'>
     Are you sure you want to cancel and leave this page?
-    <footer slot="modal-footer">
-      <b-btn variant="secondary" @click="handleClose('cancellation-modal')">No</b-btn>
-      <b-btn variant="warning" @click="handleCancel">Yes, cancel</b-btn>
+    <footer slot='modal-footer'>
+      <b-btn variant='secondary' @click='handleClose('cancellation-modal')'>No</b-btn>
+      <b-btn variant='warning' @click='handleCancel'>Yes, cancel</b-btn>
     </footer>
   </b-modal>
-  <b-modal id="save-draft-modal" :title="message.title">
+  <b-modal id='save-draft-modal' :title='message.title'>
     {{ message.details }}
-    <footer slot="modal-footer">
-      <b-btn variant="secondary" @click="handleGoBack">Go back</b-btn>
-      <b-btn variant="success" @click="handleClose('save-draft-modal')">Continue editing</b-btn>
+    <footer slot='modal-footer'>
+      <b-btn variant='secondary' @click='handleGoBack'>Go back</b-btn>
+      <b-btn variant='success' @click='handleClose('save-draft-modal')'>Continue editing</b-btn>
     </footer>
   </b-modal>
-  <b-modal id="published-modal" :title="message.title">
+  <b-modal id='published-modal' :title='message.title'>
     {{ message.details }}
-    <footer slot="modal-footer">
-      <b-btn variant="primary" @click="handlePublishedOk">Ok</b-btn>
+    <footer slot='modal-footer'>
+      <b-btn variant='primary' @click='handlePublishedOk'>Ok</b-btn>
     </footer>
   </b-modal>
 
   <hr />
 
-  <b-tabs pills card id="workout-week" v-for="(week, index) in weeks" :key="index">
-    <b-tab disabled id="week-label" :title="'Week ' + (index + 1)" />
-    <b-tab title="Day 1">
-      <create-session :day="1" :week="week" />
+  <b-tabs pills card id='workout-week' v-for='(week, index) in weeks' :key='index'>
+    <b-tab disabled id='week-label' :title='"Week " + (index + 1)' />
+    <b-tab title='Day 1'>
+      <create-session :day='1' :week='week' />
     </b-tab>
-    <b-tab title="Day 2">
-      <create-session :day="2" :week="week" />
+    <b-tab title='Day 2'>
+      <create-session :day='2' :week='week' />
     </b-tab>
-    <b-tab title="Day 3">
-      <create-session :day="3" :week="week" />
+    <b-tab title='Day 3'>
+      <create-session :day='3' :week='week' />
     </b-tab>
-    <b-tab title="Day 4">
-      <create-session :day="4" :week="week" />
+    <b-tab title='Day 4'>
+      <create-session :day='4' :week='week' />
     </b-tab>
-    <b-tab title="Day 5">
-      <create-session :day="5" :week="week" />
+    <b-tab title='Day 5'>
+      <create-session :day='5' :week='week' />
     </b-tab>
-    <b-tab title="Day 6">
-      <create-session :day="6" :week="week" />
+    <b-tab title='Day 6'>
+      <create-session :day='6' :week='week' />
     </b-tab>
-    <b-tab title="Day 7">
-      <create-session :day="7" :week="week" />
+    <b-tab title='Day 7'>
+      <create-session :day='7' :week='week' />
     </b-tab>
-    <template slot="tabs">
-      <b-button class="ml-auto btn-week" variant="danger" @click="handleDeleteWeek(index)">Delete</b-button>
+    <template slot='tabs'>
+      <b-button class='ml-auto btn-week' variant='danger' @click='handleDeleteWeek(index)'>Delete</b-button>
     </template>
   </b-tabs>
 
   <hr />
 
-  <b-button class="btn-week" variant="primary" @click="handleAddWeek">Add a week</b-button>
+  <b-button class='btn-week' variant='primary' @click='handleAddWeek'>Add a week</b-button>
 </div>
 </template>
 
@@ -77,13 +77,20 @@
 import CreateSession from './CreateSession';
 import api from '@/../utils/api';
 import Router from 'vue-router';
+import general from '@/mixins/general';
+import programs from '@/mixins/programs';
 
 export default {
   name: 'create-program',
+  mixins: [
+    general,
+    programs
+  ],
   components: {
     CreateSession
   },
   data() {
+
     return {
       name: '',
       client: ' ',
@@ -99,85 +106,36 @@ export default {
         details: ''
       }
     };
+
   },
   mounted() {
+
     // this function is called before the setUserInfo acton can be completed (from App.vue), so user object is not set yet.  Set timetout as a workaround.
     setTimeout(this.getClients(), 100);
+
   },
   methods: {
-    getClients() {
-      var clients = this.$store.state.user._clients;
 
-      for (var i = 0; i < clients.length; i++) {
-        var fullName = clients[i].lastName + ', ' + clients[i].firstName;
-
-        this.clientList.push({
-          text: fullName,
-          value: clients[i].email
-        });
-      }
-
-      this.clientList.sort();
-    },
-    handleClose(modalId) {
-      this.$root.$emit('hide::modal', modalId);
-    },
-    handleOpen(modalId) {
-      this.$root.$emit('show::modal', modalId);
-    },
-    handleAddWeek() {
-      this.weeks.push(++this.week);
-    },
-    handleDeleteWeek(index) {
-      this.weeks.splice(index, 1);
-    },
+    /**
+     * Handles cancellation modal and returns to programs page
+     */
     handleCancel() {
+
       var router = new Router();
 
       this.handleClose('cancellation-modal');
       router.push('/programs');
-    },
-    handleGoBack() {
-      var router = new Router();
 
-      this.handleClose('save-draft-modal');
-      router.push('/programs');
     },
-    handlePublishedOk() {
-      var router = new Router();
 
-      this.handleClose('published-modal');
-      router.push('/programs');
-    },
-    handleSaveDraft() {
-      this.saveProgram('draft')
-        .then((result) => {
-          this.message.title = 'Draft saved';
-          this.message.details = result;
-        })
-        .catch((error) => {
-          this.message.title = 'Error';
-          this.message.details = error;
-        });
-
-      this.handleOpen('save-draft-modal');
-    },
-    handlePublish() {
-      var router = new Router();
-      
-      this.saveProgram('published')
-        .then((result) => {
-          this.message.title = 'Program published';
-          this.message.details = 'Program published successfully!';
-        })
-        .catch((error) => {
-          this.message.title = 'Error';
-          this.message.details = error;
-        });
-
-      this.handleOpen('published-modal');
-    },
+    /**
+     * Saves a program.
+     *
+     * @param      {string}  saveStatus  The save status
+     * @return     {Promise}  Promise of save response
+     */
     saveProgram(saveStatus) {
+
       if (this.name === '') {
         return Promise.reject('Program name required.');
       }
@@ -297,27 +255,37 @@ export default {
       if (this.new) {
         return api.post('/training/programs', this.$store.state.programs.program)
           .then((response) => {
+
             if (response.status === 201) {
               this.new = false;
               this.id = response.data.id;
               return response.data.message;
             }
+
           })
           .catch((error) => {
+
             console.log('API error saving program: ', error);
+
           });
       } else {
         return api.patch('/training/programs/' + this.id, this.$store.state.programs.program)
           .then((response) => {
+
             if (response.status === 200) {
               return response.data;
             }
+
           })
           .catch((error) => {
+
             console.log('API error updating program: ', error);
+            
           });
       }
+
     }
+
   }
 };
 </script>

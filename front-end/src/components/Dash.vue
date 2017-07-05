@@ -1,5 +1,5 @@
 <template>
-<div id="dash">
+<div id='dash'>
   hello i'm the dash
 </div>
 </template>

@@ -3,6 +3,13 @@
 import api from './api';
 import store from '@/store';
 
+/**
+ * Sign in function.  Makes api call to create session information.
+ *
+ * @param      {string}  email     The email
+ * @param      {string}  password  The password
+ * @return     {Promise}  Promise of api response
+ */
 export function signin(email, password) {
 
     var sanitizedEmail = email.toLowerCase();
@@ -34,8 +41,13 @@ export function signin(email, password) {
             });
     }
 
-}
+};
 
+/**
+ * Sign out function.  Makes api call to delete session information.
+ *
+ * @return     {Promise}  Promise of api response
+ */
 export function signout() {
 
     return api.delete('/authentication/sessions')
@@ -53,14 +65,26 @@ export function signout() {
 
         });
 
-}
+};
 
+/**
+ * Determines if signed in.
+ *
+ * @return     {boolean}  True if signed in, False otherwise.
+ */
 export function isSignedIn() {
 
     return api.get('/authentication/sessions');
 
-}
+};
 
+/**
+ * Require authorization function.  Checks if signed in to view routes.
+ *
+ * @param      {Function}  to      The to
+ * @param      {Function}  from    The from
+ * @param      {Function}  next    The next
+ */
 export async function requireAuth(to, from, next) {
 
     var response = await isSignedIn();
@@ -77,4 +101,4 @@ export async function requireAuth(to, from, next) {
         next();
     }
     
-}
+};

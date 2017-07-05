@@ -16,69 +16,69 @@ import { requireAuth } from '@/../utils/auth';
 Vue.use(Router);
 
 export default new Router({
-  routes: [
-    {
-      path: '/',
-      name: 'Home',
-      component: Home
-    },
-    {
-      path: '/create-account',
-      name: 'Create an account',
-      component: CreateAccount
-    },
-    {
-      path: '/signin',
-      name: 'Sign in',
-      component: Signin
-    },
-    {
-      path: '/dash',
-      name: 'Dashboard',
-      beforeEnter: requireAuth,
-      component: Dash
-    },
-    {
-      path: '/clients',
-      name: 'Clients',
-      beforeEnter: requireAuth,
-      component: Clients
-    },
-    {
-      path: '/programs',
-      name: 'Programs',
-      beforeEnter: requireAuth,
-      component: Programs
-    },
-    {
-      path: '/create-program',
-      name: 'Create program',
-      beforeEnter: requireAuth,
-      component: CreateProgram
-    },
-    {
-      path: '/update-program',
-      name: 'Update program',
-      beforeEnter: requireAuth,
-      component: UpdateProgram
-    },
-    {
-      path: '/view-program',
-      name: 'View program',
-      beforeEnter: requireAuth,
-      component: ViewProgram
-    },
-    {
-      path: '/training-log',
-      name: 'Training log',
-      beforeEnter: requireAuth,
-      component: TrainingLog
-    },
-    {
-      path: '*',
-      name: 'Page not found',
-      component: PageNotFound
-    }
-  ],
-  linkActiveClass: 'active'
+    routes: [
+        {
+            path: '/',
+            name: 'Home',
+            component: Home
+        },
+        {
+            path: '/create-account',
+            name: 'Create an account',
+            component: CreateAccount
+        },
+        {
+            path: '/signin',
+            name: 'Sign in',
+            component: Signin
+        },
+        {
+            path: '/dash',
+            name: 'Dashboard',
+            beforeEnter: requireAuth,
+          component: Dash
+        },
+        {
+            path: '/clients',
+            name: 'Clients',
+            beforeEnter: requireAuth,
+          component: Clients
+        },
+        {
+            path: '/programs',
+            name: 'Programs',
+            beforeEnter: requireAuth,
+          component: Programs
+        },
+        {
+            path: '/create-program',
+            name: 'Create program',
+            beforeEnter: requireAuth,
+          component: CreateProgram
+        },
+        {
+            path: '/update-program',
+            name: 'Update program',
+            beforeEnter: requireAuth,
+          component: UpdateProgram
+        },
+        {
+            path: '/view-program',
+            name: 'View program',
+            beforeEnter: requireAuth,
+          component: ViewProgram
+        },
+        {
+            path: '/training-log',
+            name: 'Training log',
+            beforeEnter: requireAuth,
+          component: TrainingLog
+        },
+        {
+            path: '*',
+            name: 'Page not found',
+            component: PageNotFound
+        }
+    ],
+    linkActiveClass: 'active'
 });

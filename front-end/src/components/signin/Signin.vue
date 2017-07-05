@@ -1,24 +1,24 @@
 <template>
-<div class="signin">
+<div class='signin'>
   <b-card>
-    <form @submit.prevent="handleSignin">
+    <form @submit.prevent='handleSignin'>
       <h2>Please sign in</h2>
-      <small class="text-muted">Email</small>
-      <b-form-input v-model="email" id="input-email" type="email" required autofocus />
-      <small class="text-muted">Password</small>
-      <b-form-input v-model="password" id="input-password" type="password" required />
-      <b-form-checkbox v-model="remember" id="remember-me" value=true unchecked-value=false>Remember me</b-form-checkbox>
-      <b-button id="btn-signin">Sign in</b-button>
+      <small class='text-muted'>Email</small>
+      <b-form-input v-model='email' id='input-email' type='email' required autofocus />
+      <small class='text-muted'>Password</small>
+      <b-form-input v-model='password' id='input-password' type='password' required />
+      <b-form-checkbox v-model='remember' id='remember-me' value=true unchecked-value=false>Remember me</b-form-checkbox>
+      <b-button id='btn-signin'>Sign in</b-button>
     </form>
-    <b-button id="forgot-password" variant="link" to="forgot-password">Forgot password?</b-button>
+    <b-button id='forgot-password' variant='link' to='forgot-password'>Forgot password?</b-button>
     <hr class='hr-text' data-content='or' />
-    <b-button id="create-account" variant="link" to="create-account">Create an account</b-button>
+    <b-button id='create-account' variant='link' to='create-account'>Create an account</b-button>
   </b-card>
 
-  <b-modal id="unauthorized-modal" size="sm" title="Unauthorized">
+  <b-modal id='unauthorized-modal' size='sm' title='Unauthorized'>
     Invalid email/password.
-    <footer slot="modal-footer">
-      <b-btn variant="secondary" @click="handleClose('unauthorized-modal')">OK</b-btn>
+    <footer slot='modal-footer'>
+      <b-btn variant='secondary' @click='handleClose('unauthorized-modal')'>OK</b-btn>
     </footer>
   </b-modal>
 </div>
@@ -27,38 +27,49 @@
 <script>
 import { signin } from '@/../utils/auth';
 import Router from 'vue-router';
+import general from '@/mixins/general';
 
 export default {
   name: 'signin',
+  mixins: [
+    general
+  ],
   data () {
+
     return {
       email: '',
       password: '',
       remember: false
     };
+
   },
   methods: {
-    handleClose(modalId) {
-      this.$root.$emit('hide::modal', modalId);
-    },
-    handleOpen(modalId) {
-      this.$root.$emit('show::modal', modalId);
-    },
+
+    /**
+     * Handles sign in and routes to dashboard if successful.
+     */
     handleSignin() {
+
       var router = new Router();
       
       signin(this.email, this.password)
         .then((result) => {
+
           if (result) {
             router.push('/dash');
           } else {
             this.handleOpen('unauthorized-modal');
           }
+          
         })
         .catch((error) => {
+
           console.log('Error signing in: ', error);
+
         });
+
     }
+
   }
 };
 </script>

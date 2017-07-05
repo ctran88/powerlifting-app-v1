@@ -16,6 +16,7 @@ module.exports = {
      * @param      {Object}  res     The response
      */
     getMany: function(req, res) {
+        
         var query = {};
 
         if (req.query) {

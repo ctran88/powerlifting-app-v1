@@ -1,9 +1,9 @@
 <template>
-<div id="app">
-  <top-nav v-show="['Sign in', 'Create an account', 'Page not found'].indexOf($route.name) == -1" />
-  <side-nav v-if="$store.state.signedIn && ['Home', 'Sign in', 'Create an account', 'Page not found'].indexOf($route.name) === -1" />
+<div id='app'>
+  <top-nav v-show='['Sign in', 'Create an account', 'Page not found'].indexOf($route.name) == -1' />
+  <side-nav v-if='$store.state.signedIn && ['Home', 'Sign in', 'Create an account', 'Page not found'].indexOf($route.name) === -1' />
   
-  <b-card id="main-content-card" v-if="['Home', 'Sign in', 'Create an account', 'Page not found'].indexOf($route.name) === -1" :class="{ hide: $store.state.sideNavHidden }">
+  <b-card id='main-content-card' v-if='['Home', 'Sign in', 'Create an account', 'Page not found'].indexOf($route.name) === -1' :class='{ hide: $store.state.sideNavHidden }'>
     <router-view />
   </b-card>
   <router-view v-else />
@@ -22,13 +22,23 @@ export default {
     SideNav
   },
   beforeCreate() {
+
+    // checks signed in status on hash change and load
     this.$nextTick(function() {
+
       window.addEventListener('hashchange', this.handleIsSignedIn)
       window.addEventListener('load', this.handleIsSignedIn)
+
     });
+
   },
   methods: {
+
+    /**
+     * Checks signed in status
+     */
     async handleIsSignedIn() {
+
       var response = await isSignedIn();
 
       if (response.data === 'Not signed in.' && this.$store.state.signedIn !== false) {
@@ -37,6 +47,7 @@ export default {
         this.$store.dispatch('setSignedIn');
         this.$store.dispatch('setUserInfo', response.data.info);
       }
+      
     }
   }
 };

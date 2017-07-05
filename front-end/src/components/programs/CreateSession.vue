@@ -1,63 +1,63 @@
 <template>
-<div id="create-session">
-  <div id="exercise-row" class="row" v-for="(exercise, mainIndex) in exercises" :key="mainIndex">
+<div id='create-session'>
+  <div id='exercise-row' class='row' v-for='(exercise, mainIndex) in exercises' :key='mainIndex'>
     <!-- lift type -->
-    <div class="list-selector" >
-      <small class="text-muted">Lift type</small>
+    <div class='list-selector' >
+      <small class='text-muted'>Lift type</small>
       <br />
-      <b-form-select id="list-lift-type" :options="liftType" v-model="exercises[mainIndex].liftType" @input="handleSelect('liftType', $event, mainIndex)" />
+      <b-form-select id='list-lift-type' :options='liftType' v-model='exercises[mainIndex].liftType' @input='handleSelect('liftType', $event, mainIndex)' />
     </div>
     <!-- accessories -->
-    <div class="list-selector" v-show="exercises[mainIndex].liftType === 'accessories'">
-      <small class="text-muted">Accessories</small>
+    <div class='list-selector' v-show='exercises[mainIndex].liftType === "accessories"'>
+      <small class='text-muted'>Accessories</small>
       <br />
-      <b-form-select id="list-accessories" :options="accessories" v-model="exercises[mainIndex].accessories" />
+      <b-form-select id='list-accessories' :options='accessories' v-model='exercises[mainIndex].accessories' />
     </div>
     <!-- exercise -->
-    <div class="list-selector" v-show="exercises[mainIndex].liftType === 'main'">
-      <small class="text-muted">Exercise</small>
+    <div class='list-selector' v-show='exercises[mainIndex].liftType === "main"'>
+      <small class='text-muted'>Exercise</small>
       <br />
-      <b-form-select id="list-main" :options="mainLifts" v-model="exercises[mainIndex].exercise" @input="handleSelect('exercise', $event, mainIndex)" />
+      <b-form-select id='list-main' :options='mainLifts' v-model='exercises[mainIndex].exercise' @input='handleSelect('exercise', $event, mainIndex)' />
     </div>
     <!-- variations -->
-    <div class="list-selector" v-show="exercises[mainIndex].liftType === 'main'">
-      <small class="text-muted">Variations</small>
+    <div class='list-selector' v-show='exercises[mainIndex].liftType === "main"'>
+      <small class='text-muted'>Variations</small>
       <br />
-      <b-form-select id="list-variations" :options="mainVariations" v-model="exercises[mainIndex].variations" />
+      <b-form-select id='list-variations' :options='mainVariations' v-model='exercises[mainIndex].variations' />
     </div>
     <!-- sets -->
-    <div class="list-selector" v-show="exercises[mainIndex].liftType === 'main' || exercises[mainIndex].liftType === 'accessories'">
-      <small class="text-muted">Sets</small>
+    <div class='list-selector' v-show='exercises[mainIndex].liftType === "main" || exercises[mainIndex].liftType === "accessories"'>
+      <small class='text-muted'>Sets</small>
       <br />
-      <b-form-select id="list-sets" :options="setReps" v-model="exercises[mainIndex].sets" />
+      <b-form-select id='list-sets' :options='setReps' v-model='exercises[mainIndex].sets' />
     </div>
     <!-- reps -->
-    <div class="list-selector" v-show="exercises[mainIndex].liftType === 'main' || exercises[mainIndex].liftType === 'accessories'">
-      <small class="text-muted">Reps</small>
+    <div class='list-selector' v-show='exercises[mainIndex].liftType === "main" || exercises[mainIndex].liftType === "accessories"'>
+      <small class='text-muted'>Reps</small>
       <br />
-      <b-form-select id="list-reps" :options="setReps" v-model="exercises[mainIndex].reps" />
+      <b-form-select id='list-reps' :options='setReps' v-model='exercises[mainIndex].reps' />
     </div>
     <!-- load type -->
-    <div class="list-selector" v-show="exercises[mainIndex].liftType === 'main' || exercises[mainIndex].liftType === 'accessories'">
-      <small class="text-muted">Load type</small>
+    <div class='list-selector' v-show='exercises[mainIndex].liftType === "main" || exercises[mainIndex].liftType === "accessories"'>
+      <small class='text-muted'>Load type</small>
       <br />
-      <b-form-select id="list-load-type" :options="loadType" v-model="exercises[mainIndex].loadType" />
+      <b-form-select id='list-load-type' :options='loadType' v-model='exercises[mainIndex].loadType' />
     </div>
     <!-- load -->
-    <div class="list-selector" v-show="exercises[mainIndex].liftType === 'main' || exercises[mainIndex].liftType === 'accessories'">
-      <small class="text-muted">Load</small>
+    <div class='list-selector' v-show='exercises[mainIndex].liftType === "main" || exercises[mainIndex].liftType === "accessories"'>
+      <small class='text-muted'>Load</small>
       <br />
-      <b-form-input id="input-load" type="text" v-model="exercises[mainIndex].load" />
+      <b-form-input id='input-load' type='text' v-model='exercises[mainIndex].load' />
     </div>
     <!-- delete exercise button -->
-    <div class="delete-exercise">
-      <b-button id="btn-delete-exercise" class="btn-exercise" variant="danger" @click="deleteExercise(mainIndex)">Delete</b-button>
+    <div class='delete-exercise'>
+      <b-button id='btn-delete-exercise' class='btn-exercise' variant='danger' @click='deleteExercise(mainIndex)'>Delete</b-button>
     </div>
   </div>
   
   <!-- add exercise button -->
-  <div class="row">
-    <b-button class="btn-exercise" variant="primary" @click="addExercise">Add exercise</b-button>
+  <div class='row'>
+    <b-button class='btn-exercise' variant='primary' @click='addExercise'>Add exercise</b-button>
   </div>
 </div>
 </template>
@@ -72,6 +72,7 @@ export default {
     'week'
   ],
   data() {
+
     return {
       liftType: [
         'main',
@@ -90,18 +91,30 @@ export default {
       ],
       exercises: []
     };
+
   },
   mounted() {
+
+    // Retrieves libraries first if parent component is update-program
     if (this.$root.$children[0].$children[1].$children[0].$el.id === 'update-program') {
       this.getLibrary('main');
       this.getLibrary('accessories');
       this.getLibrary('variations');
     }
+
   },
   methods: {
+
+    /**
+     * Makes api call to retrieve specified library
+     *
+     * @param      {string}  library  The library
+     */
     getLibrary(library) {
+
       api.get('/training/library/' + library)
         .then((response) => {
+
           if (response.status === 200) {
             switch (library) {
               case 'main':
@@ -120,12 +133,25 @@ export default {
           } else {
             alert(response.data);
           }
+
         })
         .catch((error) => {
+
           console.log('API error retrieving library: ', error);
+
         });
+
     },
+
+    /**
+     * Sets/resets list selections
+     *
+     * @param      {string}  list    The list
+     * @param      {string}  item    The item
+     * @param      {number}  index   The index
+     */
     handleSelect(list, item, index) {
+
       switch (list) {
         case 'liftType':
           this.exercises[index].accessories = undefined;
@@ -158,8 +184,14 @@ export default {
           this.getLibrary('variations');
           break;
       }
+
     },
-    addExercise() {    
+
+    /**
+     * Adds exercise object to array
+     */
+    addExercise() {
+
       this.exercises.push({
         liftType: undefined,
         accessories: undefined,
@@ -170,10 +202,20 @@ export default {
         loadType: undefined,
         load: undefined
       });
+
     },
+
+    /**
+     * Deletes exercise object from array
+     *
+     * @param      {number}  index   The index of the exercise object
+     */
     deleteExercise(index) {
+
       this.exercises.splice(index, 1);
+
     }
+    
   }
 };
 </script>

@@ -1,44 +1,44 @@
 <template>
-<div class="create-account">
+<div class='create-account'>
   <b-card>
-    <form @submit.prevent="handleSubmit">
+    <form @submit.prevent='handleSubmit'>
       <h2>Create an account</h2>
 
-      <small class="text-muted">First Name</small>
-      <b-form-input v-model="firstName" id="input-name" type="text" required autofocus />
-      <small class="text-muted">Last Name</small>
-      <b-form-input v-model="lastName" id="input-name" type="text" required />
-      <small class="text-muted">Email</small>
-      <b-form-input v-model="email" id="input-email" type="email" required />
-      <small class="text-muted">Password</small>
-      <b-form-input v-model="password" id="input-password" type="password" required />
-      <small class="text-muted">Confirm password</small>
-      <b-form-input v-model="password2" id="input-password2" type="password" required />
+      <small class='text-muted'>First Name</small>
+      <b-form-input v-model='firstName' id='input-name' type='text' required autofocus />
+      <small class='text-muted'>Last Name</small>
+      <b-form-input v-model='lastName' id='input-name' type='text' required />
+      <small class='text-muted'>Email</small>
+      <b-form-input v-model='email' id='input-email' type='email' required />
+      <small class='text-muted'>Password</small>
+      <b-form-input v-model='password' id='input-password' type='password' required />
+      <small class='text-muted'>Confirm password</small>
+      <b-form-input v-model='password2' id='input-password2' type='password' required />
 
-      <b-form-radio v-model="accountType" :options="accountOptions" required />
+      <b-form-radio v-model='accountType' :options='accountOptions' required />
 
-      <b-button id="btn-create-account">Create an account</b-button>
+      <b-button id='btn-create-account'>Create an account</b-button>
     </form>
     <hr class='hr-text' data-content='or' />
-    <div id="already-member">
+    <div id='already-member'>
       <span>Already a member? </span>
-      <b-button id="sign-in" variant="link" to="signin">Sign in</b-button>
+      <b-button id='sign-in' variant='link' to='signin'>Sign in</b-button>
     </div>
   </b-card>
 
-  <b-modal id="create-client-modal" title="Coach selection">
+  <b-modal id='create-client-modal' title='Coach selection'>
     Who is your coach?
-    <b-form-select :options="coachList" v-model="coach" />
-    <footer slot="modal-footer">
-      <b-btn variant="secondary" @click="handleCancel">Cancel</b-btn>
-      <b-btn variant="primary" @click="handleCreateClient">Select</b-btn>
+    <b-form-select :options='coachList' v-model='coach' />
+    <footer slot='modal-footer'>
+      <b-btn variant='secondary' @click='handleCancel'>Cancel</b-btn>
+      <b-btn variant='primary' @click='handleCreateClient'>Select</b-btn>
     </footer>
   </b-modal>
 
-  <b-modal id="create-account-results-modal" title="Create account confirmation">
+  <b-modal id='create-account-results-modal' title='Create account confirmation'>
     {{ message }}
-    <footer slot="modal-footer">
-      <b-btn variant="primary" @click="handleClose('create-account-results-modal')">Ok</b-btn>
+    <footer slot='modal-footer'>
+      <b-btn variant='primary' @click='handleClose('create-account-results-modal')'>Ok</b-btn>
     </footer>
   </b-modal>
 </div>
@@ -48,10 +48,15 @@
 import api from '@/../utils/api';
 import { signin } from '@/../utils/auth';
 import Router from 'vue-router';
+import general from '@/mixins/general';
 
 export default {
   name: 'create-account',
+  mixins: [
+    general
+  ],
   data () {
+
     return {
       firstName: '',
       lastName: '',
@@ -73,19 +78,20 @@ export default {
       coach: undefined,
       message: ''
     };
+
   },
   methods: {
-    handleClose(modalId) {
-      this.$root.$emit('hide::modal', modalId);
-    },
-    handleOpen(modalId) {
-      this.$root.$emit('show::modal', modalId);
-    },
+
+    /**
+     * Makes an api call to get the coach list.
+     */
     getCoachList() {
+
       var query = '?accountType=coach';
 
       api.get('/users/' + query)
         .then((response) => {
+
           if (response.status === 200) {
             for (var i = 0; i < response.data.users.length; i++) {
               var fullName = response.data.users[i].lastName + ', ' + response.data.users[i].firstName;
@@ -97,13 +103,22 @@ export default {
             }
 
             this.coachList.sort();
+
           }
+
         })
         .catch((error) => {
+
           console.log('No coaches found.');
+
         });
     },
+
+    /**
+     * Handles submission. Compares passwords, checks account type, and opens up coach selection if client, otherwise submits.
+     */
     handleSubmit() {
+
       if (this.password !== this.password2) {
         this.message = 'Your passwords do not match.';
         this.handleOpen('create-account-results-modal');
@@ -113,6 +128,7 @@ export default {
       } else if (this.accountType === 'client') {
         this.handleCreateAccount()
           .then((result) => {
+
             if (result) {
               signin(this.email, this.password)
                 .then((result) => {
@@ -124,15 +140,26 @@ export default {
             } else {
               this.handleOpen('create-account-results-modal');
             }
+
           });
       } else {
         this.handleCreateAccount()
           .then((result) => {
+
             this.handleOpen('create-account-results-modal');
+
           });
       }
+
     },
+
+    /**
+     * Makes api call to post the account
+     *
+     * @return     {Promise}  Promise of post response
+     */
     handleCreateAccount() {
+
       var payload = {
         firstName: this.firstName,
         lastName: this.lastName,
@@ -144,32 +171,50 @@ export default {
 
       return api.post('/users', payload)
         .then((response) => {
+
           if (response.status === 201) {
             this.message = 'Your account was created successfully!';
             return true;
           }
+
         })
         .catch((error) => {
+
           this.message = 'There was an error creating your account.';
           return false;
+
         });
+
     },
+
+    /**
+     * Handles ok message modal and routes to dashboard if created
+     */
     handleOk() {
+
       var router = new Router();
 
       if (this.message === 'Your account was created successfully!') {
         signin(this.email, this.password)
           .then((result) => {
+
             if (result) {
               this.handleClose('create-account-results-modal');
               router.push('/dash');
             }
+
           });
       } else {
         this.handleClose('create-account-results-modal');
       }
+
     },
+
+    /**
+     * Handles client creation and coach assignment. Routes to dashboard if created.
+     */
     handleCreateClient() {
+
       var router = new Router();
       var query = this.email;
       var payload = {
@@ -178,31 +223,46 @@ export default {
 
       api.patch('/users/' + query, payload)
         .then((response) => {
+
           if (response.status === 200) {
             this.handleClose('create-client-modal');
             router.push('/dash');
           } else {
             this.handleClose('create-client-modal');
           }
+
         })
         .catch((error) => {
+
           console.log('There was an error assigning your coach: ', error);
           this.handleClose('create-client-modal');
+
         });
+
     },
+
+    /**
+     * Handles account cancellation. Deletes client account if cancelled at coach selection.
+     */
     handleCancel() {
+
       var query = this.email;
 
       api.delete('/users/' + query)
         .then((response) => {
+
           this.coach = undefined;
           this.coachList = [];
+
         })
         .catch((error) => {
+
           console.log('There was an error deleting the user.');
+          
         });
 
       this.handleClose('create-client-modal');
+
     }
   }
 };

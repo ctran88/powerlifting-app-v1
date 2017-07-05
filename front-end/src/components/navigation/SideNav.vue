@@ -1,10 +1,10 @@
 <template>
-<div class="side-nav">
-  <div class="sidebar col-2" :class="{ hide: $store.state.sideNavHidden }">
-    <b-link class="navbar-brand" href="/">The Powerlifting Notebook</b-link>
+<div class='side-nav'>
+  <div class='sidebar col-2' :class='{ hide: $store.state.sideNavHidden }'>
+    <b-link class='navbar-brand' href='/'>The Powerlifting Notebook</b-link>
 
-    <b-nav vertical v-for="route in $router.options.routes.slice(3, -1)" :key="route.name">
-      <router-link class="nav-link" :to="route.path">{{ route.name }}</router-link>
+    <b-nav vertical v-for='route in $router.options.routes.slice(3, -1)' :key='route.name'>
+      <router-link class='nav-link' :to='route.path'>{{ route.name }}</router-link>
     </b-nav>
   </div>
 </div>
