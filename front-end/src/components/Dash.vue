@@ -5,8 +5,22 @@
 </template>
 
 <script>
+import Router from 'vue-router';
+
 export default {
-  name: 'dash'
+  name: 'dash',
+  mounted() {
+
+    var router = new Router();
+    
+    if (this.$store.getters.userInfo.accountType === 'coach') {
+      router.push('/clients');
+    } else {
+      router.push('/programs');
+    }
+    
+
+  }
 };
 </script>
 

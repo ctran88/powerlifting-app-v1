@@ -4,7 +4,7 @@ import api from './api';
 import store from '@/store';
 
 /**
- * Sign in function.  Makes api call to create session information.
+ * Sign in function.  Makes api call to create session information and updates user with last login date.
  *
  * @param      {string}  email     The email
  * @param      {string}  password  The password
@@ -28,8 +28,20 @@ export function signin(email, password) {
             .then((response) => {
 
                 if (response.status === 200) {
-                    store.dispatch('setUserInfo', response.data.info);
-                    return true;
+                    var query = response.data.info.email;
+                    var update = {
+                        lastLogin: new Date().toISOString()
+                    };
+
+                    return api.patch('/users/' + query, update)
+                        .then((response) => {
+
+                            if (response.status === 200) {
+                                store.dispatch('setUserInfo', response.data.info);
+                                return true;
+                            }
+
+                        });
                 }
 
             })
@@ -101,4 +113,35 @@ export async function requireAuth(to, from, next) {
         next();
     }
     
+};
+
+
+/**
+ * Require coach account type function.  Checks if signed in, then checks if account tyep is coach to view routes.
+ *
+ * @param      {Function}  to      The to
+ * @param      {Function}  from    The from
+ * @param      {Function}  next    The next
+ */
+export async function requireCoach(to, from, next) {
+
+    var response = await isSignedIn();
+
+    if (response.data === 'Not signed in.') {
+        next({
+            path: '/signin',
+            query: {
+                redirect: to.fullPath
+            }
+        });
+    } else {
+        store.dispatch('setUserInfo', response.data.info);
+
+        if (store.getters.userInfo.accountType !== 'coach') {
+            next(false);
+        } else {
+            next();
+        }
+    }
+
 };

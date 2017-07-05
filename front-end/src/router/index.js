@@ -11,7 +11,7 @@ import UpdateProgram from '@/components/programs/UpdateProgram';
 import ViewProgram from '@/components/programs/ViewProgram';
 import TrainingLog from '@/components/logs/TrainingLog';
 import PageNotFound from '@/components/navigation/PageNotFound';
-import { requireAuth } from '@/../utils/auth';
+import { requireAuth, requireCoach } from '@/../utils/auth';
 
 Vue.use(Router);
 
@@ -36,43 +36,43 @@ export default new Router({
             path: '/dash',
             name: 'Dashboard',
             beforeEnter: requireAuth,
-          component: Dash
+            component: Dash
         },
         {
             path: '/clients',
             name: 'Clients',
-            beforeEnter: requireAuth,
-          component: Clients
+            beforeEnter: requireCoach,
+            component: Clients
         },
         {
             path: '/programs',
             name: 'Programs',
             beforeEnter: requireAuth,
-          component: Programs
+            component: Programs
         },
         {
             path: '/create-program',
             name: 'Create program',
-            beforeEnter: requireAuth,
-          component: CreateProgram
+            beforeEnter: requireCoach,
+            component: CreateProgram
         },
         {
             path: '/update-program',
             name: 'Update program',
-            beforeEnter: requireAuth,
-          component: UpdateProgram
+            beforeEnter: requireCoach,
+            component: UpdateProgram
         },
         {
             path: '/view-program',
             name: 'View program',
             beforeEnter: requireAuth,
-          component: ViewProgram
+            component: ViewProgram
         },
         {
             path: '/training-log',
             name: 'Training log',
             beforeEnter: requireAuth,
-          component: TrainingLog
+            component: TrainingLog
         },
         {
             path: '*',

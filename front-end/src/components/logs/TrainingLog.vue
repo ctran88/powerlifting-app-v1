@@ -157,9 +157,11 @@ export default {
           this.log.exercises = JSON.parse(JSON.stringify(response.data.logs[0].main.concat(response.data.logs[0].accessories)))
         })
         .catch((error) => {
+          this.log.logId = '';
           this.log.programId = this.$store.state.programs.program._id;
           this.log.microcycleId = microcycleId;
           this.log.sessionId = session._id;
+          this.log.weighIn = '';
           this.log.exercises = [];
 
           for (var i = 0; i < session.session.length; i++) {

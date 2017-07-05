@@ -3,16 +3,48 @@
   <div class='sidebar col-2' :class='{ hide: $store.state.sideNavHidden }'>
     <b-link class='navbar-brand' href='/'>The Powerlifting Notebook</b-link>
 
-    <b-nav vertical v-for='route in $router.options.routes.slice(3, -1)' :key='route.name'>
-      <router-link class='nav-link' :to='route.path'>{{ route.name }}</router-link>
-    </b-nav>
+    <!-- coach side nav -->
+    <div v-if='$store.getters.userInfo.accountType === "coach"'>
+      <b-nav vertical v-for='route in $router.options.routes.slice(4, 6)' :key='route.name'>
+        <router-link class='nav-link' :to='route.path'>{{ route.name }}</router-link>
+      </b-nav>
+    </div>
+
+    <!-- client side nav -->
+    <div v-else>
+      <b-nav vertical v-for='route in routes' :key='route.name'>
+        <router-link class='nav-link' :to='route.path'>{{ route.name }}</router-link>
+      </b-nav>
+    </div>
   </div>
 </div>
 </template>
 
 <script>
 export default {
-  name: 'side-nav'
+  name: 'side-nav',
+  computed: {
+
+    /**
+     * Returns new route array for client side nav
+     *
+     * @return     {Array}  The client routes array
+     */
+    routes() {
+
+      var router = this.$router.options.routes;
+      var clientRoutes = [];
+
+      for (var i = 0; i < router.length; i++) {
+        if (router[i].name === 'Programs') {
+          clientRoutes.push(router[i]);
+        }
+      }
+
+      return clientRoutes;
+
+    }
+  }
 };
 </script>
 
