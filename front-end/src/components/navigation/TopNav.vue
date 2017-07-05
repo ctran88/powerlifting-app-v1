@@ -31,14 +31,10 @@
 </template>
 
 <script>
-import SideNav from './SideNav';
 import { signout } from '@/../utils/auth';
 
 export default {
   name: 'top-nav',
-  components: {
-    SideNav
-  },
   data() {
 
     return {

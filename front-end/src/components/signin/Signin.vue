@@ -18,7 +18,7 @@
   <b-modal id='unauthorized-modal' size='sm' title='Unauthorized'>
     Invalid email/password.
     <footer slot='modal-footer'>
-      <b-btn variant='secondary' @click='handleClose('unauthorized-modal')'>OK</b-btn>
+      <b-btn variant='secondary' @click='handleClose("unauthorized-modal")'>OK</b-btn>
     </footer>
   </b-modal>
 </div>

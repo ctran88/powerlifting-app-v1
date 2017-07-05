@@ -38,7 +38,7 @@
   <b-modal id='create-account-results-modal' title='Create account confirmation'>
     {{ message }}
     <footer slot='modal-footer'>
-      <b-btn variant='primary' @click='handleClose('create-account-results-modal')'>Ok</b-btn>
+      <b-btn variant='primary' @click='handleClose("create-account-results-modal")'>Ok</b-btn>
     </footer>
   </b-modal>
 </div>

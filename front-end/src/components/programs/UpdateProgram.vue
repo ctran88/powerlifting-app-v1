@@ -19,7 +19,7 @@
   <b-modal id='cancellation-modal' size='sm' title='Cancellation confirmation'>
     Are you sure you want to cancel your changes and leave this page?
     <footer slot='modal-footer'>
-      <b-btn variant='secondary' @click='handleClose('cancellation-modal')'>No</b-btn>
+      <b-btn variant='secondary' @click='handleClose("cancellation-modal")'>No</b-btn>
       <b-btn variant='warning' @click='handleCancelChanges'>Yes, cancel changes</b-btn>
     </footer>
   </b-modal>
@@ -27,7 +27,7 @@
     {{ message.details }}
     <footer slot='modal-footer'>
       <b-btn variant='secondary' @click='handleGoBack'>Go back</b-btn>
-      <b-btn variant='success' @click='handleClose('save-draft-modal')'>Continue editing</b-btn>
+      <b-btn variant='success' @click='handleClose("save-draft-modal")'>Continue editing</b-btn>
     </footer>
   </b-modal>
   <b-modal id='published-modal' :title='message.title'>

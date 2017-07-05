@@ -5,7 +5,7 @@
     <div class='list-selector' >
       <small class='text-muted'>Lift type</small>
       <br />
-      <b-form-select id='list-lift-type' :options='liftType' v-model='exercises[mainIndex].liftType' @input='handleSelect('liftType', $event, mainIndex)' />
+      <b-form-select id='list-lift-type' :options='liftType' v-model='exercises[mainIndex].liftType' @input='handleSelect("liftType", $event, mainIndex)' />
     </div>
     <!-- accessories -->
     <div class='list-selector' v-show='exercises[mainIndex].liftType === "accessories"'>
@@ -17,7 +17,7 @@
     <div class='list-selector' v-show='exercises[mainIndex].liftType === "main"'>
       <small class='text-muted'>Exercise</small>
       <br />
-      <b-form-select id='list-main' :options='mainLifts' v-model='exercises[mainIndex].exercise' @input='handleSelect('exercise', $event, mainIndex)' />
+      <b-form-select id='list-main' :options='mainLifts' v-model='exercises[mainIndex].exercise' @input='handleSelect("exercise", $event, mainIndex)' />
     </div>
     <!-- variations -->
     <div class='list-selector' v-show='exercises[mainIndex].liftType === "main"'>

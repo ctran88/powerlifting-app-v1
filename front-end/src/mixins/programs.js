@@ -33,13 +33,13 @@ export default {
             api.get('training/programs' + query)
                 .then((response) => {
 
-                  this.$store.dispatch('setProgram', response.data.programs[0]);
-                  this.formatMicrocycles();
+                    this.$store.dispatch('setProgram', response.data.programs[0]);
+                    this.formatMicrocycles();
 
                 })
                 .catch((error) => {
 
-                  console.log('Program not found.');
+                    console.log('Program not found.');
 
                 });
 
