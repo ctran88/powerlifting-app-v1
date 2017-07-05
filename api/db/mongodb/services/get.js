@@ -64,7 +64,8 @@ module.exports = {
                 path: '_clients',
                 match: {
                     coach: payload
-                }
+                },
+                select: '-password'
             };
         }
         

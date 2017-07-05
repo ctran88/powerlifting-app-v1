@@ -35,8 +35,8 @@
   <b-modal id='client-preview-modal' title='Client preview'>
     {{ details }}
     <footer slot='modal-footer'>
-      <b-btn variant='secondary' @click='handleClose('client-preview-modal')'>Close</b-btn>
-      <b-btn variant='primary' @click='handleClose('client-preview-modal')'>OK</b-btn>
+      <b-btn variant='secondary' @click='handleClose("client-preview-modal")'>Close</b-btn>
+      <b-btn variant='primary' @click='handleTrainingLog'>Training Log</b-btn>
     </footer>
   </b-modal>
 
@@ -44,7 +44,7 @@
   <b-modal id='remove-confirmation-modal' size='sm' title='Confirm remove'>
     Are you sure you want to remove {{ details }}?
     <footer slot='modal-footer'>
-      <b-btn variant='secondary' @click='handleClose('remove-confirmation-modal')'>Cancel</b-btn>
+      <b-btn variant='secondary' @click='handleClose("remove-confirmation-modal")'>Cancel</b-btn>
       <b-btn variant='danger' @click='handleRemove'>remove</b-btn>
     </footer>
   </b-modal>
@@ -62,6 +62,7 @@
 
 <script>
 import api from '@/../utils/api';
+import Router from 'vue-router';
 import general from '@/mixins/general';
 
 export default {
@@ -158,6 +159,19 @@ export default {
     handleDetails(item) {
 
       this.details = item;
+
+    },
+
+    /**
+     * Sets program id as active program from client then routes to training-log page
+     */
+    handleTrainingLog() {
+
+      var router = new Router();
+
+      this.$store.dispatch('setProgramId', this.details._activeProgram);
+      this.handleClose('client-preview-modal');
+      router.push('/training-log');
 
     },
 
