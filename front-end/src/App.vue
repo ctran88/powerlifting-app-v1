@@ -1,9 +1,9 @@
 <template>
 <div id='app'>
-  <top-nav v-show='['Sign in', 'Create an account', 'Page not found'].indexOf($route.name) == -1' />
-  <side-nav v-if='$store.state.signedIn && ['Home', 'Sign in', 'Create an account', 'Page not found'].indexOf($route.name) === -1' />
+  <top-nav v-show='["Sign in", "Create an account", "Page not found"].indexOf($route.name) == -1' />
+  <side-nav v-if='$store.state.signedIn && ["Home", "Sign in", "Create an account", "Page not found"].indexOf($route.name) === -1' />
   
-  <b-card id='main-content-card' v-if='['Home', 'Sign in', 'Create an account', 'Page not found'].indexOf($route.name) === -1' :class='{ hide: $store.state.sideNavHidden }'>
+  <b-card id='main-content-card' v-if='["Home", "Sign in", "Create an account", "Page not found"].indexOf($route.name) === -1' :class='{ hide: $store.state.sideNavHidden }'>
     <router-view />
   </b-card>
   <router-view v-else />

@@ -3,7 +3,7 @@
   <b-navbar toggleable type='inverse' variant='inverse' class='navbar-double' />
   <b-navbar toggleable type='inverse' variant='inverse' :style='styles' :class='{ hide: $store.state.sideNavHidden }'>
     <!-- signed in and not at home page -->
-    <b-nav is-nav-bar v-if='$store.state.signedIn && ['Home'].indexOf($route.name) === -1'>
+    <b-nav is-nav-bar v-if='$store.state.signedIn && ["Home"].indexOf($route.name) === -1'>
       <b-btn class='btn-toggle' @click='handleToggle'><span class='navbar-toggler-icon' /></b-btn>
       <span id='route-name'>{{ $route.name }}</span>
     </b-nav>
