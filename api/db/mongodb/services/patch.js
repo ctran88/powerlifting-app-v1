@@ -195,17 +195,18 @@ module.exports = {
         };
         var update = payload.update;
         var options = {
+            new: true,
             overwrite: true,
             runValidators: true
         };
 
-        return Log.update(
+        return Log.findByIdAndUpdate(
             query,
             update,
             options
-        ).then((raw) => {
+        ).then((doc) => {
 
-            var result = raw ? true : false;
+            var result = doc ? doc : false;
             return result;
 
         }).catch((err) => {

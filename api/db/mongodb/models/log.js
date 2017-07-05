@@ -9,56 +9,40 @@ mongoose.Promise = require('bluebird');
 const logModel = new Schema({
     metadata: {
         date: Date,
-        program: {
+        _program: {
             type: Schema.Types.ObjectId,
             ref: 'program'
         },
-        mesocycle: {
-            type: Schema.Types.ObjectId,
-            ref: 'mesocycle'
-        },
-        microcycle: {
+        _microcycle: {
             type: Schema.Types.ObjectId,
             ref: 'microcycle'
         },
-        session: {
+        _session: {
             type: Schema.Types.ObjectId,
             ref: 'session'
         }
     },
-    log: {
-        weighin:            Number,
-        mainLift: [
-            {
-                exercise: {
-                    type: String,
-                    enum: [
-                        'squat',
-                        'bench press',
-                        'deadlift'
-                    ]
-                },
-                variation:  [String],
-                sets:       Number,
-                reps:       Number,
-                weight:     Number,
-                rpe:        Number,
-                backoff:    Boolean,
-                workupSets: Boolean
-            }
-        ],
-        accessory: [
-            {
-                exercise:   String,
-                sets:       Number,
-                reps:       Number,
-                weight:     Number,
-                rpe:        Number,
-                backoff:    Boolean,
-                workupSets: Boolean
-            }
-        ]
-    }
+    weighIn:                Number,
+    main: [
+        {
+            exercise:       String,
+            variations:     String,
+            sets:           Number,
+            reps:           Number,
+            weight:         Number,
+            rpe:            Number
+        }
+    ],
+    accessories: [
+        {
+            exercise:       String,
+            variations:     String,
+            sets:           Number,
+            reps:           Number,
+            weight:         Number,
+            rpe:            Number
+        }
+    ]
 });
 
 module.exports = mongoose.model('log', logModel);

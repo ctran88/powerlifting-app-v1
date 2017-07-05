@@ -208,15 +208,37 @@ module.exports = {
      */
     logs: function(payload) {
 
-        // query for single, many, or all logs
-        var query = payload;
+        var query = {};
+        
+        // assumes payload is session id
+        if (payload._session) {
+            query = {
+                'metadata._session': payload._session
+            };
+        }
+
         var projection = {
             '__v': 0
+        };
+        var programPopulation = {
+            path: 'program'
+        };
+        var microcyclePopulation = {
+            path: 'microcycle'
+        };
+        var sessionPopulation = {
+            path: '_session'
         };
         
         return Log.find(
             query,
             projection
+        ).populate(
+            programPopulation
+        ).populate(
+            microcyclePopulation
+        ).populate(
+            sessionPopulation
         ).then((doc) => {
 
             var result = doc.length > 0 ? doc : false;

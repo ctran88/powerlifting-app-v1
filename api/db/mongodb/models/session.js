@@ -25,8 +25,7 @@ const sessionModel = new Schema({
             percent:        Number,
             percentOf:      String,
             weight:         Number,
-            workupSets:     Boolean,
-            backoff:        Boolean
+            workupSets:     Boolean
         }
     ],
     accessories: [
@@ -39,8 +38,7 @@ const sessionModel = new Schema({
             percent:        Number,
             percentOf:      String,
             weight:         Number,
-            workupSets:     Boolean,
-            backoff:        Boolean
+            workupSets:     Boolean
         }
     ],
     rest:                   Boolean

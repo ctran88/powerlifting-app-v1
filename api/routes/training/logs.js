@@ -17,8 +17,7 @@ module.exports = {
      */
     get: function(req, res) {
 
-        // query logs with json body
-        get.logs(req.body).then((result) => {
+        get.logs(req.query).then((result) => {
 
             if (!result) {
                 res.status(404).send('No logs found.');
@@ -41,19 +40,14 @@ module.exports = {
      */
     post: function(req, res) {
 
-        // create log from json body
-        post.logs(req.body).then((found) => {
+        post.logs(req.body).then((result) => {
 
-            if (found) {
-                res.status(409).send('Log already exists.');
+            if (!result) {
+                res.status(404).send('No log found');
             } else {
-                // save log to database
-                post.logs(req.body).then((result) => {
-
-                    if (result) {
-                        res.status(201).send('Log saved successfully.');
-                    }
-
+                res.status(201).json({
+                    message: 'Log saved successfully.',
+                    log: result
                 });
             }
 
@@ -69,7 +63,12 @@ module.exports = {
      */
     patch: function(req, res) {
 
-        patch.logs(req.body).then((result) => {
+        var payload = {
+            query: req.params.id,
+            update: req.body
+        };
+
+        patch.logs(payload).then((result) => {
 
             if (!result) {
                 res.status(404).send('No log found');
