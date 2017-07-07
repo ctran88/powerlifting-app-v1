@@ -31,7 +31,7 @@
   </b-table>
 
   <b-modal id='program-preview-modal' title='Program preview'>
-    {{ details }}
+    <!-- {{ details }} -->
     <footer slot='modal-footer'>
       <b-btn variant='success' @click='handlePreview'>Preview</b-btn>
     </footer>

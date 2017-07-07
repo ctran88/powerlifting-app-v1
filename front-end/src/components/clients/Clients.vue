@@ -33,7 +33,7 @@
   
   <!-- client preview modal -->
   <b-modal id='client-preview-modal' title='Client preview'>
-    {{ details }}
+    <!-- {{ details }} -->
     <footer slot='modal-footer'>
       <b-btn variant='secondary' @click='handleClose("client-preview-modal")'>Close</b-btn>
       <b-btn variant='primary' @click='handleTrainingLog'>Training Log</b-btn>

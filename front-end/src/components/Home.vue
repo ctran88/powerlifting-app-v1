@@ -15,7 +15,7 @@ export default {
 <style scoped>
 #home {
   height: 100%;
-  background-image: url('../../static/barbell.jpg');
+  background-image: url('../assets/barbell.jpg');
   background-size: cover;
 }
 h1 {
