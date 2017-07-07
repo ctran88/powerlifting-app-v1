@@ -8,9 +8,12 @@ mongoose.set('debug', true);
 mongoose.Promise = require('bluebird');
 
 exports.connect = function() {
+    var options = {
+        useMongoClient: true
+    };
 
     // Start MongoDB connection
-    mongoose.connect(config.db);
+    mongoose.connect(config.db, options);
     const db = mongoose.connection;
     db.on('error', console.error.bind(console, 'MongoDB connection error'));
     db.once('open', () => {
