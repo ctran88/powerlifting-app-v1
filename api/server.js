@@ -8,12 +8,12 @@ var port = config.port;
 
 // initialize database connection
 app.locals.db.connect();
-console.log(__dirname)
+
 // initialize secure server connection
 var server = https.createServer({
 
-    key: fs.readFileSync('../key.pem'),
-    cert: fs.readFileSync('../cert.pem')
+    key: fs.readFileSync('key.pem'),
+    cert: fs.readFileSync('cert.pem')
 
 }, app).listen(port, () => {
 
