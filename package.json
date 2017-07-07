@@ -30,7 +30,7 @@
   "scripts": {
     "uninstall:all": "npm uninstall $(ls -1 node_modules | tr '\n' ' ')",
     "deploy": "api/deploy.sh",
-    "start": "NODE_ENV=development AUTH_SECRET=TPNsecret01 DB=mongodb://admin:TPNadmin01@0.0.0.0/tpn?authSource=admin LOG_LEVEL=info node api/server.js & cd front-end && node build/dev-server.js",
+    "start": "NODE_ENV=development AUTH_SECRET=TPNsecret01 DB=mongodb://heroku_17b2rs2p:67o39jdvm5c87r40kuua8ijvi9@ds151202.mlab.com:51202/heroku_17b2rs2p LOG_LEVEL=info node api/server.js & cd front-end && node build/dev-server.js",
     "dev": "NODE_ENV=development AUTH_SECRET=TPNsecret01 DB=mongodb://admin:TPNadmin01@0.0.0.0/tpn?authSource=admin LOG_LEVEL=info node_modules/.bin/nodemon api/server.js",
     "test": "NODE_ENV=test AUTH_SECRET=TPNsecret01 DB=mongodb://test:TPNtest01@0.0.0.0/tpnTest?authSource=admin LOG_LEVEL=info node_modules/.bin/mocha api/test"
   },
