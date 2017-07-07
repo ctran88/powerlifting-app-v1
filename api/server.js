@@ -8,7 +8,7 @@ var port = config.port;
 
 // initialize database connection
 app.locals.db.connect();
-
+console.log(__dirname)
 // initialize secure server connection
 var server = https.createServer({
 
