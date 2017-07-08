@@ -1,4 +1,5 @@
 import api from '@/../utils/api';
+import Router from 'vue-router';
 
 export default {
     methods: {

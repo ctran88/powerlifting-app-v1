@@ -19,7 +19,7 @@ exports.connect = function() {
     db.once('open', () => {
 
         if (process.env.NODE_ENV !== 'test') {
-            console.log('Successfully connected to MongoDB database: ' + db.name);
+            console.log('Successfully connected to MongoDB database: ' + db.db.databaseName);
         }
 
     });

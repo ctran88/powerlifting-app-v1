@@ -33,13 +33,22 @@ module.exports = {
                         get.users(clientQuery).then((result) => {
 
                             var payload = {
-                                query: req.session.userInfo,
-                                update: {
+                                query: req.session.userInfo
+                            };
+
+                            if (!result) {
+                                payload.update = {
+                                    $set: {
+                                        _clients: []
+                                    }
+                                };
+                            } else {
+                                payload.update = {
                                     $set: {
                                         _clients: result.map((el) => el._id)
                                     }
-                                }
-                            };
+                                };
+                            }
 
                             // set clients array
                             patch.users(payload).then((result) => {

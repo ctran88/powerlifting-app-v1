@@ -98,21 +98,18 @@ export default {
      */
     updatePrograms() {
 
+      this.programs = [];
       var query = '?metadata.client=' + this.$store.state.user.email;
       
       api.get('/training/programs' + query)
         .then((response) => {
 
           if (response.status === 200) {
-            this.programs = [];
-
             response.data.programs.forEach((current) => {
 
               this.programs.push(current);
 
             });
-          } else {
-            alert(response.data);
           }
 
         })
