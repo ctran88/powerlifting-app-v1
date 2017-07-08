@@ -63,7 +63,10 @@
       <create-session :day='7' :week='week' />
     </b-tab>
     <template slot='tabs'>
-      <b-button class='ml-auto btn-week' variant='danger' @click='handleDeleteWeek(index)'>Delete</b-button>
+      <div class='btn-action'>
+        <b-button class='btn-week' id='btn-duplicate-week' @click='handleDuplicateWeek(index)'>Duplicate</b-button>
+        <b-button class='btn-week' id='btn-delete-week' variant='danger' @click='handleDeleteWeek(index)'>Delete</b-button>
+      </div>
     </template>
   </b-tabs>
 
@@ -310,5 +313,8 @@ span {
 }
 .custom-control {
   margin: 0px 40px;
+}
+.btn-action {
+  margin-left: auto;
 }
 </style>

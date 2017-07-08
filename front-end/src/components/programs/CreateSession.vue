@@ -49,8 +49,9 @@
       <br />
       <b-form-input id='input-load' type='text' v-model='exercises[mainIndex].load' />
     </div>
-    <!-- delete exercise button -->
-    <div class='delete-exercise'>
+    <!-- action buttons -->
+    <div class='btn-action'>
+      <b-button id='btn-duplicate-exercise' class='btn-exercise' @click='duplicateExercise(mainIndex)'>Duplicate</b-button>
       <b-button id='btn-delete-exercise' class='btn-exercise' variant='danger' @click='deleteExercise(mainIndex)'>Delete</b-button>
     </div>
   </div>
@@ -206,6 +207,19 @@ export default {
     },
 
     /**
+     * Duplicate exercise object in array
+     *
+     * @param      {number}  index   The index of the exercise object
+     */
+    duplicateExercise(index) {
+
+      var duplicate = JSON.parse(JSON.stringify(this.exercises[index]));
+
+      this.exercises.push(duplicate);
+
+    },
+
+    /**
      * Deletes exercise object from array
      *
      * @param      {number}  index   The index of the exercise object
@@ -228,6 +242,9 @@ export default {
 </style>
 
 <style scoped>
+button {
+  cursor: pointer;
+}
 #exercise-row {
   margin-bottom: 15px;
 }
@@ -238,16 +255,8 @@ export default {
   width: 70px;
   display: inline;
 }
-.btn-exercise {
-  cursor: pointer;
-}
-.delete-exercise {
+.btn-action {
   margin-left: auto;
-  position: relative;
-}
-#btn-delete-exercise {
-  position: absolute;
-  bottom: 0;
-  right: 0;
+  margin-top: auto;
 }
 </style>

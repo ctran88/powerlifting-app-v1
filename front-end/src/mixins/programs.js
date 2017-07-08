@@ -53,6 +53,7 @@ export default {
          * @return     {Object}  Object with formatted exercise information
          */
         formatExercise(value) {
+
             var scheme = value.sets + 'x' + value.reps;
             var load = '';
 
@@ -73,6 +74,7 @@ export default {
                 name: value.exercise,
                 scheme: scheme + ' @ ' + load
             };
+
         },
 
         /**
@@ -81,6 +83,40 @@ export default {
         handleAddWeek() {
 
             this.weeks.push(++this.week);
+
+        },
+
+        /**
+         * Duplicates a week object in array
+         *
+         * @param      {number}  index   The index of the week element
+         */
+        handleDuplicateWeek(index) {
+
+            this.handleAddWeek();
+
+            // timeout so Vue has time to render new week
+            setTimeout(() => {
+
+                var array = this.$children;
+                var weekLabel = (index + 1).toString();
+                var newWeekIndex = array.length -1;
+
+                for (var i = 0; i < array.length; i++) {
+                    if (array[i].tabs && array[i].tabs[0].title.indexOf(weekLabel) !== -1) {
+                        for (var j = 1; j < array[i].tabs.length; j++) {
+                            var exerciseArray = array[i].tabs[j].$children[0].exercises;
+
+                            array[newWeekIndex].tabs[j].$children[0].accessories = array[i].tabs[j].$children[0].accessories;
+                            array[newWeekIndex].tabs[j].$children[0].mainLifts = array[i].tabs[j].$children[0].mainLifts;
+                            array[newWeekIndex].tabs[j].$children[0].mainVariations = array[i].tabs[j].$children[0].mainVariations;
+                            array[newWeekIndex].tabs[j].$children[0].exercises = JSON.parse(JSON.stringify(exerciseArray));
+                        }
+                    }
+                    
+                }
+
+            }, 100);
 
         },
 
