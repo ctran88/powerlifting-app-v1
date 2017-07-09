@@ -18,7 +18,8 @@
     "mongoose": "^4.10.4",
     "morgan": "^1.8.2",
     "vue-cli": "^2.8.2",
-    "vue-config": "^1.0.0"
+    "vue-config": "^1.0.0",
+    "vuefire": "^1.4.3"
   },
   "devDependencies": {
     "chai": "^4.0.2",
