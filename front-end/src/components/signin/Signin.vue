@@ -1,163 +1,132 @@
 <template>
-<div class='signin'>
-  <b-card>
-    <form @submit.prevent='handleSignin'>
-      <h2>Please sign in</h2>
-      <small class='text-muted'>Email</small>
-      <b-form-input v-model='email' id='input-email' type='email' required autofocus />
-      <small class='text-muted'>Password</small>
-      <b-form-input v-model='password' id='input-password' type='password' required />
-      <b-form-checkbox v-model='remember' id='remember-me' value=true unchecked-value=false>Remember me</b-form-checkbox>
-      <b-button id='btn-signin'>Sign in</b-button>
-    </form>
-    <b-button id='forgot-password' variant='link' to='forgot-password'>Forgot password?</b-button>
-    <hr class='hr-text' data-content='or' />
-    <b-button id='create-account' variant='link' to='create-account'>Create an account</b-button>
-  </b-card>
-
-  <b-modal id='unauthorized-modal' size='sm' title='Unauthorized'>
-    Invalid email/password.
-    <footer slot='modal-footer'>
-      <b-btn variant='secondary' @click='handleClose("unauthorized-modal")'>OK</b-btn>
-    </footer>
-  </b-modal>
-</div>
+  <v-container fluid>
+    <v-layout row wrap>
+      <v-flex xs8 md4 offset-md4 offset-xs2>
+        <v-card>
+          <v-card-title primary-title>
+            <h2 class="headline mb-0">Sign in</h2>
+          </v-card-title>
+          <v-card-text class="pb-0">
+            <v-text-field
+              label="Email"
+              v-model="email"
+              :rules="rules.email"
+            ></v-text-field>
+            <v-text-field
+              label="Password"
+              class="mb-0"
+              v-model="password"
+              :append-icon="e ? 'visibility' : 'visibility_off'"
+              :append-icon-cb="handlePasswordVisibility"
+              :type="e ? 'password' : 'text'"
+              :rules="rules.password"
+            ></v-text-field>
+            <v-layout row>
+              <v-checkbox
+                class="mt-0"
+                :label="'Remember me'"
+                v-model="rememberMe"
+              ></v-checkbox>
+              <v-spacer></v-spacer>
+              <v-btn
+                large
+                primary
+                @click.native.stop="handleSignIn"
+              >Sign in</v-btn>
+            </v-layout>
+            <v-divider></v-divider>
+          </v-card-text>
+          <v-card-actions>
+            <router-link to="forgot-password">Forgot your password?</router-link>
+            <v-spacer></v-spacer>
+            <span>Not a member yet? </span>
+            <router-link to="create-account">Create an account</router-link>
+          </v-card-actions>
+        </v-card>
+      </v-flex>
+    </v-layout>
+  </v-container>
 </template>
 
 <script>
-import { signin } from '@/../utils/auth';
-import Router from 'vue-router';
-import general from '@/mixins/general';
+  import { firebase } from '@/../utils/firebase';
+  import Router from 'vue-router';
+  import general from '@/mixins/general';
 
-export default {
-  name: 'signin',
-  mixins: [
-    general
-  ],
-  data () {
+  export default {
+    name: 'signin',
+    mixins: [
+      general
+    ],
+    data: function() {
+      return {
+        email: '',
+        password: '',
+        e: true,
+        rememberMe: false,
+        rules: {
+          email: [],
+          password: []
+        }
+      };
+    },
+    methods: {
+      /**
+       * Handles toggling eye icon for password visibility.
+       */
+      handlePasswordVisibility: function() {
+        this.e = !this.e;
+      },
 
-    return {
-      email: '',
-      password: '',
-      remember: false
-    };
+      /**
+       * Makes api call to post the account
+       *
+       * @return     {Promise}  Promise of post response
+       */
+      handleSignIn: function() {
+        this.rules = {
+          email: [],
+          password: []
+        };
 
-  },
-  methods: {
+        var payload = {
+          firstName: this.firstName,
+          lastName: this.lastName,
+          memberStart: new Date().toISOString()
+        };
 
-    /**
-     * Handles sign in and routes to dashboard if successful.
-     */
-    handleSignin() {
+        this.setErrors();
 
-      var router = new Router();
-      
-      signin(this.email, this.password)
-        .then((result) => {
+        firebase.auth().signInWithEmailAndPassword(this.email, this.password)
+          .catch((error) => {
+            if (error.code === 'auth/invalid-email') {
+              this.rules.email.push('Must enter valid email.');
+            } else if (error.code === 'auth/user-not-found') {
+              this.rules.email.push('User does not exist.');
+            } else {
+              this.rules.email.push('Email and password do not match.');
+            }
+          });
+      },
 
-          if (result) {
-            router.push('/dash');
-          } else {
-            this.handleOpen('unauthorized-modal');
-          }
-          
-        })
-        .catch((error) => {
+      /**
+       * Checks/sets form errors.
+       */
+      setErrors: function() {
+        var requiredMessage = 'Required.';
 
-          console.log('Error signing in: ', error);
+        if (this.email === '') {
+          this.rules.email.push(requiredMessage);
+        }
 
-        });
-
+        if (this.password === '') {
+          this.rules.password.push(requiredMessage);
+        }
+      }
     }
-
-  }
-};
+  };
 </script>
 
 <style scoped>
-.signin {
-  max-width: 330px;
-  padding: 60px 15px;
-  margin: 0 auto;
-}
-.card {
-  border-color: #cccccc;
-  background-color: #f6f6f6;
-  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-              0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  -moz-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-                   0 6px 20px 0 rgba(0, 0, 0, 0.19);
-  -webkit-box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2),
-                      0 6px 20px 0 rgba(0, 0, 0, 0.19);
-}
-h2 {
-  margin-bottom: 10px;
-}
-button {
-  cursor: pointer;
-}
-.form-control {
-  position: relative;
-  height: auto;
-  -webkit-box-sizing: border-box;
-          box-sizing: border-box;
-  padding: 10px;
-  font-size: 16px;
-  margin-bottom: 10px;
-}
-.form-control:focus {
-  z-index: 2;
-  border-color: #C8D80D;
-}
-.custom-checkbox {
-  margin-bottom: 10px;
-}
-#btn-signin {
-  color: #ffffff;
-  background-color: #C8D80D;
-  display: block;
-  width: 100%;
-}
-#btn-signin:hover, #btn-signin:active {
-  background-color: #B3C20B;
-}
-#forgot-password {
-  color: #0A3E65;
-  padding: 8px 0px;
-  font-size: 0.9rem;
-}
-#create-account {
-  color: #0A3E65;
-  padding: 8px 0px;
-  width: 100%;
-}
-.hr-text {
-  line-height: 1em;
-  position: relative;
-  outline: 0;
-  border: 0;
-  color: black;
-  text-align: center;
-  height: 1.5em;
-  opacity: .5;
-}
-.hr-text::before {
-  content: '';
-  background: linear-gradient(to right, transparent, #818078, transparent);
-  position: absolute;
-  left: 0;
-  top: 50%;
-  width: 100%;
-  height: 1px;
-}
-.hr-text::after {
-  content: attr(data-content);
-  position: relative;
-  display: inline-block;
-  color: black;
-  padding: 0 .5em;
-  line-height: 1.5em;
-  color: #818078;
-  background-color: #f6f6f6;
-}
+
 </style>

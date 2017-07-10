@@ -7,7 +7,7 @@ export default {
         /**
          * Retrieves client list from state
          */
-        getClients() {
+        getClients: function() {
 
             var clients = this.$store.state.user._clients;
 
@@ -27,7 +27,7 @@ export default {
         /**
          * Uses the program id in state to make an api call to retrieve program, then calls formatting functions
          */
-        getProgram() {
+        getProgram: function() {
 
             var query = '?_id=' + this.$store.state.programs.program._id;
 
@@ -52,7 +52,7 @@ export default {
          * @param      {Object}  value   The value
          * @return     {Object}  Object with formatted exercise information
          */
-        formatExercise(value) {
+        formatExercise: function(value) {
 
             var scheme = value.sets + 'x' + value.reps;
             var load = '';
@@ -80,7 +80,7 @@ export default {
         /**
          * Pushes a week object to array to add a week element
          */
-        handleAddWeek() {
+        handleAddWeek: function() {
 
             this.weeks.push(++this.week);
 
@@ -91,7 +91,7 @@ export default {
          *
          * @param      {number}  index   The index of the week element
          */
-        handleDuplicateWeek(index) {
+        handleDuplicateWeek: function(index) {
 
             this.handleAddWeek();
 
@@ -125,7 +125,7 @@ export default {
          *
          * @param      {number}  index   The index of the week element
          */
-        handleDeleteWeek(index) {
+        handleDeleteWeek: function(index) {
 
             this.weeks.splice(index, 1);
 
@@ -134,7 +134,7 @@ export default {
         /**
          * Handles save draft modal and returns to programs page
          */
-        handleGoBack() {
+        handleGoBack: function() {
 
             var router = new Router();
 
@@ -146,7 +146,7 @@ export default {
         /**
          * Handles publish modal and returns to programs page
          */
-        handlePublishedOk() {
+        handlePublishedOk: function() {
 
             var router = new Router();
 
@@ -158,7 +158,7 @@ export default {
         /**
          * Saves program as draft then sets message details for modal
          */
-        handleSaveDraft() {
+        handleSaveDraft: function() {
 
             this.saveProgram('draft')
                 .then((result) => {
@@ -181,7 +181,7 @@ export default {
         /**
          * Saves program as published then sets message details for modal
          */
-        handlePublish() {
+        handlePublish: function() {
 
             var router = new Router();
           

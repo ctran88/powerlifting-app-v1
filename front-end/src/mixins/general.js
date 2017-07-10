@@ -6,7 +6,7 @@ export default {
          *
          * @param      {string}  modalId  The modal identifier
          */
-        handleClose(modalId) {
+        handleClose: function(modalId) {
 
             this.$root.$emit('hide::modal', modalId);
 
@@ -17,7 +17,7 @@ export default {
          *
          * @param      {string}  modalId  The modal identifier
          */
-        handleOpen(modalId) {
+        handleOpen: function(modalId) {
 
             this.$root.$emit('show::modal', modalId);
 
@@ -28,7 +28,7 @@ export default {
          *
          * @param      {Object}  item    The item
          */
-        handleDetails(item) {
+        handleDetails: function(item) {
             
             this.details = item;
 

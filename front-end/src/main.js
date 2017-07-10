@@ -2,16 +2,15 @@
 // (runtime-only or standalone) has been set in webpack.base.conf with an alias.
 import Vue from 'vue';
 import VueFire from 'vuefire';
+import Vuetify from 'vuetify';
 import App from './App';
-import BootstrapVue from 'bootstrap-vue/dist/bootstrap-vue.esm';
 import router from './router';
 import store from './store/index';
 
-import 'bootstrap/dist/css/bootstrap.css';
-import 'bootstrap-vue/dist/bootstrap-vue.css';
+import 'vuetify/dist/vuetify.min.css';
 
 Vue.use(VueFire);
-Vue.use(BootstrapVue);
+Vue.use(Vuetify);
 
 /* eslint-disable no-new */
 new Vue({
