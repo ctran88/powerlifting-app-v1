@@ -2,38 +2,15 @@
   "name": "the-powerlifting-notebook",
   "version": "1.0.0",
   "description": "A powerlifting application for coaches and clients to communicate all of their needs.",
-  "main": "server.js",
   "dependencies": {
-    "bcrypt": "^1.0.2",
-    "bluebird": "^3.5.0",
-    "body-parser": "^1.17.2",
-    "connect-mongo": "^1.3.2",
-    "cookie-parser": "^1.4.3",
-    "cors": "^2.8.3",
-    "csurf": "^1.9.0",
-    "express": "^4.15.3",
-    "express-session": "^1.15.3",
-    "express-validator": "^3.2.0",
-    "firebase": "^4.1.3",
-    "mongoose": "^4.10.4",
-    "morgan": "^1.8.2",
-    "vue-cli": "^2.8.2",
-    "vue-config": "^1.0.0",
-    "vuefire": "^1.4.3"
-  },
-  "devDependencies": {
-    "chai": "^4.0.2",
-    "chai-http": "^3.0.0",
-    "eslint": "^3.19.0",
-    "mocha": "^3.4.2",
-    "nodemon": "^1.11.0"
+    "firebase-tools": "^3.9.1",
+    "vue-cli": "^2.8.2"
   },
   "scripts": {
     "uninstall:all": "npm uninstall $(ls -1 node_modules | tr '\n' ' ')",
-    "deploy": "api/deploy.sh",
-    "start": "NODE_ENV=development AUTH_SECRET=TPNsecret01 DB=mongodb://heroku_17b2rs2p:67o39jdvm5c87r40kuua8ijvi9@ds151202.mlab.com:51202/heroku_17b2rs2p LOG_LEVEL=info node api/server.js & cd front-end && node build/dev-server.js",
-    "dev": "NODE_ENV=development AUTH_SECRET=TPNsecret01 DB=mongodb://admin:TPNadmin01@0.0.0.0/tpn?authSource=admin LOG_LEVEL=info node_modules/.bin/nodemon api/server.js",
-    "test": "NODE_ENV=test AUTH_SECRET=TPNsecret01 DB=mongodb://test:TPNtest01@0.0.0.0/tpnTest?authSource=admin LOG_LEVEL=info node_modules/.bin/mocha api/test"
+    "vue-cli:init": "./node_modules/.bin/vue-cli init webpack app",
+    "firebase:login": "./node_modules/.bin/firebase login",
+    "firebase:deploy": "./node_modules/.bin/firebase deploy"
   },
   "repository": {
     "type": "git",
