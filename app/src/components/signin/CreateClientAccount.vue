@@ -1,7 +1,13 @@
 <template>
   <v-container fluid>
     <v-layout row wrap>
-      <v-flex xs8 md4 offset-md4 offset-xs2>
+      <v-flex
+        xs8
+        md4
+        offset-md4
+        offset-xs2
+        v-if="!successful"
+      >
         <v-card>
           <v-card-title primary-title>
             <h2 class="headline mb-0">Create an account</h2>
@@ -11,24 +17,29 @@
               label="First name"
               v-model="firstName"
               :rules="rules.firstName"
+              @keyup.native.enter="handleCreateAccount"
             ></v-text-field>
             <v-text-field
               label="Last name"
               v-model="lastName"
               :rules="rules.lastName"
+              @keyup.native.enter="handleCreateAccount"
             ></v-text-field>
             <v-text-field
               label="Coach"
-              v-model="coach"
+              disabled
+              :value="coach"
             ></v-text-field>
             <v-text-field
               label="Team"
-              v-model="team"
+              disabled
+              :value="team"
             ></v-text-field>
             <v-text-field
               label="Email"
               v-model="email"
               :rules="rules.email"
+              @keyup.native.enter="handleCreateAccount"
             ></v-text-field>
             <v-text-field
               label="Password"
@@ -40,12 +51,14 @@
               :append-icon-cb="handlePasswordVisibility"
               :type="e ? 'password' : 'text'"
               :rules="rules.password"
+              @keyup.native.enter="handleCreateAccount"
             ></v-text-field>
             <v-layout row class="mb-3">
               <v-spacer></v-spacer>
               <v-btn
                 large
                 primary
+                :disabled="successful"
                 @click.native.stop="handleCreateAccount"
               >Create account</v-btn>
             </v-layout>
@@ -58,6 +71,7 @@
           </v-card-actions>
         </v-card>
       </v-flex>
+      <h2 class="welcome-message" v-else>Welcome to The Powerlifting Notebook</h2>
     </v-layout>
   </v-container>
 </template>
@@ -65,20 +79,26 @@
 <script>
   import { firebasedb } from '@/../utils/firebase';
   import { createAccount } from '@/../utils/auth';
-  import general from '@/mixins/general';
 
   export default {
-    name: 'create-account',
-    mixins: [
-      general
+    name: 'create-client-account',
+    props: [
+      'defaultClientEmail',
+      'defaultClientFirst',
+      'defaultClientLast',
+      'defaultCoachEmail',
+      'defaultCoach',
+      'defaultTeam',
+      'defaultKey'
     ],
     data: function() {
       return {
-        firstName: '',
-        lastName: '',
-        coach: '',
-        team: '',
-        email: '',
+        successful: false,
+        firstName: this.defaultClientFirst,
+        lastName: this.defaultClientLast,
+        coach: this.defaultCoach,
+        team: this.defaultTeam,
+        email: this.defaultClientEmail,
         password: '',
         e: true,
         rules: {
@@ -91,16 +111,16 @@
     },
     firebase: {
       users: {
-        source: firebasedb.ref('users'),
+        source: firebasedb.ref('/users'),
         cancelCallback: function(error) {
           console.error('firebasedb error: ', error);
         }
-      }
-    },
-    beforeRouteLeave: function(to, from, next) {
-      if (to.name === 'Dashboard') {
-        this.successful = true;
-        setTimeout(next, 1000);
+      },
+      invites: {
+        source: firebasedb.ref('/invites'),
+        cancelCallback: function(error) {
+          console.error('firebasedb error: ', error);
+        }
       }
     },
     methods: {
@@ -115,7 +135,6 @@
        * Handles sign in submission.
        */
       handleCreateAccount: function() {
-        var router = new Router();
         var payload = {
           firstName: this.firstName,
           lastName: this.lastName,
@@ -143,12 +162,14 @@
           .then((user) => {
             var update = {
               displayName: this.firstName + ' ' + this.lastName,
-              photoURL: "https://randomuser.me/api/portraits/lego/1.jpg"
+              photoURL: 'https://randomuser.me/api/portraits/lego/1.jpg'
             };
 
             user.updateProfile(update);
             this.$firebaseRefs.users.child(user.uid).set(payload);
-            this.$router.push({ name: 'Dashboard' });
+            this.$firebaseRefs.invites.child(this.defaultKey).remove();
+            this.successful = true;
+            setTimeout(() => this.$router.push({ name: 'Dashboard' }), 1000);
           })
           .catch((error) => {
             if (error.code === 'auth/email-already-in-use') {
@@ -195,5 +216,9 @@
 </script>
 
 <style scoped>
-  
+  .welcome-message {
+    width: 100%;
+    margin-top: 15%;
+    text-align: center;
+  }
 </style>

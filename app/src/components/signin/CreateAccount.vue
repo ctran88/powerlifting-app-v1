@@ -1,7 +1,13 @@
 <template>
   <v-container fluid>
     <v-layout row wrap>
-      <v-flex xs8 md4 offset-md4 offset-xs2 v-if="!successful">
+      <v-flex
+        xs8
+        md4
+        offset-md4
+        offset-xs2
+        v-if="!successful"
+      >
         <v-card>
           <v-card-title primary-title>
             <h2 class="headline mb-0">Create an account</h2>
@@ -11,20 +17,24 @@
               label="First name"
               v-model="firstName"
               :rules="rules.firstName"
+              @keyup.native.enter="handleCreateAccount"
             ></v-text-field>
             <v-text-field
               label="Last name"
               v-model="lastName"
               :rules="rules.lastName"
+              @keyup.native.enter="handleCreateAccount"
             ></v-text-field>
             <v-text-field
               label="Team (optional)"
               v-model="team"
+              @keyup.native.enter="handleCreateAccount"
             ></v-text-field>
             <v-text-field
               label="Email"
               v-model="email"
               :rules="rules.email"
+              @keyup.native.enter="handleCreateAccount"
             ></v-text-field>
             <v-text-field
               label="Password"
@@ -36,12 +46,14 @@
               :append-icon-cb="handlePasswordVisibility"
               :type="e ? 'password' : 'text'"
               :rules="rules.password"
+              @keyup.native.enter="handleCreateAccount"
             ></v-text-field>
             <v-layout row class="mb-3">
               <v-spacer></v-spacer>
               <v-btn
                 large
                 primary
+                :disabled="successful"
                 @click.native.stop="handleCreateAccount"
               >Create account</v-btn>
             </v-layout>
@@ -54,7 +66,7 @@
           </v-card-actions>
         </v-card>
       </v-flex>
-      <h2 v-else>Welcome to The Powerlifting Notebook</h2>
+      <h2 class="welcome-message" v-else>Welcome to The Powerlifting Notebook</h2>
     </v-layout>
   </v-container>
 </template>
@@ -62,13 +74,9 @@
 <script>
   import { firebasedb } from '@/../utils/firebase';
   import { createAccount } from '@/../utils/auth';
-  import general from '@/mixins/general';
 
   export default {
     name: 'create-account',
-    mixins: [
-      general
-    ],
     data: function() {
       return {
         successful: false,
@@ -88,16 +96,10 @@
     },
     firebase: {
       users: {
-        source: firebasedb.ref('users'),
+        source: firebasedb.ref('/users'),
         cancelCallback: function(error) {
           console.error('firebasedb error: ', error);
         }
-      }
-    },
-    beforeRouteLeave: function(to, from, next) {
-      if (to.name === 'Dashboard') {
-        this.successful = true;
-        setTimeout(next, 1000);
       }
     },
     methods: {
@@ -143,7 +145,8 @@
 
             user.updateProfile(update);
             this.$firebaseRefs.users.child(user.uid).set(payload);
-            this.$router.push({ name: 'Dashboard' });
+            this.successful = true;
+            setTimeout(() => this.$router.push({ name: 'Dashboard' }), 1000);
           })
           .catch((error) => {
             if (error.code === 'auth/email-already-in-use') {
@@ -190,5 +193,9 @@
 </script>
 
 <style scoped>
-  
+  .welcome-message {
+    width: 100%;
+    margin-top: 15%;
+    text-align: center;
+  }
 </style>

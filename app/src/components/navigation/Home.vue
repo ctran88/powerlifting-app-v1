@@ -17,7 +17,7 @@
     height: 100%;
     width: 100%;
     position: fixed;
-    background-image: url('../assets/barbell.jpg');
+    background-image: url('../../assets/barbell.jpg');
     background-size: cover;
   }
   h1 {

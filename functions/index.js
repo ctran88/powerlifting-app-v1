@@ -1,11 +1,12 @@
+'use strict';
+
 const functions = require('firebase-functions');
 const admin = require('firebase-admin');
+const hashModule = require('./hash');
+const mailerModule = require('./mailer');
 
-// // Create and Deploy Your First Cloud Functions
-// // https://firebase.google.com/docs/functions/write-firebase-functions
-//
-// exports.helloWorld = functions.https.onRequest((request, response) => {
-//  response.send("Hello from Firebase!");
-// });
-
+// initialize connection to database
 admin.initializeApp(functions.config().firebase);
+
+exports.hash = functions.https.onRequest(hashModule.handler);
+exports.mailer = functions.database.ref('/invites/{.key}').onCreate(mailerModule.handler);

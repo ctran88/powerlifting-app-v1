@@ -7,4 +7,5 @@
     - common
     - python
     - nodejs
+    # - stouts-nodejs
     - vagrant

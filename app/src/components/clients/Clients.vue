@@ -12,14 +12,25 @@
             <span class="headline">Invite a client</span>
           </v-card-title>
           <v-card-text>
-            <v-text-field label="Email" required></v-text-field>
+            <v-text-field
+              label="Name"
+              v-model="inviteName"
+              @keyup.native.enter="handleInvite"
+            ></v-text-field>
+            <v-text-field
+              label="Email"
+              required
+              v-model="inviteEmail"
+              :rules="rules.email"
+              @keyup.native.enter="handleInvite"
+            ></v-text-field>
           </v-card-text>
           <v-card-actions>
             <v-spacer></v-spacer>
             <v-btn
               class="blue--text darken-1"
               flat
-              @click.native="dialog = false"
+              @click.native="handleInviteCancel"
             >Cancel</v-btn>
             <v-btn
               class="blue--text darken-1"
@@ -57,24 +68,42 @@
         From {{ pageStart }} to {{ pageStop }}
       </template>
     </v-data-table>
+
+    <v-snackbar
+      :timeout="4000"
+      top
+      multi-line
+      vertical
+      :success="snackbarStatus === 'success'"
+      :error="snackbarStatus === 'error'"
+      v-model="snackbar"
+    >
+      {{ snackbarText }}
+      <v-btn
+        flat
+        dark
+        @click.native="snackbar = false"
+      >Close</v-btn>
+    </v-snackbar>
   </v-card>
 </template>
 
 <script>
-  import { firebasedb } from '@/../utils/firebase';
-  import { hashBcrypt } from '@/../utils/hash';
-  import { sendMail } from '@/../utils/mailer';
-  import general from '@/mixins/general';
+  import api from '@/../utils/api';
 
   export default {
     name: 'clients',
-    mixins: [
-      general
-    ],
     data: function() {
       return {
+        snackbar: false,
+        snackbarStatus: '',
+        snackbarText: '',
         dialog: false,
+        inviteName: '',
         inviteEmail: '',
+        rules: {
+          email: []
+        },
         search: '',
         pagination: {},
         headers: [
@@ -83,25 +112,29 @@
             align: 'left',
             value: 'client'
           },
-          { text: 'Team', value: 'team' },
-          { text: 'Active program', value: 'active program' },
-          { text: 'Member start date', value: 'member start date' },
-          { text: 'Last login', value: 'last login' },
-          { text: 'Email', value: 'email' }
+          {
+            text: 'Team',
+            value: 'team'
+          },
+          {
+            text: 'Active program',
+            value: 'active program'
+          },
+          {
+            text: 'Member start date',
+            value: 'member start date'
+          },
+          {
+            text: 'Last login',
+            value: 'last login'
+          },
+          {
+            text: 'Email',
+            value: 'email'
+          }
         ],
         items: []
       };
-    },
-    firebase: {
-      invites: {
-        source: firebasedb.ref('invites'),
-        cancelCallback: function(error) {
-          console.error('firebasedb error: ', error);
-        }
-      }
-    },
-    mounted: function() {
-      // this.getProgramNames();
     },
     methods: {
       /**
@@ -145,92 +178,85 @@
       },
 
       /**
-       * Handles client invitation hashing and emailing.
+       * Handle cancel client invite
+       */
+      handleInviteCancel: function() {
+        this.inviteEmail = '';
+        this.inviteName = '';
+        this.rules.email = [];
+        this.dialog = false;
+      },
+
+      /**
+       * Calls firebase cloud function to hash invite.
        */
       handleInvite: function() {
-        this.hashInvite()
-          .then((payload) => {
-            var link = 'https://192.168.54.54:8080/#/invitation/' + payload.hash;
-            var params = this.setMailerParams(this.inviteEmail, this.$store.state.user.displayName, link);
-
-            this.$firebaseRefs.invites.once('value')
-              .then((dataSnapshot) => sendMail(params));
-            this.$firebaseRefs.invites.set(payload);
-          });
-      },
-
-      /**
-       * Hashes invitation link using coach uid and client email
-       *
-       * @return     {Promise}  Promise of payload
-       */
-      hashInvite: function() {
-        var coachUid = this.$store.state.user.uid;
-        var clientEmail = this.inviteEmail;
-        var date = new Date().toISOString();
-
-        // hash invitation parameters
-        var inviteHash = hashBcrypt(coachUid, clientEmail, date);
-
         var payload = {
-          hash: inviteHash
+          coach: this.$store.state.user.displayName,
+          coachEmail: this.$store.state.user.email,
+          team: this.$store.state.user.team,
+          client: this.inviteName,
+          clientEmail: this.inviteEmail,
+          created: Date.now() // using unix format to make calculating cleanup easier
         };
 
-        return new Promise((resolve) => resolve(payload));
+        var errorsSet = this.setErrors();
+
+        if (errorsSet) {
+          this.inviteName = '';
+          this.inviteEmail = '';
+          return;
+        }
+
+        api.post('/hash', payload)
+          .then((response) => {
+            this.snackbarText = response.data;
+            this.snackbarStatus = 'success';
+            this.snackbar = true;
+          })
+          .catch((error) => {
+            this.snackbarText = 'An error occurred trying to send the invitation';
+            this.snackbarStatus = 'error';
+            this.snackbar = true;
+            console.log('Error hashing invite: ', error);
+          });
+
+        this.inviteName = '';
+        this.inviteEmail = '';
+        this.dialog = false;
       },
 
       /**
-       * Sets the mailer parameters.
+       * Checks/sets form errors.
        *
-       * @param      {string}  email   The email
-       * @param      {string}  coach   The coach
-       * @param      {string}  link    The link
-       * @return     {Object}  Mailer parameters
+       * @return     {boolean}  true if errors are set, else false
        */
-      setMailerParams: function(email, coach, link) {
-        var subject = 'Invitation to join The Powerlifting Notebook';
-        var text = 'Hello,' +
-                   '\n\n' +
-                   'Coach ' + coach +
-                   ' has invited you to join The Powerlifting Notebook.  Follow this link to create an account with us.' +
-                   '\n\n' +
-                   link +
-                   '\n\n' +
-                   'If you don\'t want to create an account, you can ignore this email.' +
-                   '\n\n' +
-                   'Thanks,' +
-                   '\n\n' +
-                   'The Powerlifting Notebook Team';
-        var html = 'Hello,' +
-                   '<br /><br />' +
-                   'Coach ' + coach +
-                   ' has invited you to join The Powerlifting Notebook.  Follow this link to create an account with us.' +
-                   '<br /><br />' +
-                   '<a href="' + link + '">Invitation</a>' +
-                   '<br /><br />' +
-                   'If you don\'t want to create an account, you can ignore this email.' +
-                   '<br /><br />' +
-                   'Thanks,' +
-                   '<br /><br />' +
-                   'The Powerlifting Notebook Team';
+      setErrors: function() {
+        var requiredMessage = 'Required.';
+        var invalidEmailMessage = 'Invalid email.';
+        var errorsSet = false;
+        var pattern = /^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
 
-        var params = {
-          to: email,
-          subject: subject,
-          text: text,
-          html: html
-        };
+        if (this.inviteEmail === '') {
+          this.rules.email.push(requiredMessage);
+          errorsSet = true;
+        }
 
-        return params;
+        if (!pattern.test(this.inviteEmail)) {
+          this.rules.email.push(invalidEmailMessage);
+          errorsSet = true;
+        }
+
+        return errorsSet;
       },
 
       /**
        * Sets program id as active program from client then routes to training-log page
        */
       handleTrainingLog: function() {
-        this.$store.dispatch('setProgramId', this.details._activeProgram);
-        this.handleClose('client-preview-modal');
-        this.$router.push({ name: 'Training log' });
+        // this.$store.dispatch('setProgramId', this.details._activeProgram);
+        // this.handleClose('client-preview-modal');
+        // this.$router.push({ name: 'Training log' });
       },
 
       handleRemove: function() {

@@ -4,7 +4,7 @@
     <v-toolbar
       class="grey darken-4"
       dark
-      v-if="!$store.state.signedIn && ['Sign in', 'Create an account', 'Page not found'].indexOf($route.name) === -1"
+      v-if="!$store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
     >
       <v-toolbar-side-icon class="hidden-md-and-up"></v-toolbar-side-icon>
       <v-toolbar-title>
@@ -25,48 +25,35 @@
       light
       enable-resize-watcher
       overflow
-      v-if="$store.state.signedIn && ['Sign in', 'Create an account', 'Page not found'].indexOf($route.name) === -1"
+      v-if="$store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
     >
       <!-- drawer header -->
-      <v-list class="pa-0">
+      <v-list class="pa-1">
         <v-list-tile avatar tag="div">
           <v-list-tile-avatar>
             <img src="./assets/barbell.jpg" />
           </v-list-tile-avatar>
-          <v-list-tile-content>
-            <v-list-tile-title>
-              <a class="brand" href="/">The Powerlifting Notebook</a>
-            </v-list-tile-title>
-          </v-list-tile-content>
+          <v-list-tile class="brand" href="/">The Powerlifting Notebook</v-list-tile>
         </v-list-tile>
       </v-list>
+      <v-divider></v-divider>
 
       <!-- coach menu -->
-      <v-list
-        class="pt-0"
-        dense
-        v-if="$store.getters.user.accountType === 'coach'"
-      >
-        <v-divider></v-divider>
-        <v-list-tile v-for="route in $router.options.routes.slice(4, 7)" :key="route.name">
-          <v-list-tile-content>
-            <router-link :to="route.path">{{ route.name }}</router-link>
-          </v-list-tile-content>
-        </v-list-tile>
+      <v-list v-if="$store.getters.user.accountType === 'coach'">
+        <v-list-tile
+          v-for="route in $router.options.routes.slice(6, 9)"
+          :key="route.name"
+          :to="route.path"
+        >{{ route.name }}</v-list-tile>
       </v-list>
 
       <!-- client menu -->
-      <v-list
-        class="pt-0"
-        dense
-        v-else
-      >
-        <v-divider></v-divider>
-        <v-list-tile v-for="route in routes" :key="route.name">
-          <v-list-tile-content>
-            <router-link :to="route.path">{{ route.name }}</router-link>
-          </v-list-tile-content>
-        </v-list-tile>
+      <v-list v-else>
+        <v-list-tile
+          v-for="route in routes"
+          :key="route.name"
+          :to="route.path"
+        >{{ route.name }}</v-list-tile>
       </v-list>
     </v-navigation-drawer>
 
@@ -74,7 +61,7 @@
     <v-toolbar
       class="grey darken-4"
       dark
-      v-if="$store.state.signedIn && ['Sign in', 'Create an account', 'Page not found'].indexOf($route.name) === -1"
+      v-if="$store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
     >
       <v-toolbar-side-icon @click.native.stop="handleToggleDrawer"></v-toolbar-side-icon>
       <v-toolbar-title v-if="$route.name === 'Home'">
@@ -92,9 +79,11 @@
           <span>{{ $store.state.user.displayName }}</span>
         </v-btn>
         <v-list>
-          <v-list-tile v-for="item in items" :key="item">
-            <v-list-tile-title @click.stop="handleMenuSelect(item.title)">{{ item.title }}</v-list-tile-title>
-          </v-list-tile>
+          <v-list-tile
+            v-for="item in items"
+            :key="item"
+            @click.native="handleMenuSelect(item.title)"
+          >{{ item.title }}</v-list-tile>
         </v-list>
       </v-menu>
     </v-toolbar>
@@ -108,7 +97,7 @@
   
     <!-- footer -->
     <v-footer>
-      <span>© 2017 The Powerlifting Notebook</span>
+      <span class="text-xl-center">© 2017 The Powerlifting Notebook</span>
     </v-footer>
   </v-app>
 </template>
@@ -192,8 +181,20 @@
               this.$store.dispatch('setSignedIn');
             });
           } else {
-            this.handleSignout();
-            this.$store.dispatch('setSignedOut');
+            // if route.name is not in the array, do not automatically sign out
+            // this is for non-signed in users to be able to navigate to these pages
+            var excludeRoutes = [
+              'Sign in',
+              'Create an account',
+              'Invitation',
+              'About',
+              'Page not found'
+            ];
+
+            if (excludeRoutes.indexOf(this.$route.name) === -1) {
+              this.handleSignout();
+              this.$store.dispatch('setSignedOut');
+            }
           }
         });
       },
@@ -242,15 +243,14 @@
   body {
     background-color: #f4f4f4;
   }
-  footer {
-    position: absolute;
-    bottom: 0;
-    width: 100%;
-    text-align: center;
-  }
 </style>
 
 <style scoped>
+  footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+  }
   .brand {
     cursor: pointer;
     text-decoration: none;

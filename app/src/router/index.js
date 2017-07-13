@@ -2,14 +2,15 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import { requireAuth, requireCoach } from '@/../utils/auth';
 
-import Home from '@/components/Home';
-import Dashboard from '@/components/Dashboard';
-
+import Home from '@/components/navigation/Home';
 import About from '@/components/navigation/About';
 import PageNotFound from '@/components/navigation/PageNotFound';
 
+import Dashboard from '@/components/dashboard/Dashboard';
+
 import CreateAccount from '@/components/signin/CreateAccount';
 import Signin from '@/components/signin/Signin';
+import Invitation from '@/components/signin/Invitation';
 
 import Clients from '@/components/clients/Clients';
 
@@ -37,6 +38,11 @@ export default new Router({
       path: '/about',
       name: 'About',
       component: About
+    },
+    {
+      path: '/invitation/:invite/',
+      name: 'Invitation',
+      component: Invitation
     },
     {
       path: '/create-account',

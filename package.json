@@ -10,7 +10,13 @@
     "uninstall:all": "npm uninstall $(ls -1 node_modules | tr '\n' ' ')",
     "vue-cli:init": "./node_modules/.bin/vue-cli init webpack app",
     "firebase:login": "./node_modules/.bin/firebase login",
-    "firebase:deploy": "./node_modules/.bin/firebase deploy"
+    "firebase:deploy": "./node_modules/.bin/firebase deploy",
+    "firebase:hosting": "./node_modules/.bin/firebase deploy --only hosting",
+    "firebase:functions": "./node_modules/.bin/firebase deploy --only functions",
+    "firebase:database": "./node_modules/.bin/firebase deploy --only database",
+    "firebase:storage": "./node_modules/.bin/firebase deploy --only storage",
+    "firebase:serve": "./node_modules/.bin/firebase serve --only functions,hosting",
+    "firebase:get-configs": "./node_modules/.bin/firebase functions:config:get > .runtimeconfig.json"
   },
   "repository": {
     "type": "git",

@@ -1,6 +1,2 @@
-/venv
 *.retry
-.molecule
-.vagrant
-/tests/__pycache__
-.cache
+tests/test.sh

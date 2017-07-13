@@ -1,0 +1,9 @@
+{
+  "gmail": {
+    "email": "the.powerlifting.notebook@gmail.com",
+    "password": "TPNadmin001!!!"
+  },
+  "auth": {
+    "secret": "TPNsecret001"
+  }
+}

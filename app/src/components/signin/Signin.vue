@@ -11,6 +11,7 @@
               label="Email"
               v-model="email"
               :rules="rules.email"
+              @keyup.native.enter="handleSignIn"
             ></v-text-field>
             <v-text-field
               label="Password"
@@ -20,6 +21,7 @@
               :append-icon-cb="handlePasswordVisibility"
               :type="e ? 'password' : 'text'"
               :rules="rules.password"
+              @keyup.native.enter="handleSignIn"
             ></v-text-field>
             <v-layout row>
               <v-checkbox
@@ -31,7 +33,7 @@
               <v-btn
                 large
                 primary
-                @click.native.stop="handleSignIn"
+                @click.native="handleSignIn"
               >Sign in</v-btn>
             </v-layout>
             <v-divider></v-divider>
@@ -51,13 +53,9 @@
 <script>
   import { firebasedb } from '@/../utils/firebase';
   import { signin } from '@/../utils/auth';
-  import general from '@/mixins/general';
 
   export default {
     name: 'signin',
-    mixins: [
-      general
-    ],
     data: function() {
       return {
         email: '',
@@ -72,7 +70,7 @@
     },
     firebase: {
       users: {
-        source: firebasedb.ref('users'),
+        source: firebasedb.ref('/users'),
         cancelCallback(error) {
           console.error('firebasedb error: ', error);
         }
