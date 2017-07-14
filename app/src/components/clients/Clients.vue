@@ -50,7 +50,7 @@
       ></v-text-field>
     </v-card-title>
     <v-data-table
-      no-data-text="No clients yet. Invite a client to get started!"
+      no-data-text="No clients yet. Invite someone to get started!"
       no-results-text="No results."
       :headers="headers"
       :items="items"
@@ -74,7 +74,6 @@
       top
       multi-line
       vertical
-      :success="snackbarStatus === 'success'"
       :error="snackbarStatus === 'error'"
       v-model="snackbar"
     >
@@ -118,15 +117,15 @@
           },
           {
             text: 'Active program',
-            value: 'active program'
+            value: 'activeProgram'
           },
           {
             text: 'Member start date',
-            value: 'member start date'
+            value: 'memberStart'
           },
           {
             text: 'Last login',
-            value: 'last login'
+            value: 'lastLogin'
           },
           {
             text: 'Email',
@@ -211,7 +210,6 @@
         api.post('/hash', payload)
           .then((response) => {
             this.snackbarText = response.data;
-            this.snackbarStatus = 'success';
             this.snackbar = true;
           })
           .catch((error) => {

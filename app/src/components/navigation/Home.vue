@@ -3,6 +3,7 @@
     <h1 id="row-first">The Powerlifting</h1>
     <br />
     <h1 id="row-second">Notebook</h1>
+    <img id="background" src="../../assets/barbell.jpg">
   </div>
 </template>
 
@@ -14,11 +15,11 @@
 
 <style scoped>
   #home {
-    height: 100%;
-    width: 100%;
-    position: fixed;
-    background-image: url('../../assets/barbell.jpg');
-    background-size: cover;
+    display: flex;
+  }
+  #background {
+    min-height: 100%;
+    min-width: 100%;
   }
   h1 {
     color: #ffffff;

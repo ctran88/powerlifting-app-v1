@@ -1,6 +1,6 @@
 <template>
   <div id="programs">
-    <coach-programs v-if='$store.getters.user.accountType === "coach"' />
+    <coach-programs v-if="$store.getters.user.accountType === 'coach'" />
     <client-programs v-else />
   </div>
 </template>

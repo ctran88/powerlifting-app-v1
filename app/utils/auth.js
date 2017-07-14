@@ -37,6 +37,7 @@ export function signout() {
 /**
  * Checks and sets auth status
  *
+ * @param      {Function}   observer  The observer function
  * @return     {Promise}  Promise of user information or null
  */
 export function checkSignInStatus(observer) {

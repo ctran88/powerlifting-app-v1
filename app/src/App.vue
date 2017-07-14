@@ -103,7 +103,7 @@
 </template>
 
 <script>
-  import { firebasedb } from '@/../utils/firebase';
+  import { firebaseApp, firebasedb } from '@/../utils/firebase';
   import { checkSignInStatus, signout } from '@/../utils/auth';
 
   export default {
@@ -146,9 +146,23 @@
           this.drawer = false;
         }
 
-        if (this.$store.state.signedIn) {
-          this.handleCheckSignInStatus();
-        }
+        // checks for sign in, sign out, password change, and token expiry events. if not signed in, signs out user.
+        checkSignInStatus((user) => {
+          // not entirely sure if this whole block is needed. not sure if user is automatically signed out or not if user is not detected.
+          if (!user) {
+            var excludeRoutes = [
+              'Sign in',
+              'Create an account',
+              'Invitation',
+              'About',
+              'Page not found'
+            ];
+
+            if (excludeRoutes.indexOf(this.$route.name) === -1) {
+              this.handleSignout();
+            }
+          }
+        });
       }
     },
     firebase: {
@@ -160,16 +174,19 @@
       }
     },
     mounted: function() {
-      window.addEventListener('load', this.handleCheckSignInStatus);
+      // called once
+      this.handleInitialDataFetch();
+      // constant observer
+      this.handleDataChange();
     },
     methods: {
       /**
-       * Checks and sets sign in status
+       * Checks and sets sign in status once when a page is loaded.
        */
-      handleCheckSignInStatus: function() {
+      handleInitialDataFetch: function() {
         checkSignInStatus((user) => {
           if (user) {
-            this.$firebaseRefs.users.child(user.uid).on('value', (snapshot) => {
+            this.$firebaseRefs.users.child(user.uid).once('value', (snapshot) => {
               var userInfo = JSON.parse(JSON.stringify(snapshot.val()));
 
               userInfo.displayName = user.displayName;
@@ -180,21 +197,27 @@
               this.$store.dispatch('setUserInfo', userInfo);
               this.$store.dispatch('setSignedIn');
             });
-          } else {
-            // if route.name is not in the array, do not automatically sign out
-            // this is for non-signed in users to be able to navigate to these pages
-            var excludeRoutes = [
-              'Sign in',
-              'Create an account',
-              'Invitation',
-              'About',
-              'Page not found'
-            ];
+          }
+        });
+      },
 
-            if (excludeRoutes.indexOf(this.$route.name) === -1) {
-              this.handleSignout();
-              this.$store.dispatch('setSignedOut');
-            }
+      /**
+       * Checks and sets sign in status when data is changed
+       */
+      handleDataChange: function() {
+        checkSignInStatus((user) => {
+          if (user) {
+            this.$firebaseRefs.users.on('child_changed', (snapshot) => {
+              var userInfo = JSON.parse(JSON.stringify(snapshot.val()));
+
+              userInfo.displayName = user.displayName;
+              userInfo.email = user.email;
+              userInfo.uid = user.uid;
+              userInfo.photoURL = user.photoURL;
+
+              this.$store.dispatch('setUserInfo', userInfo);
+              this.$store.dispatch('setSignedIn');
+            });
           }
         });
       },
@@ -229,7 +252,6 @@
         signout()
           .then(() => {
             this.$store.dispatch('setSignedOut');
-            this.$router.push({ name: 'Home' });
           })
           .catch((error) => {
             console.log('Error signing out: ', error);
@@ -246,11 +268,6 @@
 </style>
 
 <style scoped>
-  footer {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-  }
   .brand {
     cursor: pointer;
     text-decoration: none;
