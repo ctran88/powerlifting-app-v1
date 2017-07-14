@@ -136,44 +136,8 @@
       };
     },
     methods: {
-      /**
-       * Uses the client array from state to create a query for an api call to retrieve those clients' active programs
-       */
       getProgramNames: function() {
-      //   this.items = JSON.parse(JSON.stringify(this.$store.state.user._clients));
 
-      //   var programNames = [];
-      //   var query = '?';
-
-      // // build query string
-      //   for (var i = 0; i < this.clientList.length; i++) {
-      //     if (this.clientList[i]._activeProgram) {
-      //       query += '_id=' + this.clientList[i]._activeProgram + '&';
-      //     }
-      //   }
-
-      //   // remove '&' if there is one at the end of the query string
-      //   query = query.replace(/&$/, '');
-
-      // // get list of program names
-      //   api.get('/training/programs' + query)
-      //     .then((response) => {
-      //       programNames = response.data.programs.map((el) => {
-      //         return {
-      //           _id: el._id,
-      //           name: el.metadata.name
-      //         };
-      //       });
-
-      //     // match program ids and assign program name
-      //       for (var i = 0; i < this.clientList.length; i++) {
-      //         for (var k = 0; k < programNames.length; k++) {
-      //           if (this.clientList[i]._activeProgram === programNames[k]._id) {
-      //             this.$set(this.clientList[i], '_activeProgramName', programNames[k].name);
-      //           }
-      //         }
-      //       }
-      //     });
       },
 
       /**
@@ -268,10 +232,5 @@
 </script>
 
 <style scoped>
-  button {
-    cursor: pointer;
-  }
-  #btn-invite-client {
-    margin-bottom: 1rem;
-  }
+
 </style>

@@ -25,24 +25,26 @@
         <td>{{ props.item.lastUpdated }}</td>
         <td>
           <v-dialog
+            lazy
             v-model="detailsDialog"
           >
             <v-btn
               flat
               slot="activator"
+              @click.native="details = props.item"
             >Details</v-btn>
             <v-card>
               <v-card-title>
                 <span class="headline">Program details</span>
               </v-card-title>
               <v-card-text>
-                Details for {{ props.item.name }}
+                Details for {{ details.name }}
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
                 <v-btn
                   flat
-                  @click.native="handlePreview(props.item)"
+                  @click.native="handlePreview"
                 >Preview</v-btn>
               </v-card-actions>
             </v-card>
@@ -50,7 +52,7 @@
           <v-btn
             primary
             flat
-            @click.native="handleTrainingLog(props.item._id)"
+            @click.native="handleTrainingLog(props.item)"
           >Training Log</v-btn>
         </td>
       </template>
@@ -62,8 +64,6 @@
 </template>
 
 <script>
-  import api from '@/../utils/api';
-
   export default {
     name: 'client-programs',
     data: function() {
@@ -121,9 +121,7 @@
             lastUpdated: '2016-07-08T12:40:55.969Z'
           }
         ],
-        details: {
-          metadata: {}
-        }
+        details: {}
       };
     },
     mounted() {
@@ -136,20 +134,20 @@
        * Retrieves programs based on client email
        */
       updatePrograms() {
-        this.programs = [];
-        var query = '?metadata.client=' + this.$store.state.user.email;
+        // this.programs = [];
+        // var query = '?metadata.client=' + this.$store.state.user.email;
 
-        api.get('/training/programs' + query)
-          .then((response) => {
-            if (response.status === 200) {
-              response.data.programs.forEach((current) => {
-                this.programs.push(current);
-              });
-            }
-          })
-          .catch((error) => {
-            console.log('API error retrieving programs: ', error);
-          });
+        // api.get('/training/programs' + query)
+        //   .then((response) => {
+        //     if (response.status === 200) {
+        //       response.data.programs.forEach((current) => {
+        //         this.programs.push(current);
+        //       });
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     console.log('API error retrieving programs: ', error);
+        //   });
       },
 
       /**
@@ -177,10 +175,5 @@
 </script>
 
 <style scoped>
-  button {
-    cursor: pointer;
-  }
-  #btn-create-program {
-    margin-bottom: 1rem;
-  }
+
 </style>

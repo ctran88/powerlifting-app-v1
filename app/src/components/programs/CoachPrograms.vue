@@ -31,18 +31,20 @@
         <td>{{ props.item.lastUpdated }}</td>
         <td>
           <v-dialog
+            lazy
             v-model="detailsDialog"
           >
             <v-btn
               flat
               slot="activator"
+              @click.native="details = props.item"
             >Details</v-btn>
             <v-card>
               <v-card-title>
                 <span class="headline">Program details</span>
               </v-card-title>
               <v-card-text>
-                Details for {{ props.item.name }}
+                Details for {{ details.name }}
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -63,19 +65,21 @@
             </v-card>
           </v-dialog>
           <v-dialog
+            lazy
             v-model="deleteDialog"
           >
             <v-btn
               error
               flat
               slot="activator"
+              @click.native="details = props.item"
             >Delete</v-btn>
             <v-card>
               <v-card-title>
                 <span class="headline">Confirm delete</span>
               </v-card-title>
               <v-card-text>
-                Are you sure you want to delete {{ props.item.name }}?
+                Are you sure you want to delete {{ details.name }}?
               </v-card-text>
               <v-card-actions>
                 <v-spacer></v-spacer>
@@ -123,6 +127,7 @@
     data: function() {
       return {
         snackbar: false,
+        snackbarText: '',
         detailsDialog: false,
         deleteDialog: false,
         search: '',
@@ -182,9 +187,7 @@
             lastUpdated: '2016-07-08T12:40:55.969Z'
           }
         ],
-        details: {
-          metadata: {}
-        }
+        details: {}
       };
     },
     firebase: {
@@ -196,28 +199,27 @@
       }
     },
     mounted: function() {
-      // this function is called before the setUserInfo acton can be completed (from App.vue), so user object is not set yet.  Set timetout as a workaround.
-      setTimeout(this.updatePrograms, 100);
+  
     },
     methods: {
       /**
        * Retrieves programs based on coach email
        */
       updatePrograms: function() {
-        this.programs = [];
-        var query = '?metadata.coach=' + this.$store.state.user.email;
+        // this.programs = [];
+        // var query = '?metadata.coach=' + this.$store.state.user.email;
 
-        api.get('/training/programs' + query)
-          .then((response) => {
-            if (response.status === 200) {
-              response.data.programs.forEach((current) => {
-                this.programs.push(current);
-              });
-            }
-          })
-          .catch((error) => {
-            console.log('API error retrieving programs: ', error);
-          });
+        // api.get('/training/programs' + query)
+        //   .then((response) => {
+        //     if (response.status === 200) {
+        //       response.data.programs.forEach((current) => {
+        //         this.programs.push(current);
+        //       });
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     console.log('API error retrieving programs: ', error);
+        //   });
       },
 
       /**
@@ -293,10 +295,5 @@
 </script>
 
 <style scoped>
-  button {
-    cursor: pointer;
-  }
-  #btn-create-program {
-    margin-bottom: 1rem;
-  }
+
 </style>

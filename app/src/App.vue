@@ -1,10 +1,11 @@
 <template>
-  <v-app id="app" standalone>
+  <v-app id="app">
+    <div v-if="loading"></div>
     <!-- not signed in toolbar -->
     <v-toolbar
       class="grey darken-4"
       dark
-      v-if="!$store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
+      v-else-if="!$store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
     >
       <v-toolbar-side-icon class="hidden-md-and-up"></v-toolbar-side-icon>
       <v-toolbar-title>
@@ -41,7 +42,7 @@
       <!-- coach menu -->
       <v-list v-if="$store.getters.user.accountType === 'coach'">
         <v-list-tile
-          v-for="route in $router.options.routes.slice(6, 9)"
+          v-for="route in $router.options.routes.slice(5, 8)"
           :key="route.name"
           :to="route.path"
         >{{ route.name }}</v-list-tile>
@@ -97,19 +98,20 @@
   
     <!-- footer -->
     <v-footer>
-      <span class="text-xl-center">© 2017 The Powerlifting Notebook</span>
+      <span>© 2017 The Powerlifting Notebook</span>
     </v-footer>
   </v-app>
 </template>
 
 <script>
-  import { firebaseApp, firebasedb } from '@/../utils/firebase';
+  import { firebasedb } from '@/../utils/firebase';
   import { checkSignInStatus, signout } from '@/../utils/auth';
 
   export default {
     name: 'app',
     data: function() {
       return {
+        loading: true,
         drawer: false,
         items: [
           {
@@ -196,7 +198,10 @@
 
               this.$store.dispatch('setUserInfo', userInfo);
               this.$store.dispatch('setSignedIn');
+              this.loading = false;
             });
+          } else {
+            this.loading = false;
           }
         });
       },
