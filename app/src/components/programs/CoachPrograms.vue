@@ -119,8 +119,7 @@
 </template>
 
 <script>
-  import { firebasedb } from '@/../utils/firebase';
-  import api from '@/../utils/api';
+  import { firebaseApp, firebasedb } from '@/../utils/firebase';
 
   export default {
     name: 'coach-programs',
@@ -169,24 +168,7 @@
             value: 'actions'
           }
         ],
-        items: [
-          {
-            name: 'Program v1',
-            client: 'Client One',
-            active: 'Yes',
-            status: 'Published',
-            created: '2017-06-10T09:30:15.561Z',
-            lastUpdated: '2017-07-08T12:40:55.969Z'
-          },
-          {
-            name: 'Program v2',
-            client: 'Client One',
-            active: 'No',
-            status: 'Published',
-            created: '2016-06-10T09:30:15.561Z',
-            lastUpdated: '2016-07-08T12:40:55.969Z'
-          }
-        ],
+        items: [],
         details: {}
       };
     },
@@ -199,44 +181,51 @@
       }
     },
     mounted: function() {
-  
+      this.getPrograms();
     },
     methods: {
       /**
        * Retrieves programs based on coach email
        */
-      updatePrograms: function() {
-        // this.programs = [];
-        // var query = '?metadata.coach=' + this.$store.state.user.email;
+      getPrograms: function() {
+        var user = firebaseApp.auth().currentUser;
 
-        // api.get('/training/programs' + query)
-        //   .then((response) => {
-        //     if (response.status === 200) {
-        //       response.data.programs.forEach((current) => {
-        //         this.programs.push(current);
-        //       });
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.log('API error retrieving programs: ', error);
-        //   });
+        this.items = [];
+
+        this.$firebaseRefs.programs
+          .orderByChild('coach')
+          .equalTo(user.email)
+          .once('value')
+            .then((snapshot) => {
+              var data = snapshot.val();
+
+              if (data !== null) {
+                var keys = Object.keys(data);
+
+                for (var i = 0; i < keys.length; i++) {
+                  this.items.push(data[keys[i]]);
+                }
+              } else {
+                console.log('No data found.');
+              }
+            });
       },
 
       /**
        * Deletes a program
        */
       handleDelete: function() {
-        var id = this.details._id;
+        // var id = this.details._id;
 
-        api.delete('/training/programs/' + id)
-          .then((response) => {
-            if (response.status === 200) {
-              this.updatePrograms();
-            }
-          })
-          .catch((error) => {
-            console.log('API error retrieving programs: ', error);
-          });
+        // api.delete('/training/programs/' + id)
+        //   .then((response) => {
+        //     if (response.status === 200) {
+        //       this.updatePrograms();
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     console.log('API error retrieving programs: ', error);
+        //   });
 
         this.deleteDialog = false;
       },
@@ -267,19 +256,19 @@
         copy.metadata.cycle = 1;
         copy.microcycles = this.details.microcycles;
 
-        api.post('/training/programs', copy)
-          .then((response) => {
-            if (response.status === 201) {
-              this.updatePrograms();
-            } else {
-              alert(response.data);
-            }
-          })
-          .catch((error) => {
-            console.log('API error retrieving programs: ', error);
-          });
+        // api.post('/training/programs', copy)
+        //   .then((response) => {
+        //     if (response.status === 201) {
+        //       this.updatePrograms();
+        //     } else {
+        //       alert(response.data);
+        //     }
+        //   })
+        //   .catch((error) => {
+        //     console.log('API error retrieving programs: ', error);
+        //   });
 
-        this.handleClose('program-preview-modal');
+        // this.handleClose('program-preview-modal');
       },
 
       /**

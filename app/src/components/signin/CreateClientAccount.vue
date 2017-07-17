@@ -138,7 +138,7 @@
         var payload = {
           firstName: this.firstName,
           lastName: this.lastName,
-          coach: this.coach,
+          coach: this.defaultCoachEmail,
           team: this.team,
           accountType: 'client',
           memberStart: new Date().toISOString(),

@@ -1,444 +1,399 @@
 <template>
-<div id='update-program'>
-  <div class='row'>
-    <span class='text-muted'>Program name</span>
-    <b-form-input v-model='name' type='text' />
+  <div id="update-program">
+    <v-layout row>
+      <v-flex xs3>
+        <v-text-field
+          label="Program name"
+          v-model="name"
+        ></v-text-field>
+      </v-flex>
+      <v-flex xs3>
+        <v-select
+          label="Client"
+          :items="items"
+          v-model="client"
+        ></v-select>
+      </v-flex>
+      <v-flex>
+        <v-checkbox
+          :label="'Make this the active program?'"
+          v-model="programActive"
+        ></v-checkbox>
+      </v-flex>
+    </v-layout>
+    <v-layout row>
+      <v-flex>
+        <v-tabs
+          dark
+          id="workout-week"
+          v-for="(week, index) in weeks"
+          :key="index"
+          v-model="activeTab[index]"
+        >
+          <v-tabs-bar class="white--text" slot="activators">
+            <v-subheader>Week {{ index + 1 }}</v-subheader>
+            <v-tabs-item
+              v-for="day in days"
+              :key="day"
+              :href="'#' + day"
+              ripple
+            >Day {{ day.slice(-1) }}</v-tabs-item>
+            <v-spacer></v-spacer>
+            <v-btn
+              @click.native="handleDuplicateWeek(index)"
+            >Duplicate</v-btn>
+            <v-btn
+              error
+              dark
+              @click.native="handleDeleteWeek(index)"
+            >Delete</v-btn>
+            <v-tabs-slider class="yellow"></v-tabs-slider>
+          </v-tabs-bar>
+          <v-tabs-content
+            v-for="day in days"
+            :key="day"
+            :id="day"
+          >
+            <v-card flat>
+              <v-card-text>
+                <create-session></create-session>
+              </v-card-text>
+            </v-card>
+          </v-tabs-content>
+        </v-tabs>
+      </v-flex>
+    </v-layout>
+    <v-layout row>
+      <v-flex xs8>
+        <v-btn
+          primary
+          flat
+          @click.native="handleAddWeek"
+        >Add week</v-btn>
+      </v-flex>
+      <v-spacer></v-spacer>
+      <v-flex>
+        <v-dialog v-model="cancelDialog">
+          <v-btn
+            warning
+            dark
+            slot="activator"
+          >Cancel</v-btn>
+          <v-card>
+            <v-card-title>
+              <span class="headline">Confirm cancellation</span>
+            </v-card-title>
+            <v-card-text>
+              Are you sure you want to cancel and leave this page? All unsaved progress will be lost.
+            </v-card-text>
+            <v-card-actions>
+              <v-spacer></v-spacer>
+              <v-btn
+                flat
+                @click.native="cancelDialog = false"
+              >No</v-btn>
+              <v-btn
+                warning
+                flat
+                to="programs"
+              >Yes, cancel</v-btn>
+            </v-card-actions>
+          </v-card>
+        </v-dialog>
+      </v-flex>
+      <v-flex>
+        <v-btn
+          success
+          dark
+          @click.native="handleSaveDraft"
+        >Save draft</v-btn>
+      </v-flex>
+      <v-flex>
+        <v-btn
+          primary
+          dark
+          @click.native.stop="handlePublish"
+        >Publish</v-btn>
+      </v-flex>
+    </v-layout>
 
-    <span class='text-muted'>Client</span>
-    <b-form-select :options='clientList' v-model='client' />
+    <v-snackbar
+      :timeout="4000"
+      top
+      multi-line
+      vertical
+      :error="snackbarStatus === 'error'"
+      v-model="snackbar"
+    >
+      {{ snackbarText }}
+      <v-btn
+        flat
+        dark
+        @click.native="snackbar = false"
+      >Close</v-btn>
+    </v-snackbar>
 
-    <b-form-checkbox v-model='active' id='program-active' value=true unchecked-value=false>Make this the active program?</b-form-checkbox>
-
-    <b-button-group class='ml-auto'>
-      <b-button class='btn-cancel-changes' variant='warning' v-b-modal='"cancellation-modal"'>Cancel changes</b-button>
-      <b-button class='btn-save-draft' variant='success' @click='handleSaveDraft'>Save draft</b-button>
-      <b-button class='btn-save-published' variant='primary' @click='handlePublish'>Publish</b-button>
-    </b-button-group>
+    <v-dialog v-model="publishDialog">
+      <v-card>
+        <v-card-title>
+          <span class="headline">Publish program</span>
+        </v-card-title>
+        <v-card-text>
+          {{ publishMessage }}
+        </v-card-text>
+        <v-card-actions>
+          <v-spacer></v-spacer>
+          <v-btn
+            flat
+            to="programs"
+          >Ok</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
   </div>
-
-  <b-modal id='cancellation-modal' size='sm' title='Cancellation confirmation'>
-    Are you sure you want to cancel your changes and leave this page?
-    <footer slot='modal-footer'>
-      <b-btn variant='secondary' @click='handleClose("cancellation-modal")'>No</b-btn>
-      <b-btn variant='warning' @click='handleCancelChanges'>Yes, cancel changes</b-btn>
-    </footer>
-  </b-modal>
-  <b-modal id='save-draft-modal' :title='message.title'>
-    {{ message.details }}
-    <footer slot='modal-footer'>
-      <b-btn variant='secondary' @click='handleGoBack'>Go back</b-btn>
-      <b-btn variant='success' @click='handleClose("save-draft-modal")'>Continue editing</b-btn>
-    </footer>
-  </b-modal>
-  <b-modal id='published-modal' :title='message.title'>
-    {{ message.details }}
-    <footer slot='modal-footer'>
-      <b-btn variant='primary' @click='handlePublishedOk'>Ok</b-btn>
-    </footer>
-  </b-modal>
-
-  <hr />
-
-  <b-tabs pills card id='workout-week' v-for='(week, index) in weeks' :key='index'>
-    <b-tab disabled id='week-label' :title='"Week " + (index + 1)' />
-    <b-tab title='Day 1'>
-      <create-session :day='1' :week='week' />
-    </b-tab>
-    <b-tab title='Day 2'>
-      <create-session :day='2' :week='week' />
-    </b-tab>
-    <b-tab title='Day 3'>
-      <create-session :day='3' :week='week' />
-    </b-tab>
-    <b-tab title='Day 4'>
-      <create-session :day='4' :week='week' />
-    </b-tab>
-    <b-tab title='Day 5'>
-      <create-session :day='5' :week='week' />
-    </b-tab>
-    <b-tab title='Day 6'>
-      <create-session :day='6' :week='week' />
-    </b-tab>
-    <b-tab title='Day 7'>
-      <create-session :day='7' :week='week' />
-    </b-tab>
-    <template slot='tabs'>
-      <div class='btn-action'>
-        <b-button class='btn-week' id='btn-duplicate-week' @click='handleDuplicateWeek(index)'>Duplicate</b-button>
-        <b-button class='btn-week' id='btn-delete-week' variant='danger' @click='handleDeleteWeek(index)'>Delete</b-button>
-      </div>
-    </template>
-  </b-tabs>
-
-  <hr />
-
-  <b-button class='btn-week' variant='primary' @click='handleAddWeek'>Add a week</b-button>
-</div>
 </template>
 
 <script>
-import CreateSession from './CreateSession';
-import api from '@/../utils/api';
-import Router from 'vue-router';
-import general from '@/mixins/general';
-import programs from '@/mixins/programs';
+  import { firebaseApp, firebasedb } from '@/../utils/firebase';
+  import CreateSession from './CreateSession';
 
-export default {
-  name: 'update-program',
-  mixins: [
-    general,
-    programs
-  ],
-  components: {
-    CreateSession
-  },
-  data() {
-    return {
-      _id: '',
-      name: '',
-      client: ' ',
-      created: '',
-      active: 'false',
-      weeks: [],
-      week: '',
-      clientList: [' '],
-      message: {
-        title: '',
-        details: ''
+  export default {
+    name: 'update-program',
+    components: {
+      CreateSession
+    },
+    props: [
+      'id'
+    ],
+    data: function() {
+      return {
+        name: '',
+        items: [],
+        client: '',
+        programActive: false,
+        cancelDialog: false,
+        publishDialog: false,
+        publishMessage: '',
+        weeks: [1],
+        week: 1,
+        activeTab: {},
+        days: [
+          'day-1',
+          'day-2',
+          'day-3',
+          'day-4',
+          'day-5',
+          'day-6',
+          'day-7'
+        ],
+        created: '',
+        snackbar: false,
+        snackbarStatus: '',
+        snackbarText: ''
+      };
+    },
+    firebase: {
+      users: {
+        source: firebasedb.ref('/users'),
+        cancelCallback(error) {
+          console.error('firebasedb error: ', error);
+        }
+      },
+      programs: {
+        source: firebasedb.ref('/programs'),
+        cancelCallback(error) {
+          console.error('firebasedb error: ', error);
+        }
       }
-    };
-  },
-  mounted() {
-    // this function is called before the setUserInfo acton can be completed (from App.vue), so user object is not set yet.  Set timetout as a workaround.
-    setTimeout(() => {
+    },
+    mounted: function() {
       this.getClients();
       this.getProgram();
-    }, 100);
-  },
-  methods: {
-
-    /**
-     * Makes api call to get program using program id from state
-     */
-    getProgram() {
-      var query = '?_id=' + this.$store.state.programs.program._id;
-
-      api.get('training/programs' + query)
-        .then((response) => {
-          this.$store.dispatch('setProgram', response.data.programs[0]);
-          this.setMetadataDefaults();
-        })
-        .catch((error) => {
-          console.log('Program not found. ', error);
-        });
     },
+    methods: {
+      /**
+       * Retrieves the coach's clients
+       */
+      getClients: function() {
+        var user = firebaseApp.auth().currentUser;
 
-    /**
-     * Sets the metadata defaults for the program
-     */
-    setMetadataDefaults() {
-      var program = JSON.parse(JSON.stringify(this.$store.state.programs.program));
+        this.$firebaseRefs.users
+          .orderByChild('coach')
+          .equalTo(user.email)
+          .once('value')
+            .then((snapshot) => {
+              var data = snapshot.val();
+              var keys = Object.keys(data);
 
-      this._id = program._id;
-      this.name = program.metadata.name;
-      this.client = program.metadata.client;
-      this.created = program.metadata.created;
-      this.active = program.metadata.active.toString();
-      this.weeks = Array.from(new Array(program.microcycles.length), (val, index) => index + 1);
-      this.week = program.microcycles.length;
+              for (var i = 0; i < keys.length; i++) {
+                var client = data[keys[i]].firstName + ' ' + data[keys[i]].lastName;
 
-      // delay needed to let dom render the updates above
-      setTimeout(() => {
-        var updateProgram = this.$children;
+                this.items.push(client);
+              }
+            });
+      },
 
-        for (var i = 0; i < updateProgram.length; i++) {
-          if (updateProgram[i].id === 'workout-week') {
-            this.setExerciseDefaults(i);
-          }
-        }
-      }, 100);
-    },
+      /**
+       * Handles retrieving and populating program
+       */
+      getProgram: function() {
+        //
+      },
 
-    /**
-     * Sets the exercise defaults.
-     *
-     * @param      {number}  weekIndex  The week index
-     */
-    setExerciseDefaults(weekIndex) {
-      var microcycle = JSON.parse(JSON.stringify(this.$store.state.programs.program.microcycles));
-      var workoutWeek = this.$children[weekIndex].$children;
+      /**
+       * Pushes a week object to array to add a week element
+       */
+      handleAddWeek: function() {
+        this.weeks.push(++this.week);
+      },
 
-      // day 1 starts at index[2]
-      for (var i = 2; i < workoutWeek.length; i++) {
-        var createSession = workoutWeek[i].$children[0];
+      /**
+       * Deletes a week object from array to remove a week element
+       *
+       * @param      {number}  index   The index of the week element
+       */
+      handleDeleteWeek: function(index) {
+        this.weeks.splice(index, 1);
+      },
 
-        for (var j = 0; j < microcycle.length; j++) {
-          if (createSession.week === microcycle[j].metadata.week) {
-            var sessions = microcycle[j].sessions;
+      /**
+       * Duplicates a week object in array
+       *
+       * @param      {number}  index   The index of the week element
+       */
+      handleDuplicateWeek: function(index) {
+        this.handleAddWeek();
 
-            for (var k = 0; k < sessions.length; k++) {
-              if (createSession.day === sessions[k].metadata.day) {
-                var exerciseObj = {
-                  liftType: undefined,
-                  accessories: undefined,
-                  exercise: undefined,
-                  variations: undefined,
-                  sets: undefined,
-                  reps: undefined,
-                  loadType: undefined,
-                  load: ''
-                };
+        setTimeout(() => {
+          var newWeekIndex = this.$children.length - 1;
 
-                if (sessions[k].rest === true) {
-                  exerciseObj = {
-                    liftType: 'rest',
-                    accessories: undefined,
-                    exercise: undefined,
-                    variations: undefined,
-                    sets: undefined,
-                    reps: undefined,
-                    loadType: undefined,
-                    load: ''
-                  };
+          // iterate through vue components
+          for (var i = 0; i < this.$children.length; i++) {
+            // check if element is a workout week
+            if (this.$children[i].$el.id === 'workout-week') {
+              var weekLabel = this.$children[i].$children[0].$slots.default[0].children[0].text;
 
-                  createSession.exercises.push(exerciseObj);
-                } else {
-                  // load any main exercises first
-                  for (var l = 0; l < sessions[k].main.length; l++) {
-                    exerciseObj = {
-                      liftType: undefined,
-                      accessories: undefined,
-                      exercise: undefined,
-                      variations: undefined,
-                      sets: undefined,
-                      reps: undefined,
-                      loadType: undefined,
-                      load: ''
-                    };
+              // check if week is the week to be copied
+              if (weekLabel.slice(-1) === (index + 1).toString()) {
+                var week = this.$children[i].$children[1].$children;
+                var newWeek = this.$children[newWeekIndex].$children[1].$children;
 
-                    exerciseObj.liftType = 'main';
-                    exerciseObj.exercise = sessions[k].main[l].exercise;
-                    exerciseObj.variations = sessions[k].main[l].variations;
-                    exerciseObj.sets = sessions[k].main[l].sets;
-                    exerciseObj.reps = sessions[k].main[l].reps;
-
-                    if (sessions[k].main[l].rpe !== 0) {
-                      exerciseObj.loadType = 'rpe';
-                      exerciseObj.load = sessions[k].main[l].rpe;
-                    } else if (sessions[k].main[l].percentOf !== '') {
-                      exerciseObj.loadType = '%/' + sessions[k].main[l].percentOf;
-                      exerciseObj.load = sessions[k].main[l].percent;
-                    } else if (sessions[k].main[l].weight !== 0) {
-                      exerciseObj.loadType = 'weight';
-                      exerciseObj.load = sessions[k].main[l].weight;
-                    }
-
-                    createSession.exercises.push(exerciseObj);
-                  }
-                  // then load any accessories
-                  for (l = 0; l < sessions[k].accessories.length; l++) {
-                    exerciseObj = {
-                      liftType: undefined,
-                      accessories: undefined,
-                      exercise: undefined,
-                      variations: undefined,
-                      sets: undefined,
-                      reps: undefined,
-                      loadType: undefined,
-                      load: ''
-                    };
-
-                    exerciseObj.liftType = 'accessories';
-                    exerciseObj.accessories = sessions[k].accessories[l].exercise;
-                    exerciseObj.variations = sessions[k].accessories[l].variations;
-                    exerciseObj.sets = sessions[k].accessories[l].sets;
-                    exerciseObj.reps = sessions[k].accessories[l].reps;
-
-                    if (sessions[k].accessories[l].rpe !== 0) {
-                      exerciseObj.loadType = 'rpe';
-                      exerciseObj.load = sessions[k].accessories[l].rpe;
-                    } else if (sessions[k].accessories[l].percentOf !== '') {
-                      exerciseObj.loadType = '%/' + sessions[k].accessories[l].percentOf;
-                      exerciseObj.load = sessions[k].accessories[l].percent;
-                    } else if (sessions[k].accessories[l].weight !== 0) {
-                      exerciseObj.loadType = 'weight';
-                      exerciseObj.load = sessions[k].accessories[l].weight;
-                    }
-
-                    createSession.exercises.push(exerciseObj);
-                  }
+                // iterate through original week and copy exercises object from each day to new week
+                for (var j = 0; j < week.length; j++) {
+                  newWeek[j].$children[0].exercises = JSON.parse(JSON.stringify(week[j].$children[0].exercises));
                 }
               }
             }
           }
+        }, 100);
+      },
+
+      /**
+       * Handles saving program as a draft.
+       */
+      handleSaveDraft: function() {
+        this.saveProgram('draft')
+          .then((status) => {
+            this.snackbarStatus = '';
+            this.snackbarText = status;
+          })
+          .catch((error) => {
+            this.snackbarStatus = 'error';
+            this.snackbarText = error;
+          });
+
+        this.snackbar = true;
+      },
+
+      /**
+       * Handles saving and publishing program.
+       */
+      handlePublish: function() {
+        this.saveProgram('published')
+          .then((status) => {
+            this.publishMessage = status;
+          })
+          .catch((error) => {
+            this.publishMessage = error;
+          });
+
+        this.publishDialog = true;
+      },
+
+      /**
+       * Saves a program.
+       *
+       * @param      {string}   status  The status
+       * @return     {Promise}  Resolves success message, rejects error message
+       */
+      saveProgram: function(status) {
+        if (this.name === '') {
+          return Promise.reject('Program name required.');
         }
-      }
-    },
 
-    /**
-     * Handles cancellation modal and reoutes back to programs
-     */
-    handleCancelChanges() {
-      var router = new Router();
+        var program = {
+          name: this.name,
+          coach: this.$store.state.user.email,
+          client: this.client,
+          status: status,
+          active: this.programActive,
+          created: this.created,
+          lastUpdated: new Date().toISOString()
+        };
+        var weekCounter = 1;
 
-      this.handleClose('cancellation-modal');
-      router.push('/programs');
-    },
+        // find the children that have the workout-week id
+        for (var i = 0; i < this.$children.length; i++) {
+          if (this.$children[i].$el.id === 'workout-week') {
+            var week = this.$children[i].$children[1].$children;
+            // initialize week object
+            program['week' + weekCounter] = {};
+  
+            // iterate through the days of the week
+            for (var j = 0; j < week.length; j++) {
+              var dayExercises = JSON.parse(JSON.stringify(week[j].$children[0].exercises));
 
-    /**
-     * Saves a program.
-     *
-     * @param      {string}  saveStatus  The save status
-     * @return     {Promise}  The promise of save response
-     */
-    saveProgram(saveStatus) {
-      if (this.name === '') {
-        return Promise.reject('Program name required.');
-      }
+              // iterate through exercises in a day
+              for (var k = 0; k < dayExercises.length; k++) {
+                var keys = Object.keys(dayExercises[k]);
 
-      // overwrite entire program with every save
-      this.$store.dispatch('resetProgram');
-
-      var metadata = {
-        name: this.name,
-        coach: this.$store.state.user.email,
-        status: saveStatus,
-        active: this.active,
-        created: this.created,
-        lastUpdated: new Date().toISOString()
-      };
-
-      if (this.client !== ' ') {
-        metadata.client = this.client;
-      }
-
-      var array = this.$children;
-
-      // find which children are the workout weeks
-      for (var i = 0; i < array.length; i++) {
-        // start of iterating through each week
-        if (array[i].id === 'workout-week') {
-          // iterate through the days of the week
-          for (var j = 1; j < array[i].tabs.length; j++) {
-            // prepare session object
-            var week = array[i].tabs[0].title.slice(-1);
-            var day = array[i].tabs[j].$children[0];
-            var session = {
-              metadata: {
-                week: week,
-                day: day.day
-              },
-              main: [],
-              accessories: [],
-              rest: true
-            };
-
-            // format exercise object and push to session object
-            for (var k = 0; k < day.exercises.length; k++) {
-              var exerciseObj = {
-                exercise: '',
-                variations: '',
-                sets: 0,
-                reps: 0,
-                weight: 0,
-                rpe: 0,
-                percent: 0,
-                percentOf: '',
-                backoff: false,
-                workupSets: false
-              };
-
-              // set exercise object values
-              if (day.exercises[k].accessories !== undefined) {
-                exerciseObj.exercise = day.exercises[k].accessories;
-              } else if (day.exercises[k].exercise !== undefined) {
-                exerciseObj.exercise = day.exercises[k].exercise;
+                // iterate throug properties of each exercise
+                for (var l = 0; l < keys.length; l++) {
+                  // change undefined values to empty strings (firebase necessity)
+                  if (dayExercises[k][keys[l]] === undefined) {
+                    dayExercises[k][keys[l]] = '';
+                  }
+                }
               }
 
-              exerciseObj.variations = day.exercises[k].variations;
-              exerciseObj.sets = day.exercises[k].sets;
-              exerciseObj.reps = day.exercises[k].reps;
-
-              // set load values based on load type
-              switch (day.exercises[k].loadType) {
-                case 'rpe':
-                  exerciseObj.rpe = day.exercises[k].load;
-                  break;
-                case '%/1rm':
-                  exerciseObj.percent = day.exercises[k].load;
-                  exerciseObj.percentOf = '1rm';
-                  break;
-                case '%/ts':
-                  exerciseObj.percent = day.exercises[k].load;
-                  exerciseObj.percentOf = 'ts';
-                  break;
-                case 'weight':
-                  exerciseObj.weight = day.exercises[k].load;
-                  break;
-              }
-
-              // push exercise object to appropriate array in session object, or set rest day to true.  if no lift type provided (nothing at all selected) default to rest = true.
-              switch (day.exercises[k].liftType) {
-                case 'main':
-                  session.main.push(exerciseObj);
-                  session.rest = false;
-                  break;
-                case 'accessories':
-                  session.accessories.push(exerciseObj);
-                  session.rest = false;
-                  break;
-                case 'rest':
-                  session.rest = true;
-                  break;
-              }
+              program['week' + weekCounter]['day' + (j + 1)] = dayExercises;
             }
 
-            // populate microcycle state with one session (day)
-            this.$store.dispatch('updateMicrocycle', session);
+            weekCounter++;
           }
+        }
 
-          // push one microcycle (week) to program state before reset
-          this.$store.dispatch('updateProgram', metadata);
-        } // end of iterating through each week
+        // updates existing program by fully replacing it
+        return this.$firebaseRefs.programs.child(this.id).set(program)
+          .then(() => {
+            var message = '';
+
+            if (status === 'draft') {
+              message = 'Program saved succesfully.';
+            } else if (status === 'published') {
+              message = 'Program published succesfully.';
+            }
+
+            return Promise.resolve(message);
+          })
+          .catch((error) => {
+            return Promise.reject(error);
+          });
       }
-
-      return api.patch('/training/programs/' + this._id, this.$store.state.programs.program)
-        .then((response) => {
-          if (response.status === 200) {
-            return response.data;
-          }
-        })
-        .catch((error) => {
-          console.log('API error updating program: ', error);
-        });
     }
-
-  }
-};
+  };
 </script>
 
-<style>
-#week-label__BV_tab_button__ {
-  font-weight: bold;
-  cursor: default;
-}
-</style>
-
 <style scoped>
-button {
-  cursor: pointer;
-}
-span {
-  margin: 0px 10px;
-}
-.form-control {
-  width: inherit;
-  margin-right: 30px;
-}
-.custom-control {
-  margin: 0px 40px;
-}
-.btn-action {
-  margin-left: auto;
-}
+
 </style>

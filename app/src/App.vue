@@ -26,7 +26,7 @@
       light
       enable-resize-watcher
       overflow
-      v-if="$store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
+      v-if="!loading && $store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
     >
       <!-- drawer header -->
       <v-list class="pa-1">
@@ -62,7 +62,7 @@
     <v-toolbar
       class="grey darken-4"
       dark
-      v-if="$store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
+      v-if="!loading && $store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
     >
       <v-toolbar-side-icon @click.native.stop="handleToggleDrawer"></v-toolbar-side-icon>
       <v-toolbar-title v-if="$route.name === 'Home'">

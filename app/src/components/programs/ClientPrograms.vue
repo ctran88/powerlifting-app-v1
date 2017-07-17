@@ -64,6 +64,8 @@
 </template>
 
 <script>
+  import { firebaseApp, firebasedb } from '@/../utils/firebase';
+
   export default {
     name: 'client-programs',
     data: function() {
@@ -103,57 +105,53 @@
             value: 'actions'
           }
         ],
-        items: [
-          {
-            name: 'Program v1',
-            coach: 'Coach One',
-            active: 'Yes',
-            status: 'Published',
-            created: '2017-06-10T09:30:15.561Z',
-            lastUpdated: '2017-07-08T12:40:55.969Z'
-          },
-          {
-            name: 'Program v2',
-            coach: 'Coach One',
-            active: 'No',
-            status: 'Published',
-            created: '2016-06-10T09:30:15.561Z',
-            lastUpdated: '2016-07-08T12:40:55.969Z'
-          }
-        ],
+        items: [],
         details: {}
       };
     },
-    mounted() {
-      // this function is called before the setUserInfo acton can be completed (from App.vue), so user object is not set yet.  Set timetout as a workaround.
-      setTimeout(this.updatePrograms, 100);
+    firebase: {
+      programs: {
+        source: firebasedb.ref('/programs'),
+        cancelCallback: function(error) {
+          console.error('firebasedb error: ', error);
+        }
+      }
+    },
+    mounted: function() {
+      this.getPrograms();
     },
     methods: {
-
       /**
-       * Retrieves programs based on client email
+       * Retrieves programs based on coach email
        */
-      updatePrograms() {
-        // this.programs = [];
-        // var query = '?metadata.client=' + this.$store.state.user.email;
+      getPrograms: function() {
+        var user = firebaseApp.auth().currentUser;
 
-        // api.get('/training/programs' + query)
-        //   .then((response) => {
-        //     if (response.status === 200) {
-        //       response.data.programs.forEach((current) => {
-        //         this.programs.push(current);
-        //       });
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.log('API error retrieving programs: ', error);
-        //   });
+        this.items = [];
+
+        this.$firebaseRefs.programs
+          .orderByChild('client')
+          .equalTo(user.email)
+          .once('value')
+            .then((snapshot) => {
+              var data = snapshot.val();
+
+              if (data !== null) {
+                var keys = Object.keys(data);
+
+                for (var i = 0; i < keys.length; i++) {
+                  this.items.push(data[keys[i]]);
+                }
+              } else {
+                console.log('No data found.');
+              }
+            });
       },
 
       /**
        * Handles program preview and routes to view-program page
        */
-      handlePreview() {
+      handlePreview: function() {
         this.$store.dispatch('setProgramId', this.details._id);
         this.detailsDialog = false;
         this.$router.push({ name: 'View program' });
@@ -164,7 +162,7 @@
        *
        * @param      {string}  programId  The program identifier
        */
-      handleTrainingLog(programId) {
+      handleTrainingLog: function(programId) {
         this.$store.dispatch('setProgramId', programId);
         this.detailsDialog = false;
         this.$router.push({ name: 'Training log' });
