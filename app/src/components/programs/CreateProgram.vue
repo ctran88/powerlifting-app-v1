@@ -118,7 +118,7 @@
     </v-layout>
 
     <v-snackbar
-      :timeout="4000"
+      :timeout="3000"
       top
       multi-line
       vertical

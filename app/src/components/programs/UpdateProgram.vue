@@ -118,7 +118,7 @@
     </v-layout>
 
     <v-snackbar
-      :timeout="4000"
+      :timeout="3000"
       top
       multi-line
       vertical
@@ -162,11 +162,9 @@
     components: {
       CreateSession
     },
-    props: [
-      'id'
-    ],
     data: function() {
       return {
+        id: this.$store.state.programs.id,
         name: '',
         items: [],
         client: '',
@@ -174,8 +172,8 @@
         cancelDialog: false,
         publishDialog: false,
         publishMessage: '',
-        weeks: [1],
-        week: 1,
+        weeks: [],
+        week: 0,
         activeTab: {},
         days: [
           'day-1',
@@ -237,7 +235,78 @@
        * Handles retrieving and populating program
        */
       getProgram: function() {
-        //
+        this.$firebaseRefs.programs
+          .orderByKey()
+          .equalTo(this.id)
+          .once('value')
+            .then((snapshot) => {
+              var data = snapshot.val();
+
+              if (data !== null) {
+                var key = Object.keys(data)[0];
+                var program = JSON.parse(JSON.stringify(data[key]));
+
+                this.setProgram(program);
+              } else {
+                console.log('No data found.');
+              }
+            });
+      },
+
+      /**
+       * Populates the program data.
+       *
+       * @param      {Object}  program  The program
+       */
+      setProgram: function(program) {
+        this.name = program.name;
+        this.client = program.client;
+        this.programActive = program.active;
+        this.created = program.created;
+
+        var keys = Object.keys(program);
+        var weeksArray = [];
+
+        // push new weeks for each week in program
+        for (var i = 0; i < keys.length; i++) {
+          if (keys[i].search('week') !== -1) {
+            this.week++;
+            this.weeks.push(this.week);
+            weeksArray.push(program[keys[i]]);
+          }
+        }
+
+        // timeout so vue can render the new workout week components in the tree
+        setTimeout(() => {
+          // iterate through vue components
+          for (i = 0; i < this.$children.length; i++) {
+            // check if vue element is a workout week
+            if (this.$children[i].$el.id === 'workout-week') {
+              var weekLabel = this.$children[i].$children[0].$slots.default[0].children[0].text;
+              var week = this.$children[i].$children[1].$children;
+
+              // iterate through each program week
+              for (var j = 0; j < weeksArray.length; j++) {
+                // make sure weeks match
+                if (weekLabel.slice(-1) === (j + 1).toString()) {
+                  var programWeek = weeksArray[j];
+                  var weekKeys = Object.keys(programWeek);
+
+                  // iterate through days of the week
+                  for (var k = 0; k < week.length; k++) {
+                    // iterate through the program days
+                    for (var l = 0; l < weekKeys.length; l++) {
+                      // match vue week day to program week day
+                      if (week[k].id.slice(-1) === weekKeys[l].slice(-1)) {
+                        week[k].$children[0].exercises = programWeek[weekKeys[l]];
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }, 100);
       },
 
       /**

@@ -140,7 +140,10 @@
                 var keys = Object.keys(data);
 
                 for (var i = 0; i < keys.length; i++) {
-                  this.items.push(data[keys[i]]);
+                  var program = JSON.parse(JSON.stringify(data[keys[i]]));
+  
+                  program.id = keys[i];
+                  this.items.push(program);
                 }
               } else {
                 console.log('No data found.');
@@ -152,8 +155,7 @@
        * Handles program preview and routes to view-program page
        */
       handlePreview: function() {
-        this.$store.dispatch('setProgramId', this.details._id);
-        this.detailsDialog = false;
+        this.$store.dispatch('setProgramId', this.details.id);
         this.$router.push({ name: 'View program' });
       },
 
@@ -164,7 +166,6 @@
        */
       handleTrainingLog: function(programId) {
         this.$store.dispatch('setProgramId', programId);
-        this.detailsDialog = false;
         this.$router.push({ name: 'Training log' });
       }
 

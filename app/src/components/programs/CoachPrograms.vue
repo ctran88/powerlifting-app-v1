@@ -107,11 +107,13 @@
       top
       multi-line
       vertical
+      :error="snackbarStatus === 'error'"
       v-model="snackbar"
     >
       {{ snackbarText }}
       <v-btn
         flat
+        dark
         @click.native="snackbar = false"
       >Close</v-btn>
     </v-snackbar>
@@ -126,6 +128,7 @@
     data: function() {
       return {
         snackbar: false,
+        snackbarStatus: '',
         snackbarText: '',
         detailsDialog: false,
         deleteDialog: false,
@@ -203,7 +206,10 @@
                 var keys = Object.keys(data);
 
                 for (var i = 0; i < keys.length; i++) {
-                  this.items.push(data[keys[i]]);
+                  var program = JSON.parse(JSON.stringify(data[keys[i]]));
+
+                  program.id = keys[i];
+                  this.items.push(program);
                 }
               } else {
                 console.log('No data found.');
@@ -215,68 +221,56 @@
        * Deletes a program
        */
       handleDelete: function() {
-        // var id = this.details._id;
-
-        // api.delete('/training/programs/' + id)
-        //   .then((response) => {
-        //     if (response.status === 200) {
-        //       this.updatePrograms();
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.log('API error retrieving programs: ', error);
-        //   });
+        this.$firebaseRefs.programs.child(this.details.id).remove()
+          .then(() => {
+            this.snackbarStatus = '';
+            this.snackbarText = 'Program deleted successfully.';
+          })
+          .catch((error) => {
+            this.snackbarStatus = 'error';
+            this.snackbarText = error;
+          });
 
         this.deleteDialog = false;
+        this.snackbar = true;
+        this.getPrograms();
+      },
+
+      /**
+       * Copies a program
+       */
+      handleCopy: function() {
+        var copy = JSON.parse(JSON.stringify(this.details));
+
+        copy.name += '-copy';
+        this.$firebaseRefs.programs.push(copy)
+          .then(() => {
+            this.snackbarStatus = '';
+            this.snackbarText = 'Program copied successfully.';
+          })
+          .catch((error) => {
+            this.snackbarStatus = 'error';
+            this.snackbarText = error;
+          });
+
+        this.detailsDialog = false;
+        this.snackbar = true;
+        this.getPrograms();
       },
 
       /**
        * Handles program preview and routes to view-program page
        */
       handlePreview: function() {
-        this.$store.dispatch('setProgramId', this.details._id);
-        this.detailsDialog = false;
+        this.$store.dispatch('setProgramId', this.details.id);
         this.$router.push({ name: 'View program' });
-      },
-
-      /**
-       * Copies program
-       */
-      handleCopy: function() {
-        var copy = {
-          metadata: {},
-          microcycles: []
-        };
-
-        copy.metadata = this.details.metadata;
-        copy.metadata.name = this.details.metadata.name + '-copy';
-        copy.metadata.status = 'draft';
-        copy.metadata.created = new Date().toISOString();
-        copy.metadata.lastUpdated = new Date().toISOString();
-        copy.metadata.cycle = 1;
-        copy.microcycles = this.details.microcycles;
-
-        // api.post('/training/programs', copy)
-        //   .then((response) => {
-        //     if (response.status === 201) {
-        //       this.updatePrograms();
-        //     } else {
-        //       alert(response.data);
-        //     }
-        //   })
-        //   .catch((error) => {
-        //     console.log('API error retrieving programs: ', error);
-        //   });
-
-        // this.handleClose('program-preview-modal');
       },
 
       /**
        * Handles update and routes to update-program
        */
       handleUpdate: function() {
-        this.$store.dispatch('setProgramId', this.details._id);
-        this.detailsDialog = false;
+        this.$store.dispatch('setProgramId', this.details.id);
         this.$router.push({ name: 'Update program' });
       }
     }
