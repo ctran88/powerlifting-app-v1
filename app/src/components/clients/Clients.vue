@@ -57,9 +57,9 @@
       :search="search"
     >
       <template slot="items" scope="props">
-        <td class="text-xs-right">{{ props.item.name }}</td>
+        <td class="text-xs-right">{{ props.item.firstName }} {{ props.item.lastName }}</td>
         <td class="text-xs-right">{{ props.item.team }}</td>
-        <td class="text-xs-right">{{ props.item._activeProgramName }}</td>
+        <td class="text-xs-right">{{ props.item.activeProgram }}</td>
         <td class="text-xs-right">{{ props.item.memberStart }}</td>
         <td class="text-xs-right">{{ props.item.lastLogin }}</td>
         <td class="text-xs-right">{{ props.item.email }}</td>
@@ -88,6 +88,7 @@
 </template>
 
 <script>
+  import { firebaseApp, firebasedb } from '@/../utils/firebase';
   import api from '@/../utils/api';
 
   export default {
@@ -135,9 +136,46 @@
         items: []
       };
     },
+    firebase: {
+      users: {
+        source: firebasedb.ref('/users'),
+        cancelCallback: function(error) {
+          console.error('firebasedb error: ', error);
+        }
+      }
+    },
+    mounted: function() {
+      this.getClients();
+    },
     methods: {
-      getProgramNames: function() {
+      /**
+       * Gets the clients.
+       */
+      getClients: function() {
+        var user = firebaseApp.auth().currentUser;
 
+        this.items = [];
+
+        this.$firebaseRefs.users
+          .orderByChild('coach')
+          .equalTo(user.email)
+          .once('value')
+            .then((snapshot) => {
+              var data = snapshot.val();
+
+              if (data !== null) {
+                var keys = Object.keys(data);
+
+                for (var i = 0; i < keys.length; i++) {
+                  var client = JSON.parse(JSON.stringify(data[keys[i]]));
+
+                  client.id = keys[i];
+                  this.items.push(client);
+                }
+              } else {
+                console.log('No data found.');
+              }
+            });
       },
 
       /**
@@ -216,9 +254,8 @@
        * Sets program id as active program from client then routes to training-log page
        */
       handleTrainingLog: function() {
-        // this.$store.dispatch('setProgramId', this.details._activeProgram);
-        // this.handleClose('client-preview-modal');
-        // this.$router.push({ name: 'Training log' });
+        this.$store.dispatch('setProgramId', this.details.activeProgram);
+        this.$router.push({ name: 'Training log' });
       },
 
       handleRemove: function() {

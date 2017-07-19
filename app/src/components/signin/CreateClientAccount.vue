@@ -140,6 +140,7 @@
           lastName: this.lastName,
           coach: this.defaultCoachEmail,
           team: this.team,
+          email: this.email,
           accountType: 'client',
           memberStart: new Date().toISOString(),
           lastLogin: new Date().toISOString()

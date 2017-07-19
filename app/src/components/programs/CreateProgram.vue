@@ -223,7 +223,10 @@
               var keys = Object.keys(data);
 
               for (var i = 0; i < keys.length; i++) {
-                var client = data[keys[i]].firstName + ' ' + data[keys[i]].lastName;
+                var client = {
+                  text: data[keys[i]].firstName + ' ' + data[keys[i]].lastName,
+                  value: data[keys[i]].email
+                };
 
                 this.items.push(client);
               }

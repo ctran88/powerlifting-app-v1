@@ -118,6 +118,7 @@
           firstName: this.firstName,
           lastName: this.lastName,
           team: this.team,
+          email: this.email,
           accountType: 'coach',
           memberStart: new Date().toISOString(),
           lastLogin: new Date().toISOString()
