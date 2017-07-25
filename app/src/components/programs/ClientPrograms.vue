@@ -52,7 +52,7 @@
           <v-btn
             primary
             flat
-            @click.native="handleTrainingLog(props.item)"
+            @click.native="handleTrainingLog(props.item.id)"
           >Training Log</v-btn>
         </td>
       </template>

@@ -5,7 +5,7 @@
     <div class="program-wrapper">
       <div class="program-month" :style="{ gridTemplateColumns: columns }">
         <div class="program-day-column">
-          <span class="filler-day-label" />
+          <span class="filler-day-label"></span>
           <span class="day-label" v-for="n in days">Day {{ n }}</span>
         </div>
         <div class="program-week" v-for="(week, index) in weeks">
@@ -36,8 +36,7 @@
         program: '',
         columns: '0.125fr',
         days: 7,
-        weeks: [],
-        details: ''
+        weeks: []
       };
     },
     firebase: {

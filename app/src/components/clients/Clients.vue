@@ -1,7 +1,7 @@
 <template>
   <v-card>
     <v-card-title>
-      <v-dialog v-model="dialog">
+      <v-dialog v-model="inviteDialog">
         <v-btn
           primary
           dark
@@ -59,10 +59,46 @@
       <template slot="items" scope="props">
         <td class="text-xs-right">{{ props.item.firstName }} {{ props.item.lastName }}</td>
         <td class="text-xs-right">{{ props.item.team }}</td>
-        <td class="text-xs-right">{{ props.item.activeProgram }}</td>
+        <td class="text-xs-right">{{ props.item.activeProgram.name }}</td>
         <td class="text-xs-right">{{ props.item.memberStart }}</td>
         <td class="text-xs-right">{{ props.item.lastLogin }}</td>
         <td class="text-xs-right">{{ props.item.email }}</td>
+        <td>
+          <v-btn
+            flat
+            @click.native="handleTrainingLog(props.item)"
+          >Training log</v-btn>
+          <v-dialog
+            lazy
+            v-model="dropDialog"
+          >
+            <v-btn
+              error
+              flat
+              slot="activator"
+            >Drop</v-btn>
+            <v-card>
+              <v-card-title>
+                <span class="headline">Confirm drop</span>
+              </v-card-title>
+              <v-card-text>
+                Are you sure you want to drop {{ props.item.firstName }} {{ props.item.lastName }}?
+              </v-card-text>
+              <v-card-actions>
+                <v-spacer></v-spacer>
+                <v-btn
+                  flat
+                  @click.native="dropDialog = false"
+                >Cancel</v-btn>
+                <v-btn
+                  error
+                  flat
+                  @click.native="handleDrop(props.item)"
+                >Drop</v-btn>
+              </v-card-actions>
+            </v-card>
+          </v-dialog>
+        </td>
       </template>
       <template slot="pageText" scope="{ pageStart, pageStop }">
         From {{ pageStart }} to {{ pageStop }}
@@ -98,7 +134,8 @@
         snackbar: false,
         snackbarStatus: '',
         snackbarText: '',
-        dialog: false,
+        inviteDialog: false,
+        dropDialog: false,
         inviteName: '',
         inviteEmail: '',
         rules: {
@@ -185,7 +222,7 @@
         this.inviteEmail = '';
         this.inviteName = '';
         this.rules.email = [];
-        this.dialog = false;
+        this.inviteDialog = false;
       },
 
       /**
@@ -223,7 +260,7 @@
 
         this.inviteName = '';
         this.inviteEmail = '';
-        this.dialog = false;
+        this.inviteDialog = false;
       },
 
       /**
@@ -253,16 +290,33 @@
       /**
        * Sets program id as active program from client then routes to training-log page
        */
-      handleTrainingLog: function() {
-        this.$store.dispatch('setProgramId', this.details.activeProgram);
+      handleTrainingLog: function(client) {
+        this.$store.dispatch('setProgramId', client.activeProgram.id);
         this.$router.push({ name: 'Training log' });
       },
 
-      handleRemove: function() {
-        // TODO: need to finish in next iteration
-        //
-        //
-        //
+      /**
+       * Handles removing the coach from the client's user information
+       */
+      handleDrop: function(client) {
+        var payload = {
+          coach: null
+        };
+
+        this.$firebaseRefs.users.child(client.id).update(payload)
+          .then(() => {
+            this.snackbarStatus = '';
+            this.snackbarText = 'Client dropped succesfully.';
+            this.snackbar = true;
+          })
+          .catch((error) => {
+            this.snackbarStatus = 'error';
+            this.snackbarText = 'There was an error dropping your client.';
+            this.snackbar = true;
+            console.log('Error dropping client: ', error);
+          });
+
+        this.getClients();
       }
     }
   };

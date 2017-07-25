@@ -464,7 +464,10 @@
               }
   
               var payload = {
-                activeProgram: this.name
+                activeProgram: {
+                  name: this.name,
+                  id: this.id
+                }
               };
 
               // if client's program was changed from active to inactive

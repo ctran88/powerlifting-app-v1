@@ -396,7 +396,10 @@
                 }
 
                 var payload = {
-                  activeProgram: this.name
+                  activeProgram: {
+                    name: this.name,
+                    id: this.id
+                  }
                 };
 
                 return this.$firebaseRefs.users.child(key).update(payload)
@@ -445,7 +448,10 @@
                 }
   
                 var payload = {
-                  activeProgram: this.name
+                  activeProgram: {
+                    name: this.name,
+                    id: this.id
+                  }
                 };
 
                 // if client's program was changed from active to inactive

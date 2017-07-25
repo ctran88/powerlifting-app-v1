@@ -4,6 +4,12 @@
     ".write": true,
     "invites": {
       ".indexOn": "link"
+    },
+    "programs": {
+      ".indexOn": "coach"
+    },
+    "users": {
+      ".indexOn": "coach"
     }
   }
 }
