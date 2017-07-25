@@ -181,6 +181,12 @@
         cancelCallback: function(error) {
           console.error('firebasedb error: ', error);
         }
+      },
+      users: {
+        source: firebasedb.ref('/users'),
+        cancelCallback: function(error) {
+          console.error('firebasedb error: ', error);
+        }
       }
     },
     mounted: function() {
@@ -223,6 +229,11 @@
       handleDelete: function() {
         this.$firebaseRefs.programs.child(this.details.id).remove()
           .then(() => {
+            // if deleted program is active, remove active program name from client
+            if (this.details.active === true) {
+              this.removeActiveProgram();
+            }
+
             this.snackbarStatus = '';
             this.snackbarText = 'Program deleted successfully.';
           })
@@ -272,6 +283,25 @@
       handleUpdate: function() {
         this.$store.dispatch('setProgramId', this.details.id);
         this.$router.push({ name: 'Update program' });
+      },
+
+      /**
+       * Removes active program name from client
+       */
+      removeActiveProgram: function() {
+        var payload = {
+          activeProgram: null
+        };
+
+        this.$firebaseRefs.users
+          .orderByChild('email')
+          .equalTo(this.details.client)
+          .once('value')
+            .then((snapshot) => {
+              var key = Object.keys(snapshot.val())[0];
+
+              this.$firebaseRefs.users.child(key).update(payload);
+            });
       }
     }
   };

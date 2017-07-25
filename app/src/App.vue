@@ -212,7 +212,7 @@
       handleDataChange: function() {
         checkSignInStatus((user) => {
           if (user) {
-            this.$firebaseRefs.users.on('child_changed', (snapshot) => {
+            this.$firebaseRefs.users.child(user.uid).on('value', (snapshot) => {
               var userInfo = JSON.parse(JSON.stringify(snapshot.val()));
 
               userInfo.displayName = user.displayName;

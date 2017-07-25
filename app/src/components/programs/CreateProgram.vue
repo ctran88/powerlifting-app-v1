@@ -167,6 +167,7 @@
         name: '',
         items: [],
         client: '',
+        clientKeys: [],
         programActive: false,
         cancelDialog: false,
         publishDialog: false,
@@ -227,8 +228,13 @@
                   text: data[keys[i]].firstName + ' ' + data[keys[i]].lastName,
                   value: data[keys[i]].email
                 };
+                var clientKeys = {
+                  email: data[keys[i]].email,
+                  key: keys[i]
+                };
 
                 this.items.push(client);
+                this.clientKeys.push(clientKeys);
               }
             });
       },
@@ -380,34 +386,103 @@
           // saves program in array element
           return newProgramRef.set(program)
             .then(() => {
-              var message = '';
+              // if client is assigned and program marked as active, add activeProgram field to that client
+              if (this.client !== '' && this.programActive) {
+                // matches client email to client key
+                for (var i = 0; i < this.clientKeys.length; i++) {
+                  if (this.clientKeys[i].email === this.client) {
+                    var key = this.clientKeys[i].key;
+                  }
+                }
 
-              if (status === 'draft') {
-                message = 'Program saved succesfully.';
-              } else if (status === 'published') {
-                message = 'Program published succesfully.';
+                var payload = {
+                  activeProgram: this.name
+                };
+
+                return this.$firebaseRefs.users.child(key).update(payload)
+                  .then(() => {
+                    var message = '';
+
+                    if (status === 'draft') {
+                      message = 'Program saved succesfully.';
+                    } else if (status === 'published') {
+                      message = 'Program published succesfully.';
+                    }
+
+                    return Promise.resolve(message);
+                  })
+                  .catch((error) => {
+                    console.log('Error saving active program to user: ', error);
+                    return Promise.reject(error);
+                  });
+              } else {
+                var message = '';
+
+                if (status === 'draft') {
+                  message = 'Program saved succesfully.';
+                } else if (status === 'published') {
+                  message = 'Program published succesfully.';
+                }
+
+                return Promise.resolve(message);
               }
-
-              return Promise.resolve(message);
             })
             .catch((error) => {
+              console.log('Error saving program: ', error);
               return Promise.reject(error);
             });
         } else {
           // updates existing program by fully replacing it
           return this.$firebaseRefs.programs.child(this.id).set(program)
             .then(() => {
-              var message = '';
+              // if client is assigned and program marked as active, add activeProgram field to that client
+              if (this.client !== '') {
+                // matches client email to client key
+                for (var i = 0; i < this.clientKeys.length; i++) {
+                  if (this.clientKeys[i].email === this.client) {
+                    var key = this.clientKeys[i].key;
+                  }
+                }
+  
+                var payload = {
+                  activeProgram: this.name
+                };
 
-              if (status === 'draft') {
-                message = 'Program saved succesfully.';
-              } else if (status === 'published') {
-                message = 'Program published succesfully.';
+                // if client's program was changed from active to inactive
+                if (!this.programActive) {
+                  payload.activeProgram = null;
+                }
+
+                return this.$firebaseRefs.users.child(key).update(payload)
+                  .then(() => {
+                    var message = '';
+
+                    if (status === 'draft') {
+                      message = 'Program saved succesfully.';
+                    } else if (status === 'published') {
+                      message = 'Program published succesfully.';
+                    }
+
+                    return Promise.resolve(message);
+                  })
+                  .catch((error) => {
+                    console.log('Error saving active program to user: ', error);
+                    return Promise.reject(error);
+                  });
+              } else {
+                var message = '';
+
+                if (status === 'draft') {
+                  message = 'Program saved succesfully.';
+                } else if (status === 'published') {
+                  message = 'Program published succesfully.';
+                }
+
+                return Promise.resolve(message);
               }
-
-              return Promise.resolve(message);
             })
             .catch((error) => {
+              console.log('Error saving program: ', error);
               return Promise.reject(error);
             });
         }
