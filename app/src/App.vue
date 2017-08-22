@@ -1,13 +1,18 @@
 <template>
   <v-app id="app">
     <div v-if="loading"></div>
+
     <!-- not signed in toolbar -->
     <v-toolbar
       class="grey darken-4"
       dark
-      v-else-if="!$store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
+      v-else-if="!$store.state.signedIn &&
+                 ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
     >
-      <v-toolbar-side-icon class="hidden-md-and-up"></v-toolbar-side-icon>
+      <v-toolbar-side-icon
+        class="hidden-md-and-up"
+        @click.native.stop="navDrawer = !navDrawer"
+      ></v-toolbar-side-icon>
       <v-toolbar-title>
         <a class="brand" href="/">The Powerlifting Notebook</a>
       </v-toolbar-title>
@@ -18,15 +23,50 @@
         <v-btn flat to="signin">Sign in</v-btn>
       </v-toolbar-items>
     </v-toolbar>
+
+    <!-- signed in toolbar -->
+    <v-toolbar
+      class="grey darken-4"
+      dark
+      v-if="!loading &&
+            $store.state.signedIn &&
+            ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
+    >
+      <v-toolbar-side-icon @click.native.stop="drawer = !drawer"></v-toolbar-side-icon>
+      <v-toolbar-title v-if="$route.name === 'Home'">
+        <a class="brand" href="/">The Powerlifting Notebook</a>
+      </v-toolbar-title>
+      <v-toolbar-title v-else>
+        <span class="route-label">{{ $route.name }}</span>
+      </v-toolbar-title>
+      <v-spacer></v-spacer>
+      <v-menu offset-y>
+        <v-btn flat slot="activator">
+          <v-list-tile-avatar class="mr-3">
+            <img :src="$store.state.user.photoURL" />
+          </v-list-tile-avatar>
+          <span>{{ $store.state.user.displayName }}</span>
+        </v-btn>
+        <v-list>
+          <v-list-tile
+            v-for="item in items"
+            :key="item"
+            @click.native="handleMenuSelect(item.title)"
+          >{{ item.title }}</v-list-tile>
+        </v-list>
+      </v-menu>
+    </v-toolbar>
     
-    <!-- drawer -->
+    <!-- signed in drawer -->
     <v-navigation-drawer
       persistent
       v-model="drawer"
       light
       enable-resize-watcher
       overflow
-      v-if="!loading && $store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
+      v-if="!loading &&
+            $store.state.signedIn &&
+            ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
     >
       <!-- drawer header -->
       <v-list class="pa-1">
@@ -58,40 +98,24 @@
       </v-list>
     </v-navigation-drawer>
 
-    <!-- signed in toolbar -->
-    <v-toolbar
-      class="grey darken-4"
+    <!-- signed out drawer -->
+    <v-navigation-drawer
       dark
-      v-if="!loading && $store.state.signedIn && ['Sign in', 'Create an account', 'Invitation', 'Page not found'].indexOf($route.name) === -1"
+      persistent
+      v-model="navDrawer"
+      overflow
     >
-      <v-toolbar-side-icon @click.native.stop="handleToggleDrawer"></v-toolbar-side-icon>
-      <v-toolbar-title v-if="$route.name === 'Home'">
-        <a class="brand" href="/">The Powerlifting Notebook</a>
-      </v-toolbar-title>
-      <v-toolbar-title v-else>
-        <span class="route-label">{{ $route.name }}</span>
-      </v-toolbar-title>
-      <v-spacer></v-spacer>
-      <v-menu offset-y>
-        <v-btn flat slot="activator">
-          <v-list-tile-avatar class="mr-3">
-            <img :src="$store.state.user.photoURL" />
-          </v-list-tile-avatar>
-          <span>{{ $store.state.user.displayName }}</span>
-        </v-btn>
-        <v-list>
-          <v-list-tile
-            v-for="item in items"
-            :key="item"
-            @click.native="handleMenuSelect(item.title)"
-          >{{ item.title }}</v-list-tile>
-        </v-list>
-      </v-menu>
-    </v-toolbar>
+      <!-- menu -->
+      <v-list class="pa-1">
+        <v-list-tile to="about">About us</v-list-tile>
+        <v-list-tile to="create-account">Create an account</v-list-tile>
+        <v-list-tile to="signin">Sign in</v-list-tile>
+      </v-list>
+    </v-navigation-drawer>
 
     <!-- main -->
     <main>
-      <v-container fluid>
+      <v-container fluid :class="{ 'pa-0': $route.name === 'Home' }">
         <router-view></router-view>
       </v-container>
     </main>
@@ -112,6 +136,7 @@
     data: function() {
       return {
         loading: true,
+        navDrawer: false,
         drawer: false,
         items: [
           {
@@ -225,13 +250,6 @@
             });
           }
         });
-      },
-
-      /**
-       * Handles drawer toggle button
-       */
-      handleToggleDrawer: function() {
-        this.drawer = !this.drawer;
       },
 
       /**
